@@ -84,10 +84,16 @@ typedef struct
   float vel_delta[3];
   float omega_vd[3];
   float omega_vp[3];
+  
+  float dist[3];
+  
+  float Incline;
+  float Incline_ave;
 
   float pe[3];
   float pave;
 
+	float Time;
   float Nsamples;
   float Ncycles;
 } WISE_STATE_TYPE;

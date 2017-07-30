@@ -88,10 +88,10 @@ void Blink_LED( void )
     /* Display number of bytes available on comm port
     ** Com port is used for real-time communication with
     ** connected processor */
-    LOG_PORT.println("> # Available on COMM_PORT: " + String(COMM_PORT.available()) );
+    //LOG_PORT.println("> # Available on COMM_PORT: " + String(COMM_PORT.available()) );
 
     /* Toggle LED */
-    LOG_PORT.println("> Blink ...");
+    //LOG_PORT.println("> Blink ...");
     digitalWrite(HW_LED_PIN, g_control_state.g_LedState);
     g_control_state.g_LedState = !g_control_state.g_LedState;
     g_control_state.g_LastBlinkTime = millis();

@@ -39,20 +39,20 @@ extern WISE_STATE_TYPE     g_wise_state;
 void Debug_LogOut( void )
 {
   String imuLog = ""; 
-  //imuLog += "T:" + String( g_control_state.timestamp ) + ", "; // Add time to log string
-  //imuLog += "DT:" + String( g_control_state.G_Dt,3 ) + ", ";
-  //imuLog += "SR:" + String( (1/g_control_state.G_Dt),3 ) + ", "; // Add delta time to log string
 
   switch ( g_control_state.output_mode )
   {
     case 0:
+      imuLog += "T:" + String( g_control_state.timestamp ) + ", ";
+      imuLog += "DT:" + String( g_control_state.G_Dt,4 ) + ", ";
+      imuLog += "SR:" + String( (1/g_control_state.G_Dt),3 ) + ", "; 
       imuLog += "R:" + String( TO_DEG( g_sensor_state.roll ),3 ) + ", ";
       imuLog += "P:" + String( TO_DEG( g_sensor_state.pitch ),3 ) + ", ";
       imuLog += "Y:" + String( TO_DEG( g_sensor_state.yaw ),5 ) + ", ";
-      imuLog += "Acc:" + String( g_sensor_state.accel[0],3 ) + ",";
+      imuLog += "A:" + String( g_sensor_state.accel[0],3 ) + ",";
       imuLog += String( g_sensor_state.accel[1],3 ) + ",";
       imuLog += String( g_sensor_state.accel[2],3 ) + " ";
-      imuLog += "Gyr:" + String( g_sensor_state.gyro[0],3 ) + ",";
+      imuLog += "G:" + String( g_sensor_state.gyro[0],3 ) + ",";
       imuLog += String( g_sensor_state.gyro[1],3 ) + ",";
       imuLog += String( g_sensor_state.gyro[2],3 ) + " ";
       break;
@@ -85,12 +85,10 @@ void Debug_LogOut( void )
       imuLog += String( TO_DEG(g_sensor_state.yaw), 2 ) + ",";
       imuLog += String( TO_DEG(g_sensor_state.pitch), 2 ) + ",";
       imuLog += String( TO_DEG(g_sensor_state.roll), 2 ) + ",";
-      //imuLog += String( g_wise_state.accel[0],3 ) + "," + String( g_wise_state.accel[1],3 ) + ",";
-      imuLog += String( g_wise_state.accel_ave[0],3 ) + ",";
-      imuLog += String( g_wise_state.accel_ave[1],3 ) + ",";
-      //imuLog += String( g_wise_state.vel[0],3 ) + "," + String( g_wise_state.vel[1],3 )  + ",";
-      imuLog += String( g_wise_state.vel_ave[0],3 ) + ",";
-      imuLog += String( g_wise_state.vel_ave[1],3 );
+      //imuLog += String( g_wise_state.accel_ave[0],3 ) + ",";
+      //imuLog += String( g_wise_state.accel_ave[1],3 ) + ",";
+      //imuLog += String( g_wise_state.vel_ave[0],3 ) + ",";
+      //imuLog += String( g_wise_state.vel_ave[1],3 );
       break;
     case 4:
       imuLog += "\t";
@@ -100,7 +98,6 @@ void Debug_LogOut( void )
   }
   imuLog += "\r\n"; 
   LOG_PRINT( imuLog ); 
-  LOG_PRINTLN(" ");
 } /* End Debug_LogOut */
 
 /*************************************************

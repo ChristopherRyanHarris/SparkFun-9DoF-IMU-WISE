@@ -23,8 +23,9 @@
 #define COMM_PORT_BAUD 9600
 
 /* The LED can be used for external debugging */
+#define UART_BLINK_RATE 50
 //#define UART_BLINK_RATE 100
-#define UART_BLINK_RATE 300
+//#define UART_BLINK_RATE 300
 
 /* DCM parameters
 *******************************************************************/
@@ -32,10 +33,13 @@
 /* DCM gain */
 #define Kp_ROLLPITCH 0.1f
 //#define Ki_ROLLPITCH 0.00005f
-#define Ki_ROLLPITCH 0.00006f
+//#define Ki_ROLLPITCH 0.00006f
+#define Ki_ROLLPITCH 0.00001f
 
-#define Kp_YAW 1.2f
-#define Ki_YAW 0.00002f
+//#define Kp_YAW 1.2f
+#define Kp_YAW 1.5f
+//#define Ki_YAW 0.00002f
+#define Ki_YAW 0.00005f
 
 /*
 ** Notes on orientation for the 9250 IMU
@@ -152,7 +156,8 @@
 /* Sampling resolution
 *******************************************************************/
 /* Set the system sampling rate */
-#define TIME_SR         200.0f    /* Warning: depends on sensor settings! */
+//#define TIME_SR         200.0f    /* Warning: depends on sensor settings! */
+#define TIME_SR         99999.0f    /* Warning: depends on sensor settings! */
 
 /* Resolution of system time
 ** Used to set delta T - see Update_Time */
@@ -215,8 +220,8 @@
 #define ACCEL_X_GAIN (GRAVITY/(ACCEL_X_MAX - ACCEL_X_OFFSET))
 #define ACCEL_Y_GAIN (GRAVITY/(ACCEL_Y_MAX - ACCEL_Y_OFFSET))
 #define ACCEL_Z_GAIN (GRAVITY/(ACCEL_Z_MAX-ACCEL_Z_OFFSET))
-#define ACCEL_X_SCALED(x) ( (x - ACCEL_X_OFFSET)*ACCEL_X_GAIN )
-#define ACCEL_Y_SCALED(x) ( (x - ACCEL_Y_OFFSET)*ACCEL_Y_GAIN )
+#define ACCEL_X_SCALED(x) ( (x - ACCEL_X_OFFSET - (0))*ACCEL_X_GAIN )
+#define ACCEL_Y_SCALED(x) ( (x - ACCEL_Y_OFFSET - (0))*ACCEL_Y_GAIN )
 #define ACCEL_Z_SCALED(x) ( (x - ACCEL_Z_OFFSET)*ACCEL_Z_GAIN )
 
 ////#define ACCEL_GAIN 0.0134

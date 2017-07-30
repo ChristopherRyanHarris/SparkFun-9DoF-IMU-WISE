@@ -39,7 +39,7 @@
 ** data useful for calibration */
 typedef struct
 {
-  int output_mode;// = 0;
+  int output_mode;
 
   float accel_total[3];
   float accel_max[3];

@@ -318,11 +318,6 @@ void DCM_Filter( void )
   Vector_Scale( &errorYaw[0], Ki_YAW, &ErrorGain[0] ); /* Adding Integrator */
   Vector_Add( g_dcm_state.Omega_I, ErrorGain, g_dcm_state.Omega_I ); /* Adding integrator to the Omega_I */
 
-//	fprintf(stdout,"DCM[0][0]:%f DCM[0][1]:%f DCM[0][2]:%f \n",g_dcm_state.DCM_Matrix[0][0],g_dcm_state.DCM_Matrix[0][1],g_dcm_state.DCM_Matrix[0][2]);
-//	fprintf(stdout,"DCM[1][0]:%f DCM[1][1]:%f DCM[1][2]:%f \n",g_dcm_state.DCM_Matrix[1][0],g_dcm_state.DCM_Matrix[1][1],g_dcm_state.DCM_Matrix[1][2]);
-//	fprintf(stdout,"DCM[2][0]:%f DCM[2][1]:%f DCM[2][2]:%f \n",g_dcm_state.DCM_Matrix[2][0],g_dcm_state.DCM_Matrix[2][1],g_dcm_state.DCM_Matrix[2][2]);
-
-
   /******************************************************************
   ** DCM 4. Extract Euler Angles from DCM
   ** Calculate the euler angles from the orintation
@@ -382,6 +377,7 @@ void DCM_Filter( void )
       g_sensor_state.roll =  ROLL_ROT_CONV*f_atan2( g_dcm_state.DCM_Matrix[2][2], -ROLL_ZREF*g_dcm_state.DCM_Matrix[2][1] );
       break;
   }
+  
   g_sensor_state.yaw   =  f_atan2( g_dcm_state.DCM_Matrix[1][0], g_dcm_state.DCM_Matrix[0][0] ); // A faster atan2
 } /* End DCM_Filter */
 

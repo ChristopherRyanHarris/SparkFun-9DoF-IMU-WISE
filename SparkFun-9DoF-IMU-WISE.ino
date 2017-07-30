@@ -63,6 +63,8 @@ DSP_COMMON_TYPE     g_dsp;
 */
 void setup()
 {
+  Common_Init();
+  
   /* Initialize the hardware */
   Init_Hardware();
 
@@ -84,7 +86,7 @@ void setup()
 
   DCM_Init();
   WISE_Init();
-  //DSP_Filter_Init();
+  DSP_Filter_Init();
   
   LOG_PRINTLN("> IMU Setup Done");
 } /* End setup */
@@ -108,7 +110,6 @@ void loop()
   //Reset_Sensor_Fusion(); 
   
   /* Estimate Walking Speed and Incline */
-  WISE_Update();
 
   /* Read/Respond to command */
   if( COMM_PORT.available() > 0 ) { f_RespondToInput( COMM_PORT.available() );  }
