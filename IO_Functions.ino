@@ -39,65 +39,42 @@ extern WISE_STATE_TYPE     g_wise_state;
 void Debug_LogOut( void )
 {
   String imuLog = ""; 
+  char fastlog[500];
 
   switch ( g_control_state.output_mode )
   {
     case 0:
-      imuLog += "T:" + String( g_control_state.timestamp ) + ", ";
-      imuLog += "DT:" + String( g_control_state.G_Dt,4 ) + ", ";
-      imuLog += "SR:" + String( (1/g_control_state.G_Dt),3 ) + ", "; 
-      imuLog += "R:" + String( TO_DEG( g_sensor_state.roll ),3 ) + ", ";
-      imuLog += "P:" + String( TO_DEG( g_sensor_state.pitch ),3 ) + ", ";
-      imuLog += "Y:" + String( TO_DEG( g_sensor_state.yaw ),5 ) + ", ";
-      imuLog += "A:" + String( g_sensor_state.accel[0],3 ) + ",";
-      imuLog += String( g_sensor_state.accel[1],3 ) + ",";
-      imuLog += String( g_sensor_state.accel[2],3 ) + " ";
-      imuLog += "G:" + String( g_sensor_state.gyro[0],3 ) + ",";
-      imuLog += String( g_sensor_state.gyro[1],3 ) + ",";
-      imuLog += String( g_sensor_state.gyro[2],3 ) + " ";
+    	sprintf(fastlog,"T:%d, DT:%.4f, SR:%.4f, R:%.4f, P:%.4f, Y:%.4f, A:%.0f,%.0f,%.0f, G:%.0f,%.0f,%.0f\n",
+    		g_control_state.timestamp,g_control_state.G_Dt,(1/g_control_state.G_Dt),
+	    	TO_DEG(g_sensor_state.roll),TO_DEG(g_sensor_state.pitch),TO_DEG(g_sensor_state.yaw),
+	    	g_sensor_state.accel[0],g_sensor_state.accel[1],g_sensor_state.accel[2],
+	    	g_sensor_state.gyro[0],g_sensor_state.gyro[1],g_sensor_state.gyro[2]);
       break;
     case 1:
-      imuLog += "WISE_v (v/av/d/od/op):";
-      imuLog += String( g_wise_state.vel[0],3 ) + "/" + String( g_wise_state.vel_ave[0],3 ) + "/";
-      imuLog += String( g_wise_state.vel_delta[0],3 ) + "/" + String( g_wise_state.omega_vd[0],3 ) + "/";
-      imuLog += String( g_wise_state.omega_vp[0],5 ) + " , ";
-      imuLog += String( g_wise_state.vel[1],3 ) + "/" + String( g_wise_state.vel_ave[0],3 ) + "/";
-      imuLog += String( g_wise_state.vel_delta[1],3 ) + "/" + String( g_wise_state.omega_vd[1],3 ) + "/";
-      imuLog += String( g_wise_state.omega_vp[1],5 );
+    	sprintf(fastlog,"WISE_v (v/av/d/od/op): 1:%.4f/%.4f/%.4f/%.4f 2:%.4f/%.4f/%.4f/%.4f\n",
+    		g_wise_state.vel[0],g_wise_state.vel_ave[0],g_wise_state.vel_delta[0],g_wise_state.omega_vd[0],g_wise_state.omega_vp[0],
+    		g_wise_state.vel[1],g_wise_state.vel_ave[1],g_wise_state.vel_delta[1],g_wise_state.omega_vd[1],g_wise_state.omega_vp[1] );
       break;
     case 2:
-      imuLog += "WISE_a (a/aa/d/od/op):";
-      imuLog += String( g_wise_state.accel[0],3 ) + "/" + String( g_wise_state.accel_ave[0],3 ) + "/";
-      imuLog += String( g_wise_state.accel_delta[0],3 ) + "/" + String( g_wise_state.omega_ad[0],3 ) + "/";
-      imuLog += String( g_wise_state.omega_ap[0],5 ) + " , ";
-      imuLog += String( g_wise_state.accel[1],3 ) + "/" + String( g_wise_state.accel_ave[1],3 ) + "/";
-      imuLog += String( g_wise_state.accel_delta[1],3 ) + "/" + String( g_wise_state.omega_ad[1],3 ) + "/";
-      imuLog += String( g_wise_state.omega_ap[1],5 );
+    	sprintf(fastlog,"WISE_a (a/aa/d/od/op): 1:%.4f/%.4f/%.4f/%.4f 2:%.4f/%.4f/%.4f/%.4f\n",
+    		g_wise_state.accel[0],g_wise_state.accel_ave[0],g_wise_state.accel_delta[0],g_wise_state.omega_ad[0],g_wise_state.omega_ap[0],
+    		g_wise_state.accel[1],g_wise_state.accel_ave[1],g_wise_state.accel_delta[1],g_wise_state.omega_ad[1],g_wise_state.omega_ap[1]);
       break;
     case 3:
-      imuLog += String( g_control_state.timestamp ) + ",";
-      imuLog += String( g_sensor_state.accel[0],0 ) + ",";
-      imuLog += String( g_sensor_state.accel[1],0 ) + ",";
-      imuLog += String( g_sensor_state.accel[2],0 ) + ",";
-      imuLog += String( g_sensor_state.gyro[0],0 ) + ",";
-      imuLog += String( g_sensor_state.gyro[1],0 ) + ",";
-      imuLog += String( g_sensor_state.gyro[2],0 ) + ",";
-      imuLog += String( TO_DEG(g_sensor_state.yaw), 2 ) + ",";
-      imuLog += String( TO_DEG(g_sensor_state.pitch), 2 ) + ",";
-      imuLog += String( TO_DEG(g_sensor_state.roll), 2 ) + ",";
-      //imuLog += String( g_wise_state.accel_ave[0],3 ) + ",";
-      //imuLog += String( g_wise_state.accel_ave[1],3 ) + ",";
-      //imuLog += String( g_wise_state.vel_ave[0],3 ) + ",";
-      //imuLog += String( g_wise_state.vel_ave[1],3 );
+    	sprintf(fastlog,"%d,%.0f,%.0f,%.0f,%.0f,%.0f,%.0f,%.4f,%.4f,%.4f\n",
+    		g_control_state.timestamp,
+	    	g_sensor_state.accel[0],g_sensor_state.accel[1],g_sensor_state.accel[2],
+	    	g_sensor_state.gyro[0],g_sensor_state.gyro[1],g_sensor_state.gyro[2],
+	    	TO_DEG(g_sensor_state.yaw),TO_DEG(g_sensor_state.pitch),TO_DEG(g_sensor_state.roll) );
+	    LOG_PRINT( fastlog ); 
       break;
     case 4:
-      imuLog += "\t";
-      imuLog = "err est (p1/p2/p3/pave): ";
-      imuLog += String( g_wise_state.pe[0],7 ) + "/" + String( g_wise_state.pe[1],7 ) + "/" + String( g_wise_state.pe[2],7 ) + "/";
-      imuLog += String( g_wise_state.pave,7 );
+    	sprintf(fastlog,"\terr est (p1/p2/p3/pave): %.4f,%.4f,%.4f,%.4f\n",
+    		g_wise_state.pe[0],g_wise_state.pe[1],g_wise_state.pe[2],g_wise_state.pave );
+    default:
+    	break;
   }
-  imuLog += "\r\n"; 
-  LOG_PRINT( imuLog ); 
+  LOG_PRINT( fastlog ); 
 } /* End Debug_LogOut */
 
 /*************************************************

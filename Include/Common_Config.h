@@ -23,11 +23,15 @@
 #endif
 
 #define DEBUG 1
+
+/* IO params */
+#define OUTPUT_MODE 0
+#define NUM_COM_MODES 5
+
+/* Calibration params  */
 #define CALIBRATE_MODE  0
 #define CAL_OUTPUT_MODE 0
-
 #define NUM_CALCOM_MODES 2
-#define NUM_COM_MODES 5
 
 /*******************************************************************
 ** Tyedefs *********************************************************
@@ -94,10 +98,12 @@ typedef struct
 
   /* Serial communication globals */
   bool g_BaudLock; /* Used to set baud rate */
+  uint32_t  g_LastLogTime; /* Sets the UART LOG Rate */
 
   /* LED state globals */
   bool      g_LedState; /* Used to set LED state */
   uint32_t  g_LastBlinkTime; /* Used to set LED state */
+  
 
 } CONTROL_STATE_TYPE;
 

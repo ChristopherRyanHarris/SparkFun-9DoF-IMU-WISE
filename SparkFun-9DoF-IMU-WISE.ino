@@ -110,9 +110,24 @@ void loop()
   //Reset_Sensor_Fusion(); 
   
   /* Estimate Walking Speed and Incline */
-
+	//WISE_Update();
+    
   /* Read/Respond to command */
   if( COMM_PORT.available() > 0 ) { f_RespondToInput( COMM_PORT.available() );  }
+
+  /* We blink every UART_LOG_RATE millisecods */
+  if ( micros() > (g_control_state.g_LastLogTime + UART_LOG_RATE) )
+  {
+  	/* Log the current states to the debug port */
+    Debug_LogOut();
+    
+    g_control_state.g_LastLogTime = micros();
+
+    /* Display number of bytes available on comm port
+    ** Com port is used for real-time communication with
+    ** connected processor */
+    //LOG_PORT.println("> # Available on COMM_PORT: " + String(COMM_PORT.available()) );
+  }
 
   /* Blink LED 
   ** TO DO: It would be nice to have a blink code

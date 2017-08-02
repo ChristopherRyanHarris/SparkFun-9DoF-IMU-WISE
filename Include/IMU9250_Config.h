@@ -19,13 +19,19 @@
 /* Communication Parameters
 *******************************************************************/
 /* Serial Port Configuration */
-#define LOG_PORT_BAUD 115200
-#define COMM_PORT_BAUD 9600
+//#define LOG_PORT_BAUD 115200
+#define LOG_PORT_BAUD 250000
+//#define COMM_PORT_BAUD 9600
+#define COMM_PORT_BAUD 250000
+
+/* DEBUG LOG period (us) */
+//#define UART_LOG_RATE 10000
+#define UART_LOG_RATE 1
 
 /* The LED can be used for external debugging */
-#define UART_BLINK_RATE 50
+//#define UART_BLINK_RATE 50
 //#define UART_BLINK_RATE 100
-//#define UART_BLINK_RATE 300
+#define UART_BLINK_RATE 300
 
 /* DCM parameters
 *******************************************************************/
@@ -44,19 +50,19 @@
 /*
 ** Notes on orientation for the 9250 IMU
 **   Terms:
-**     Fore:       (Front) Edge oposite of the power port
-**     Aft:        (Rear) Edge of the power port
-**     Starboard:  (Right) Edge with reset switch
-**     Port:       (Left) Edge oposite of reset switch
-**     Zenith:     (Up) Clean face of board
-**     Nadir:      (Down) Populated face of board
+**     Fore:       (Front) Edge of the USB port
+**     Aft:        (Rear) Edge oposite of the USB port
+**     Starboard:  (Right) Edge oposite of PWR switch
+**     Port:       (Left) Edge with PWR switch
+**     Zenith:     (Up) face with USB port
+**     Nadir:      (Down) face oposite USB port
 **   Contrary to the silk, the axis are positioned as follows:
 **     +x is Fore,       -x is Aft
 **     +y is Starboard,  -y is Port
 **     +z is Zenith,     -z is Nadir
 **   This means, placing the board on a flat surface with the
-**   unpopulated side (Zenith) down will result in an acceleration
-**   of about -256 (1xg) for accel[2] (z) since the acceleration
+**   face without the USB port (Nadir) down will result in an acceleration
+**   of about -2000 (1xg) for accel[2] (z) since the acceleration
 **   from gravity with be acting along -z.
 */
 

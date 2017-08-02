@@ -44,7 +44,9 @@ extern WISE_STATE_TYPE     g_wise_state;
 ********************************************************************/
 
 
-/*
+
+
+/*****************************************************************
 ** Function: WISE_Init
 ** This function initializes the WISE state
 ** variables.
@@ -101,7 +103,10 @@ void WISE_Init ( void )
   g_wise_state.Nsamples++;
 } /* End WISE_Init*/
 
-/*
+
+
+
+/*****************************************************************
 ** Function: WISE_Update
 ** This code executes the speed and
 ** walking incline estimation state update
@@ -116,15 +121,20 @@ void WISE_Update ( void )
 
   /* Map acceleration to normal/tangent */
   Map_Accel_2D();
+  
   /* Integrate accel to get vel */
   Integrate_Accel_2D();
+  
   /* Velocity Adjustment */
   Adjust_Velocity();
 
   g_wise_state.pitch_mem = g_sensor_state.pitch;
 } /* End WISE_Update */
 
-/*
+
+
+
+/*****************************************************************
 ** Function: WISE_Reset
 ** This function resets the WISE
 ** state variables. In particular,
@@ -154,7 +164,9 @@ void WISE_Reset ( void )
 } /* End WISE_Reset */
 
 
-/*
+
+
+/*****************************************************************
 ** Function: Map_Accel_2D
 ** This function maps a_t and a_n to a_x and a_y
 ** using the filtered pitch assuming 2D motion.
@@ -164,28 +176,44 @@ void WISE_Reset ( void )
 */
 void Map_Accel_2D ( void )
 {
-  /*
-  ** Notes on orientation for the 10736 IMU
-  **   Terms:
-  **     Fore:       (Front) Edge oposite of the power port
-  **     Aft:        (Rear) Edge of the power port
-  **     Starboard:  (Right) Edge with reset switch
-  **     Port:       (Left) Edge oposite of reset switch
-  **     Zenith:     (Up) Clean face of board
-  **     Nadir:      (Down) Populated face of board
-  **   Contrary to the silk, the axis are positioned as follows:
-  **     +x is Fore,       -x is Aft
-  **     +y is Starboard,  -y is Port
-  **     +z is Zenith,     -z is Nadir
-  */
+	/*
+	** Notes on orientation for the 9250 IMU
+	**   Terms:
+	**     Fore:       (Front) Edge of the USB port
+	**     Aft:        (Rear) Edge oposite of the USB port
+	**     Starboard:  (Right) Edge oposite of PWR switch
+	**     Port:       (Left) Edge with PWR switch
+	**     Zenith:     (Up) face with USB port
+	**     Nadir:      (Down) face oposite USB port
+	**   Contrary to the silk, the axis are positioned as follows:
+	**     +x is Fore,       -x is Aft
+	**     +y is Starboard,  -y is Port
+	**     +z is Zenith,     -z is Nadir
+	**   This means, placing the board on a flat surface with the
+	**   face without the USB port (Nadir) down will result in an acceleration
+	**   of about -2000 (1xg) for accel[2] (z) since the acceleration
+	**   from gravity with be acting along -z.
+	*/
 
   /* Accel x:Fore y:Port z:Zenith
   ** Note: IMU coordinate ref. frame definced in IMU#_Config.h
   **       Rotation will need to be accounted for */
   float Ax, Az;
-  Ax = g_sensor_state.accel[0];
-  Az = g_sensor_state.accel[2];
-
+  switch( PITCH_O )
+  {
+  	case 1: /* P: 0:Nadir0/Zenith down. +90:Aft down   -90:Fore down */
+		  Ax = g_sensor_state.accel[0]; /* Movement: +x */
+		  Az = g_sensor_state.accel[2]; /* Gravity:  -z */
+		  break;
+		case 2: /* P: 0:Fore/Aft down       +90:Port down  -90:Starboard down */
+		  Ax = g_sensor_state.accel[1]; /* Movement: +y (stbd) */
+		  Az = g_sensor_state.accel[0]; /* Gravity:  -x (fwd) */
+			break;
+		case 3: /* P: 0:Fore/Aft down       +90:Port down  -90:Starboard down */
+		  Ax = g_sensor_state.accel[2]; /* Movement: +x */
+		  Az = g_sensor_state.accel[0]; /* Gravity:  -z */
+			break;
+	}
   g_wise_state.accel_delta[0] = Ax;
   g_wise_state.accel_delta[1] = Az;
 
@@ -225,7 +253,8 @@ void Map_Accel_2D ( void )
 
 
 
-/*
+
+/*****************************************************************
 ** Function: Integrate_Accel_2D
 ** Integrate acceleration (wrt leg ref coordinates)
 ** to get velocity (wrt leg ref coordinates)
@@ -258,7 +287,9 @@ void Integrate_Accel_2D ( void )
 } /* End Integrate_Accel_2D */
 
 
-/*
+
+
+/*****************************************************************
 ** Function: Adjust_Velocity
 ** This function adjusts for velocity drift.
 ** We detect toe-off events, from there we
@@ -297,10 +328,11 @@ void Adjust_Velocity( void )
     ** GaitStart[1] is reset within the first full gait cycle */
     if( g_wise_state.Ncycles>=1 )
     {
+    	/* Get number of samples in this gait */
     	NGaitSamples = g_wise_state.GaitEnd.Nsamples - g_wise_state.GaitStart.Nsamples - 1;
 
       /* We correct for the drift by approximating
-      ** the drift over the gait cycle.
+      ** the slope in velocity over the gait cycle.
       ** We can then subtract the accumulated drift
       ** over the cycle and the dc bias.
       ** GaitStart = {vel0_i, vel1_i}
@@ -310,16 +342,14 @@ void Adjust_Velocity( void )
 
       g_wise_state.GaitEnd.drift[1] = ( g_wise_state.GaitEnd.vel[1]-g_wise_state.GaitStart.vel[1] )/NGaitSamples;
       g_wise_state.vel_ave[1]   = ( (g_wise_state.GaitStart.vel_total[1]) - (g_wise_state.GaitEnd.drift[1]*0.5*NGaitSamples*NGaitSamples) - (g_wise_state.GaitStart.vel[1]*NGaitSamples) ) / (1*NGaitSamples);
-
-      fprintf(stdout,"DEBUG - Vel Estimate V[0]:%f V[1]:%f\n",g_wise_state.vel_ave[0],g_wise_state.vel_ave[1]);
     }
 
     /* Reset saved minima and increment cycle counter */
     g_wise_state.Ncycles++;
     
     memcpy( &(g_wise_state.GaitStart), &(g_wise_state.GaitEnd), sizeof(WISE_GATE_TYPE) );
-    g_wise_state.GaitStart.Nsamples = 1.0f;
-
+    g_wise_state.GaitStart.Nsamples   = 1.0f;
+    
     g_wise_state.GaitEnd.vel[0]       = (999);
     g_wise_state.GaitEnd.vel[1]       = (999);
     g_wise_state.GaitEnd.vel_total[0] = (999);
@@ -341,8 +371,6 @@ void Adjust_Velocity( void )
     { } /* This shouldn't happen */
     else
     {
-    	//fprintf(stdout,"DEBUG - Desending S:%f\n",g_wise_state.Nsamples);
-
       /* GaitStart[0] = { vel tangent at minima }
       ** GaitStart[1] = { vel normal at minima  } */
       g_wise_state.GaitEnd.vel[0]       = g_wise_state.vel[0];
@@ -359,14 +387,13 @@ void Adjust_Velocity( void )
   if ( (g_wise_state.Ncycles>3) & (g_wise_state.Nsamples==1) )
   {
     g_wise_state.minCount = ceil( ((NGaitSamples*0.4)+g_wise_state.minCount)*0.5 );
-		//fprintf(stdout,"DEBUG - Updating minCount:%d\n",g_wise_state.minCount);
   }
 } /* End Adjust_Velocity */
 
 
 
 
-/*
+/*****************************************************************
 ** Function: Estimate_Error
 ** This function is inteded to estimate the
 ** error in the intitial velocity estimates.
