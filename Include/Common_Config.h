@@ -25,8 +25,8 @@
 #define DEBUG 1
 
 /* IO params */
-#define OUTPUT_MODE 0
-#define NUM_COM_MODES 5
+#define OUTPUT_MODE 4
+#define NUM_COM_MODES 6
 
 /* Calibration params  */
 #define CALIBRATE_MODE  0
@@ -65,6 +65,13 @@ typedef struct
   float Omega_P[3];
   float Omega_I[3];
   float DCM_Matrix[3][3];
+  
+  float gyro_ave[3];
+  float gyro_var[3];
+  float gyro_std[3];
+  
+  long int SampleNumber;
+  float std_time;
 } DCM_STATE_TYPE;
 
 /*
@@ -82,6 +89,7 @@ typedef struct
   /* Accel x:Fore y:Port z:Zenith */
   float accel[3];
   float gyro[3];
+  
 } SENSOR_STATE_TYPE;
 
 /*

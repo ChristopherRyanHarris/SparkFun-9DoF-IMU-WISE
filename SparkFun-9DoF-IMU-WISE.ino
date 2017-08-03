@@ -110,7 +110,10 @@ void loop()
   //Reset_Sensor_Fusion(); 
   
   /* Estimate Walking Speed and Incline */
-	//WISE_Update();
+  if( (g_dcm_state.gyro_std[0]+g_dcm_state.gyro_std[1]+g_dcm_state.gyro_std[2])/3 > MOVE_MIN_GYRO_STD )
+	{
+		WISE_Update();
+	}
     
   /* Read/Respond to command */
   if( COMM_PORT.available() > 0 ) { f_RespondToInput( COMM_PORT.available() );  }

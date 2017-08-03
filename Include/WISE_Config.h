@@ -24,7 +24,7 @@
 //#define WISE_CORRECTION 3.720962
 //#define WISE_CORRECTION 1.0
 
-#define WISE_MINCOUNT 20
+#define WISE_MINCOUNT 50
 
 /*******************************************************************
 ** Tyedefs
@@ -41,6 +41,7 @@ typedef struct
 	float vel[3];
 	float vel_total[3];
 	float drift[3];
+	long int Time;
 	float Nsamples;
 } WISE_GATE_TYPE;
 
@@ -89,6 +90,7 @@ typedef struct
   
   float Incline;
   float Incline_ave;
+  float Incline_gait;
 
   float pe[3];
   float pave;

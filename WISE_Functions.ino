@@ -99,6 +99,8 @@ void WISE_Init ( void )
     g_wise_state.vel_delta[i] = 0.0f;
     g_wise_state.omega_vd[i]  = 0.0f;
     g_wise_state.omega_vp[i]  = 0.0f;
+    
+    g_wise_state.dist[i]      = 0.0f;
   }
   g_wise_state.Nsamples++;
 } /* End WISE_Init*/
@@ -127,6 +129,9 @@ void WISE_Update ( void )
   
   /* Velocity Adjustment */
   Adjust_Velocity();
+  
+  /* Get distance traveled and compute incline */
+  Adjust_Incline();
 
   g_wise_state.pitch_mem = g_sensor_state.pitch;
 } /* End WISE_Update */
@@ -160,6 +165,8 @@ void WISE_Reset ( void )
     g_wise_state.vel_delta[i] = 0.0f;
     g_wise_state.omega_vd[i]  = 0.0f;
     g_wise_state.omega_vp[i]  = 0.0f;
+    
+    g_wise_state.dist[i]      = 0.0f;
   }
 } /* End WISE_Reset */
 
@@ -307,6 +314,7 @@ void Adjust_Velocity( void )
     g_wise_state.GaitStart.vel[1]       = g_wise_state.vel[1];
     g_wise_state.GaitStart.vel_total[0] = g_wise_state.vel_total[0];
     g_wise_state.GaitStart.vel_total[1] = g_wise_state.vel_total[1];
+    g_wise_state.GaitStart.Time         = g_control_state.timestamp;
     g_wise_state.GaitStart.Nsamples     = g_wise_state.Nsamples;
   }
 
@@ -373,6 +381,7 @@ void Adjust_Velocity( void )
     {
       /* GaitStart[0] = { vel tangent at minima }
       ** GaitStart[1] = { vel normal at minima  } */
+    	g_wise_state.GaitEnd.Time         = g_control_state.timestamp;
       g_wise_state.GaitEnd.vel[0]       = g_wise_state.vel[0];
       g_wise_state.GaitEnd.vel[1]       = g_wise_state.vel[1];
       g_wise_state.GaitEnd.vel_total[0] = g_wise_state.vel_total[0];
@@ -386,9 +395,45 @@ void Adjust_Velocity( void )
   ** estimate how far apart each gait is */
   if ( (g_wise_state.Ncycles>3) & (g_wise_state.Nsamples==1) )
   {
-    g_wise_state.minCount = ceil( ((NGaitSamples*0.4)+g_wise_state.minCount)*0.5 );
+    //g_wise_state.minCount = ceil( ((NGaitSamples*0.4)+g_wise_state.minCount)*0.5 );
   }
 } /* End Adjust_Velocity */
+
+
+/*****************************************************************
+** Function: Adjust_Incline
+** From our latest velocity estimate (from Adjust_Velocity)
+** we can determine our distance traveled along each dimension.
+** Distance can be computed as dist += vel*dt
+** Incline can be computed as (dy/dx)*100
+*/
+void Adjust_Incline( void )
+{
+	int i;
+	float tempi;
+	float tempx,tempy;
+	
+	/* Compute distance traveled in each direction */
+	g_wise_state.dist[0] += g_wise_state.vel[0]*(g_control_state.G_Dt);
+	g_wise_state.dist[1] += g_wise_state.vel[1]*(g_control_state.G_Dt);
+	
+	
+	/* Compute incline estimate */
+	tempi = (g_wise_state.dist[1]/g_wise_state.dist[0])*100;
+	g_wise_state.Incline_ave = Rolling_Mean( g_wise_state.Nsamples, g_wise_state.Incline_ave, tempi );
+	
+	/* Compute an average incline estimate using the final velocity estimate */
+	if( (g_wise_state.Ncycles>3) )
+	{
+		tempx = g_wise_state.vel_ave[0]*(g_control_state.timestamp-g_wise_state.GaitStart.Time)/TIME_RESOLUTION;
+		tempx = g_wise_state.vel_ave[1]*(g_control_state.timestamp-g_wise_state.GaitStart.Time)/TIME_RESOLUTION;
+		g_wise_state.Incline_gait = (tempy/tempx)*100;
+	}
+	
+} /* End Get_WISE */
+
+
+
 
 
 

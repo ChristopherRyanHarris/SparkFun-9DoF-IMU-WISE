@@ -115,6 +115,10 @@ void Matrix_Vector_Multiply(const float m[3][3], const float v[3], float out[3])
 ** The rolling mean is a real-time meathod of 
 ** computing a mean.
 ** m = m + (x - m)/n
+** Input:
+**	n: Sample Number
+** 	m: An Initial Mean
+**	x: Sample
 */
 float Rolling_Mean( const int n, float m, float x )
 {
@@ -123,14 +127,19 @@ float Rolling_Mean( const int n, float m, float x )
 
 
 /*************************************************
-** Rolling_Std
-** Compute the rolling standard deviation given
+** Rolling_Variance
+** Compute the rolling standard deviation (xN) given
 ** the current mean, the previous mean, and a sample.
 ** The rolling std is a real-time meathod of 
 ** computing a stadard deviation.
 ** S = S + (x-m) * (x-m_prev);
+** Input:
+**	m_prev: Previous Mean (at last sample)
+**	m:			Current Mean
+**	x: 			Sample
+**	S: 			Curent STD
 */
-float Rolling_Std( const float m_prev, const float m, float x, float S )
+float Rolling_Variance( const float m_prev, const float m, float x, float S )
 {
 	return ( S + (x-m)*(x-m_prev) );
 } /* End Rolling_Std */

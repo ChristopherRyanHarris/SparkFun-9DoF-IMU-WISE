@@ -20,6 +20,8 @@
 */
 void Read_Sensors()
 {
+  int i;
+  
   /* Set the initial accel and gyro vectors */
   imu.updateAccel();
   g_sensor_state.accel[0] = imu.ax;
@@ -29,6 +31,7 @@ void Read_Sensors()
   g_sensor_state.gyro[0] = imu.gx;
   g_sensor_state.gyro[1] = imu.gy;
   g_sensor_state.gyro[2] = imu.gz;
+  
 }
 
 

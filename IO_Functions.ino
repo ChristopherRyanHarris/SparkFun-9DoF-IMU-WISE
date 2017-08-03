@@ -51,16 +51,21 @@ void Debug_LogOut( void )
 	    	g_sensor_state.gyro[0],g_sensor_state.gyro[1],g_sensor_state.gyro[2]);
       break;
     case 1:
-    	sprintf(fastlog,"WISE_v (v/av/d/od/op): 1:%.4f/%.4f/%.4f/%.4f 2:%.4f/%.4f/%.4f/%.4f\n",
+    	sprintf(fastlog,"WISE: v:%.4f %.4f vave: %.4f %.4f Igait: %.4f Iave: %.4f I: %.4f\n",
+    		g_wise_state.vel[0],g_wise_state.vel[1],g_wise_state.vel_ave[0],g_wise_state.vel_ave[1],
+    		g_wise_state.Incline_gait,g_wise_state.Incline_ave,g_wise_state.Incline );
+      break;
+    case 2:
+    	sprintf(fastlog,"WISE(v) (v/av/d/od/op): 1:%.4f/%.4f/%.4f/%.4f 2:%.4f/%.4f/%.4f/%.4f\n",
     		g_wise_state.vel[0],g_wise_state.vel_ave[0],g_wise_state.vel_delta[0],g_wise_state.omega_vd[0],g_wise_state.omega_vp[0],
     		g_wise_state.vel[1],g_wise_state.vel_ave[1],g_wise_state.vel_delta[1],g_wise_state.omega_vd[1],g_wise_state.omega_vp[1] );
       break;
-    case 2:
-    	sprintf(fastlog,"WISE_a (a/aa/d/od/op): 1:%.4f/%.4f/%.4f/%.4f 2:%.4f/%.4f/%.4f/%.4f\n",
+    case 3:
+    	sprintf(fastlog,"WISE(a) (a/aa/d/od/op): 1:%.4f/%.4f/%.4f/%.4f 2:%.4f/%.4f/%.4f/%.4f\n",
     		g_wise_state.accel[0],g_wise_state.accel_ave[0],g_wise_state.accel_delta[0],g_wise_state.omega_ad[0],g_wise_state.omega_ap[0],
     		g_wise_state.accel[1],g_wise_state.accel_ave[1],g_wise_state.accel_delta[1],g_wise_state.omega_ad[1],g_wise_state.omega_ap[1]);
       break;
-    case 3:
+    case 4:
     	sprintf(fastlog,"%d,%.0f,%.0f,%.0f,%.0f,%.0f,%.0f,%.4f,%.4f,%.4f\n",
     		g_control_state.timestamp,
 	    	g_sensor_state.accel[0],g_sensor_state.accel[1],g_sensor_state.accel[2],
@@ -68,9 +73,10 @@ void Debug_LogOut( void )
 	    	TO_DEG(g_sensor_state.yaw),TO_DEG(g_sensor_state.pitch),TO_DEG(g_sensor_state.roll) );
 	    LOG_PRINT( fastlog ); 
       break;
-    case 4:
-    	sprintf(fastlog,"\terr est (p1/p2/p3/pave): %.4f,%.4f,%.4f,%.4f\n",
-    		g_wise_state.pe[0],g_wise_state.pe[1],g_wise_state.pe[2],g_wise_state.pave );
+    case 5:
+    	sprintf(fastlog,"G_ave: %.4f %.4f %.4f G_std: %.4f %.4f %.4f\n",
+    		g_dcm_state.gyro_ave[0],g_dcm_state.gyro_ave[1],g_dcm_state.gyro_ave[2],
+    		g_dcm_state.gyro_std[0],g_dcm_state.gyro_std[1],g_dcm_state.gyro_std[2]  );
     default:
     	break;
   }

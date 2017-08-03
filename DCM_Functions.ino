@@ -79,8 +79,13 @@ void Update_Time( void )
 void DCM_Init( void )
 {
   int i;
-  for(i=0;i<3;i++) g_dcm_state.Omega_I[i] = 0;
-  for(i=0;i<3;i++) g_dcm_state.Omega_P[i] = 0;
+  for(i=0;i<3;i++) g_dcm_state.Omega_I[i] = 0.0f;
+  for(i=0;i<3;i++) g_dcm_state.Omega_P[i] = 0.0f;
+  for(i=0;i<3;i++) g_dcm_state.gyro_ave[i] = g_sensor_state.gyro[i];
+  for(i=0;i<3;i++) g_dcm_state.gyro_var[i] = 0.0f;
+  for(i=0;i<3;i++) g_dcm_state.gyro_std[i] = 0.0f;
+  g_dcm_state.SampleNumber=0;
+  g_dcm_state.std_time=0;
 }
 
 /*************************************************
@@ -172,6 +177,7 @@ void Set_Sensor_Fusion( void )
 void DCM_Filter( void )
 {
   int i;
+  float temp;
   float error = 0;
   float renorm = 0;
 
@@ -185,6 +191,28 @@ void DCM_Filter( void )
   float ErrorGain[3];
   float errorRollPitch[3];
   float errorYaw[3];
+  
+  /* Clear Rolling Std/Average after set time */
+  g_dcm_state.std_time+=(g_control_state.G_Dt*TIME_RESOLUTION);
+  if( g_dcm_state.std_time>MOVE_RESET_RATE )
+ 	{
+	  for(i=0;i<3;i++) g_dcm_state.gyro_ave[i] = g_sensor_state.gyro[i];
+	  for(i=0;i<3;i++) g_dcm_state.gyro_var[i] = 0.0f;
+	  for(i=0;i<3;i++) g_dcm_state.gyro_std[i] = 0.0f;
+	  g_dcm_state.SampleNumber=0;
+	  g_dcm_state.std_time=0;
+ 	}
+  
+  /* Update Rolling Std */
+  g_dcm_state.SampleNumber++;
+  for( i=0;i<3;i++)
+  {
+  	temp = Rolling_Mean( g_dcm_state.SampleNumber, g_dcm_state.gyro_ave[i], g_sensor_state.gyro[i] );
+  	g_dcm_state.gyro_var[i] = Rolling_Variance( g_dcm_state.gyro_ave[i], temp, g_sensor_state.gyro[i], g_dcm_state.gyro_var[i] );
+  	g_dcm_state.gyro_ave[i] = temp;
+  	g_dcm_state.gyro_std[i] = g_dcm_state.gyro_var[i]/g_dcm_state.SampleNumber;
+  }
+  
 
   /******************************************************************
   ** DCM 1. Update the Direction Cosine Matrix
