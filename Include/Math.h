@@ -20,6 +20,6 @@
 #define FCONSTRAIN constrain
 #endif /* EXE_MODE */
 
-#define SIGN(x) ( (0<x) - (x<0) )
+#define SIGN(x) ( (0<x)-(x<0)+(x==0) )
 
 #endif /* End MATH_H */
