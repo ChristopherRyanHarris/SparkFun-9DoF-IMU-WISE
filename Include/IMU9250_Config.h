@@ -25,7 +25,7 @@
 #define COMM_PORT_BAUD 250000
 
 /* DEBUG LOG period (us) */
-//#define UART_LOG_RATE 10000
+//#define UART_LOG_RATE 100000
 #define UART_LOG_RATE 1
 
 /* The LED can be used for external debugging */
@@ -64,6 +64,8 @@
 **   face without the USB port (Nadir) down will result in an acceleration
 **   of about -2000 (1xg) for accel[2] (z) since the acceleration
 **   from gravity with be acting along -z.
+**   Accel: [ x  y  z ]
+**   Gyro:  [-x -y -z ] (RH rule)
 */
 
 /* Define pitch orientation convention

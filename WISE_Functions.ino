@@ -85,23 +85,32 @@ void WISE_Init ( void )
   g_wise_state.GaitEnd.drift[0]     = 0.0f;
   g_wise_state.GaitEnd.drift[1]     = 0.0f;
   g_wise_state.GaitEnd.drift[2]     = 0.0f;
+  
+  g_wise_state.CrossingP.vel[0] = 999;
 
   for( i=0;i<3;i++ )
   {
     /* Initialize WISE Acceleration state vector */
-    g_wise_state.accel_ave[i]   =  1.0f;
     g_wise_state.accel[i]       =  0.0f;
+    g_wise_state.accel_ave[i]   =  1.0f;
     g_wise_state.accel_total[i] =  0.0f;
+    g_wise_state.accel_delta[i] =  0.0f;
 
     /* Initialize WISE Velocity state vector */
-    g_wise_state.vel_ave[i] = 1.0f;
-    g_wise_state.vel[i]     = 0.0f;
-    //g_wise_state.vel_total[i] = 0.0f;
+    g_wise_state.vel[i]         = 0.0f;
+    g_wise_state.vel_ave[i]     = 1.0f;
+    //g_wise_state.vel_total[i]   = 0.0f;
+    g_wise_state.vel_delta[i]   =  0.0f;
     
     /* Initialize WISE rotation state vector */
+    g_wise_state.gyr[i]       = 0.0f;
     g_wise_state.rot[i]       = 0.0f;
-    g_wise_state.rot_total[i] = 1.0f;
     g_wise_state.rot_ave[i]   = 1.0f;
+    g_wise_state.rot_total[i] = 0.0f;
+    g_wise_state.rot_delta[i] = 0.0f;
+    
+    g_wise_state.CrossingP.vel[0] = 0.0f;
+    g_wise_state.CrossingP.vel[1] = 0.0f;
 
     g_wise_state.vel_delta[i] = 0.0f;
     g_wise_state.omega_vd[i]  = 0.0f;
@@ -139,6 +148,9 @@ void WISE_Update ( void )
   
   /* Get distance traveled and compute incline */
   Adjust_Incline();
+  
+  /* Reset at toeoff */
+  if( g_wise_state.toe_off==TRUE ) { WISE_Reset(); }
 
   g_wise_state.pitch_mem = g_sensor_state.pitch;
 } /* End WISE_Update */
@@ -162,9 +174,10 @@ void WISE_Reset ( void )
   for( i=0; i<=2; i++)
   {
     /* Initialize WISE Acceleration state vector */
-    g_wise_state.accel_ave[i]   =  1.0f;
     g_wise_state.accel[i]       =  0.0f;
+    g_wise_state.accel_ave[i]   =  1.0f;
     g_wise_state.accel_total[i] =  0.0f;
+    g_wise_state.accel_delta[i] =  0.0f;
 
     /* Initialize WISE Velocity state vector */
     g_wise_state.vel[i]       = 0.0f;
@@ -174,9 +187,11 @@ void WISE_Reset ( void )
     g_wise_state.omega_vp[i]  = 0.0f;
     
     /* Initialize WISE Rotation state vector */
+    g_wise_state.gyr[i]       = 0.0f;
     g_wise_state.rot[i]       = 0.0f;
+    g_wise_state.rot_ave[i]   = 0.0f;
     g_wise_state.rot_total[i] = 0.0f;
-    g_wise_state.rot_ave[i] = 0.0f;
+    g_wise_state.rot_delta[i] = 0.0f;
     
     g_wise_state.dist[i]      = 0.0f;
   }
@@ -220,22 +235,25 @@ void Map_Accel_2D ( void )
   float Ax, Az, R;
   switch( PITCH_O )
   {
-  	case 1: /* P: 0:Nadir0/Zenith down. +90:Aft down   -90:Fore down */
+  	case 1: /* P: 0:Nadir0/Zenith down  +90:Aft down   -90:Fore down */
 		  Ax = g_sensor_state.accel[0]; /* Movement: +x */
 		  Az = g_sensor_state.accel[2]; /* Gravity:  -z */
-		  R  = g_sensor_state.gyro[1];
+		  R  = g_sensor_state.gyro[1];  /* Rotation: -y */
 		  break;
 		case 2: /* P: 0:Fore/Aft down       +90:Port down  -90:Starboard down */
 		  Ax = g_sensor_state.accel[1]; /* Movement: +y (stbd) */
 		  Az = g_sensor_state.accel[0]; /* Gravity:  -x (fwd) */
+		  R  = g_sensor_state.gyro[2];  /* Rotation: -z */
 			break;
-		case 3: /* P: 0:Fore/Aft down       +90:Port down  -90:Starboard down */
+		case 3: /* P: 0:Fore/Aft down       +90:Nadir down -90:Zenith down */
 		  Ax = g_sensor_state.accel[2]; /* Movement: +x */
 		  Az = g_sensor_state.accel[0]; /* Gravity:  -z */
+		  R  = g_sensor_state.gyro[1];  /* Rotation: -y */
 			break;
 	}
   g_wise_state.accel_delta[0] = Ax;
   g_wise_state.accel_delta[1] = Az;
+  g_wise_state.gyr[0]         = R;
 
   /**********************************
   ** Tangent Part *******************
@@ -251,14 +269,14 @@ void Map_Accel_2D ( void )
 
   /* Get average */
   g_wise_state.accel_total[0] += g_wise_state.accel[0];
-  g_wise_state.accel_ave[0]  = g_wise_state.accel_total[0]/g_wise_state.Nsamples;
+  g_wise_state.accel_ave[0]    = g_wise_state.accel_total[0]/g_wise_state.Nsamples;
 
   /*********************************
   ** Normal Part *******************
   **********************************/
 
   /* Calc Ay wrt world coordinate system */
-  g_wise_state.accel[1]  = -(Ax*sin(g_sensor_state.pitch) - Az*cos(g_sensor_state.pitch)  - GRAVITY) * GTOMPS2/GRAVITY * MPSTOMPH * (1/WISE_CORRECTION);
+  g_wise_state.accel[1]  = -(Ax*sin(g_sensor_state.pitch) - Az*cos(g_sensor_state.pitch)  - GRAVITY) * GTOMPS2/GRAVITY * MPSTOMPH;// * (1/WISE_CORRECTION);
 
   /* Feedback */
   g_wise_state.accel_delta[1] = g_wise_state.accel[1] - g_wise_state.accel_delta[1];
@@ -267,7 +285,7 @@ void Map_Accel_2D ( void )
 
   /* Get average */
   g_wise_state.accel_total[1] += g_wise_state.accel[1];
-  g_wise_state.accel_ave[1]  = g_wise_state.accel_total[1]/g_wise_state.Nsamples;
+  g_wise_state.accel_ave[1]    = g_wise_state.accel_total[1]/g_wise_state.Nsamples;
 
 } /* End Map_Accel_2D */
 
@@ -302,8 +320,16 @@ void Integrate_Accel_2D ( void )
 		}
 
     g_wise_state.vel_total[i] += g_wise_state.vel[i];
-    //g_wise_state.vel_ave[i]  = g_wise_state.vel_total[i]/g_wise_state.Nsample;
+    //g_wise_state.vel_ave[i]  = g_wise_state.vel_total[i]/g_wise_state.Nsample; 
   }
+  
+  
+  /*********************************
+  ** Rotational Part ***************
+  **********************************/
+  g_wise_state.rot[0] = g_wise_state.rot[i] + g_wise_state.gyr[i]*g_control_state.G_Dt;
+  
+  
 } /* End Integrate_Accel_2D */
 
 
@@ -329,7 +355,28 @@ void Adjust_Velocity( void )
     g_wise_state.GaitStart.vel_total[1] = g_wise_state.vel_total[1];
     g_wise_state.GaitStart.Time         = g_control_state.timestamp;
     g_wise_state.GaitStart.Nsamples     = g_wise_state.Nsamples;
+    
+    g_wise_state.CrossingP.vel[0]       = g_wise_state.rot[0];
+    g_wise_state.CrossingP.vel[1]       = g_wise_state.rot[0];
   }
+  
+  
+  /* In Testing */
+  if( g_wise_state.rot[0]>g_wise_state.CrossingP.vel[0] )
+	{
+		/* Record rotational maximum */
+		g_wise_state.CrossingP.vel[0] = g_wise_state.rot[0];
+		
+		/* Record velocity minimum 
+		** GaitStart[0] = { vel tangent at minima }
+		** GaitStart[1] = { vel normal at minima  } */
+		g_wise_state.GaitEnd.Time         = g_control_state.timestamp;
+		g_wise_state.GaitEnd.vel[0]       = g_wise_state.vel[0];
+		g_wise_state.GaitEnd.vel[1]       = g_wise_state.vel[1];
+		g_wise_state.GaitEnd.vel_total[0] = g_wise_state.vel_total[0];
+		g_wise_state.GaitEnd.vel_total[1] = g_wise_state.vel_total[1];
+		g_wise_state.GaitEnd.Nsamples     = g_wise_state.Nsamples;
+	}
 
   /* Part I : At toe-off, we must correct velocity measured
   ** We must wait a few full gait cycles to get
@@ -340,7 +387,7 @@ void Adjust_Velocity( void )
   ** GaitStart[0] is reset within the first full gait cycle */
   if ( (g_wise_state.Nsamples-g_wise_state.GaitEnd.Nsamples)>(g_wise_state.minCount) )
   {
-  	fprintf(stdout,"DEBUG - Toe off! S:%f vel[0]:%f vel[1]:%f\n",g_wise_state.GaitEnd.Nsamples,g_wise_state.GaitEnd.vel[0],g_wise_state.GaitEnd.vel[1]);
+  	//fprintf(stdout,"DEBUG - Toe off! S:%f vel[0]:%f vel[1]:%f\n",g_wise_state.GaitEnd.Nsamples,g_wise_state.GaitEnd.vel[0],g_wise_state.GaitEnd.vel[1]);
 
     /* We must be within, at a minimum, the second
     ** gait cycle. This garuntees we are calculating the
@@ -362,7 +409,7 @@ void Adjust_Velocity( void )
       g_wise_state.vel_ave[0]   = ( (g_wise_state.GaitStart.vel_total[0]) - (g_wise_state.GaitEnd.drift[0]*0.5*NGaitSamples*NGaitSamples) - (g_wise_state.GaitStart.vel[0]*NGaitSamples) ) * (1/NGaitSamples);
 
       g_wise_state.GaitEnd.drift[1] = ( g_wise_state.GaitEnd.vel[1]-g_wise_state.GaitStart.vel[1] )/NGaitSamples;
-      g_wise_state.vel_ave[1]   = ( (g_wise_state.GaitStart.vel_total[1]) - (g_wise_state.GaitEnd.drift[1]*0.5*NGaitSamples*NGaitSamples) - (g_wise_state.GaitStart.vel[1]*NGaitSamples) ) / (1*NGaitSamples);
+      g_wise_state.vel_ave[1]   = ( (g_wise_state.GaitStart.vel_total[1]) - (g_wise_state.GaitEnd.drift[1]*0.5*NGaitSamples*NGaitSamples) - (g_wise_state.GaitStart.vel[1]*NGaitSamples) ) * (1/NGaitSamples);
     }
 
     /* Reset saved minima and increment cycle counter */
@@ -376,40 +423,44 @@ void Adjust_Velocity( void )
     g_wise_state.GaitEnd.vel_total[0] = (999);
     g_wise_state.GaitEnd.vel_total[1] = (999);
     g_wise_state.GaitEnd.Nsamples     = (999);
+    
+    g_wise_state.CrossingP.vel[0] = g_wise_state.rot[0];
 
     /* Reset gait parameters
     ** for next cycle */
-    WISE_Reset();
+    g_wise_state.toe_off = TRUE; /* Signal reset */
+    //WISE_Reset();
   }
 
-  /* Part II : Record minima
-  ** Here we are attempting to locate the local minima
-  ** If this velocit is lower than the previous minima ... */
-  if ( g_wise_state.vel[0] < g_wise_state.GaitEnd.vel[0] )
-  {
-    /* If this sample is more than the minimal required */
-    if ( (g_wise_state.Nsamples-g_wise_state.GaitEnd.Nsamples ) > (g_wise_state.minCount) )
-    { } /* This shouldn't happen */
-    else
-    {
-      /* GaitStart[0] = { vel tangent at minima }
-      ** GaitStart[1] = { vel normal at minima  } */
-    	g_wise_state.GaitEnd.Time         = g_control_state.timestamp;
-      g_wise_state.GaitEnd.vel[0]       = g_wise_state.vel[0];
-      g_wise_state.GaitEnd.vel[1]       = g_wise_state.vel[1];
-      g_wise_state.GaitEnd.vel_total[0] = g_wise_state.vel_total[0];
-      g_wise_state.GaitEnd.vel_total[1] = g_wise_state.vel_total[1];
-      g_wise_state.GaitEnd.Nsamples     = g_wise_state.Nsamples;
-    }
-  }
+//  /* Part II : Record minima
+//  ** Here we are attempting to locate the local minima
+//  ** If this velocit is lower than the previous minima ... */
+//  if ( g_wise_state.vel[0] < g_wise_state.GaitEnd.vel[0] )
+//  {
+//    /* If this sample is more than the minimal required */
+//    if ( (g_wise_state.Nsamples-g_wise_state.GaitEnd.Nsamples ) > (g_wise_state.minCount) )
+//    { } /* This shouldn't happen */
+//    else
+//    {
+//      /* GaitStart[0] = { vel tangent at minima }
+//      ** GaitStart[1] = { vel normal at minima  } */
+//    	g_wise_state.GaitEnd.Time         = g_control_state.timestamp;
+//      g_wise_state.GaitEnd.vel[0]       = g_wise_state.vel[0];
+//      g_wise_state.GaitEnd.vel[1]       = g_wise_state.vel[1];
+//      g_wise_state.GaitEnd.vel_total[0] = g_wise_state.vel_total[0];
+//      g_wise_state.GaitEnd.vel_total[1] = g_wise_state.vel_total[1];
+//      g_wise_state.GaitEnd.Nsamples     = g_wise_state.Nsamples;
+//    }
+//  }
 
-  /* Part III : Update the min count threshold
-  ** Once we have warmed up, we can try to
-  ** estimate how far apart each gait is */
-  if ( (g_wise_state.Ncycles>3) & (g_wise_state.Nsamples==1) )
-  {
-    //g_wise_state.minCount = ceil( ((NGaitSamples*0.4)+g_wise_state.minCount)*0.5 );
-  }
+//  /* Part III : Update the min count threshold
+//  ** Once we have warmed up, we can try to
+//  ** estimate how far apart each gait is */
+//  if ( (g_wise_state.Ncycles>3) & (g_wise_state.Nsamples==1) )
+//  {
+//    g_wise_state.minCount = ceil( ((NGaitSamples*0.4)+g_wise_state.minCount)*0.5 );
+//  }
+
 } /* End Adjust_Velocity */
 
 

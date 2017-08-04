@@ -9,7 +9,7 @@
 #ifndef WISE_COMMON_H
 #define WISE_COMMON_H
 
-#define WISE_ON 1
+#define WISE_ON 0
 
 //#define WISE_GAIN_AD 0.025f
 #define WISE_GAIN_AD 0.05f
@@ -22,7 +22,8 @@
 //#define WISE_GAIN_VP 0.03f
 #define WISE_GAIN_VP 0.0f
 
-#define WISE_CORRECTION 5.0
+#define WISE_CORRECTION 1.8
+//#define WISE_CORRECTION 5.0
 //#define WISE_CORRECTION 3.720962
 //#define WISE_CORRECTION 1.0
 
@@ -61,6 +62,8 @@ typedef struct
 
 	WISE_GATE_TYPE GaitStart;
 	WISE_GATE_TYPE GaitEnd;
+	
+	WISE_GATE_TYPE CrossingP;
 
   float pitch_mem;
   float pitch_delta;
@@ -93,9 +96,11 @@ typedef struct
   ** Integral of gyro data
   ** Used to determine gait toe-off (max point)
   ** Can also be used to fine heel strike (min point) */
+  float gyr[3];
   float rot[3];
   float rot_total[3];
   float rot_ave[3];
+  float rot_delta[3];
   
   float dist[3];
   
