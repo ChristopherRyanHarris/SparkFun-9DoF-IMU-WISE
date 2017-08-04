@@ -79,6 +79,9 @@ void Update_Time( void )
 void DCM_Init( void )
 {
   int i;
+  
+  LOG_PRINTLN("> Initializing DCM Filter");
+  
   for(i=0;i<3;i++) g_dcm_state.Omega_I[i] = 0.0f;
   for(i=0;i<3;i++) g_dcm_state.Omega_P[i] = 0.0f;
   for(i=0;i<3;i++) g_dcm_state.gyro_ave[i] = g_sensor_state.gyro[i];
@@ -193,6 +196,7 @@ void DCM_Filter( void )
   float errorYaw[3];
   
   /* Clear Rolling Std/Average after set time */
+  #if( WISE_ON==1 )
   g_dcm_state.std_time+=(g_control_state.G_Dt*TIME_RESOLUTION);
   if( g_dcm_state.std_time>MOVE_RESET_RATE )
  	{
@@ -212,6 +216,7 @@ void DCM_Filter( void )
   	g_dcm_state.gyro_ave[i] = temp;
   	g_dcm_state.gyro_std[i] = g_dcm_state.gyro_var[i]/g_dcm_state.SampleNumber;
   }
+  #endif
   
 
   /******************************************************************

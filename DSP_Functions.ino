@@ -64,6 +64,8 @@ void DSP_Filter_Init ( void )
 	float FIR_coeffs_L[NTAPS]  = FIR_LPF;
 	float FIR_coeffs_H[NTAPS]  = FIR_HPF;
 
+  LOG_PRINTLN("> Initializing DSP Filter");
+
 	memcpy(&g_dsp.IIR_coeffs_La[0],&IIR_coeffs_La[0],NTAPS*sizeof(float));
 	memcpy(&g_dsp.IIR_coeffs_Lb[0],&IIR_coeffs_Lb[0],NTAPS*sizeof(float));
 	memcpy(&g_dsp.IIR_coeffs_Ha[0],&IIR_coeffs_Ha[0],NTAPS*sizeof(float));

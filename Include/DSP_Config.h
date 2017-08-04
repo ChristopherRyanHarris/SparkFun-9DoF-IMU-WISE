@@ -16,6 +16,8 @@
 ** DEFINES
 ********************************************************************/
 
+#define DSP_ON 0
+
 /* Define the number of taps in filter */
 #define NTAPS 3
 

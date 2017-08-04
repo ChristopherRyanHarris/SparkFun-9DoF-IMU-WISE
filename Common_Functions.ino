@@ -47,7 +47,7 @@ extern WISE_STATE_TYPE     g_wise_state;
 */
 void Common_Init( void )
 {
-  LOG_PRINT("> Initializing\n");
+  LOG_PRINT("> Initializing Common\n");
 
 	/* Set default IO mode */
 	g_control_state.output_mode = OUTPUT_MODE;

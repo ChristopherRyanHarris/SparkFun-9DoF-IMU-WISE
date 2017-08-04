@@ -43,6 +43,9 @@ void Read_Sensors()
 */
 bool Init_IMU(void)
 {
+	
+	LOG_PRINTLN("> Initializing IMU9250");
+	
   /* Set up MPU-9250 interrupt input (active-low) */
   pinMode(MPU9250_INT_PIN, INPUT_PULLUP);
   

@@ -60,6 +60,9 @@ void Read_Sensors( void )
 */
 bool Init_IMU( void )
 {
+	
+	LOG_PRINTLN("> Initializing IMU10736");
+	
   /* Initialize sensors */
   delay(50);  // Give sensors enough time to start
   I2C_Init();

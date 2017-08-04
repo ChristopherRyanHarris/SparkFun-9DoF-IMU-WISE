@@ -9,6 +9,8 @@
 #ifndef WISE_COMMON_H
 #define WISE_COMMON_H
 
+#define WISE_ON 1
+
 //#define WISE_GAIN_AD 0.025f
 #define WISE_GAIN_AD 0.05f
 //#define WISE_GAIN_AP 0.00005f
@@ -85,6 +87,15 @@ typedef struct
   float vel_delta[3];
   float omega_vd[3];
   float omega_vp[3];
+  
+  
+  /* [r_x, r_y, r_Z]
+  ** Integral of gyro data
+  ** Used to determine gait toe-off (max point)
+  ** Can also be used to fine heel strike (min point) */
+  float rot[3];
+  float rot_total[3];
+  float rot_ave[3];
   
   float dist[3];
   

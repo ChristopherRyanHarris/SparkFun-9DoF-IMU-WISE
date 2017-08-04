@@ -54,6 +54,8 @@ extern WISE_STATE_TYPE     g_wise_state;
 void WISE_Init ( void )
 {
   int i;
+  
+  LOG_PRINTLN("> Initializing WISE");
 
   g_wise_state.swing_state = FALSE; /* Bool */
   g_wise_state.toe_off     = FALSE; /* Bool */
@@ -95,6 +97,11 @@ void WISE_Init ( void )
     g_wise_state.vel_ave[i] = 1.0f;
     g_wise_state.vel[i]     = 0.0f;
     //g_wise_state.vel_total[i] = 0.0f;
+    
+    /* Initialize WISE rotation state vector */
+    g_wise_state.rot[i]       = 0.0f;
+    g_wise_state.rot_total[i] = 1.0f;
+    g_wise_state.rot_ave[i]   = 1.0f;
 
     g_wise_state.vel_delta[i] = 0.0f;
     g_wise_state.omega_vd[i]  = 0.0f;
@@ -166,6 +173,11 @@ void WISE_Reset ( void )
     g_wise_state.omega_vd[i]  = 0.0f;
     g_wise_state.omega_vp[i]  = 0.0f;
     
+    /* Initialize WISE Rotation state vector */
+    g_wise_state.rot[i]       = 0.0f;
+    g_wise_state.rot_total[i] = 0.0f;
+    g_wise_state.rot_ave[i] = 0.0f;
+    
     g_wise_state.dist[i]      = 0.0f;
   }
 } /* End WISE_Reset */
@@ -205,12 +217,13 @@ void Map_Accel_2D ( void )
   /* Accel x:Fore y:Port z:Zenith
   ** Note: IMU coordinate ref. frame definced in IMU#_Config.h
   **       Rotation will need to be accounted for */
-  float Ax, Az;
+  float Ax, Az, R;
   switch( PITCH_O )
   {
   	case 1: /* P: 0:Nadir0/Zenith down. +90:Aft down   -90:Fore down */
 		  Ax = g_sensor_state.accel[0]; /* Movement: +x */
 		  Az = g_sensor_state.accel[2]; /* Gravity:  -z */
+		  R  = g_sensor_state.gyro[1];
 		  break;
 		case 2: /* P: 0:Fore/Aft down       +90:Port down  -90:Starboard down */
 		  Ax = g_sensor_state.accel[1]; /* Movement: +y (stbd) */

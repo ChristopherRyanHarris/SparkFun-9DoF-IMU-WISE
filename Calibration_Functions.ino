@@ -35,6 +35,9 @@ extern WISE_STATE_TYPE     g_wise_state;
 void Calibration_Init ( void )
 {
   int i;
+  
+  LOG_PRINTLN("> Initializing Calibration");
+  
   for( i=0; i<3; i++ )
   {
     g_calibration.accel_total[i] = 0.0f;

@@ -44,7 +44,7 @@ void Debug_LogOut( void )
   switch ( g_control_state.output_mode )
   {
     case 0:
-    	sprintf(fastlog,"T:%d, DT:%.4f, SR:%.4f, R:%.4f, P:%.4f, Y:%.4f, A:%.0f,%.0f,%.0f, G:%.0f,%.0f,%.0f\n",
+    	sprintf(fastlog,"T:%09d, DT:%.4f, SR:% 07.4f, R:% 09.4f, P:% 09.4f, Y:% 09.4f, A:% 05.0f,% 05.0f,% 05.0f, G:% 05.0f,% 05.0f,% 05.0f\n",
     		g_control_state.timestamp,g_control_state.G_Dt,(1/g_control_state.G_Dt),
 	    	TO_DEG(g_sensor_state.roll),TO_DEG(g_sensor_state.pitch),TO_DEG(g_sensor_state.yaw),
 	    	g_sensor_state.accel[0],g_sensor_state.accel[1],g_sensor_state.accel[2],
