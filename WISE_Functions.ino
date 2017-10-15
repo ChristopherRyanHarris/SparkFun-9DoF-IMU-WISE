@@ -210,6 +210,22 @@ void WISE_Reset ( void )
 */
 void Map_Accel_2D ( void )
 {
+
+  /*
+  ** Notes on orientation for the 10736 IMU
+  **   Terms:
+  **     Fore:       (Front) Edge oposite of the power port
+  **     Aft:        (Rear) Edge of the power port
+  **     Starboard:  (Right) Edge with reset switch
+  **     Port:       (Left) Edge oposite of reset switch
+  **     Zenith:     (Up) Clean face of board
+  **     Nadir:      (Down) Populated face of board
+  **   Contrary to the silk, the axis are positioned as follows:
+  **     +x is Fore,       -x is Aft
+  **     +y is Starboard,  -y is Port
+  **     +z is Zenith,     -z is Nadir
+  */
+
 	/*
 	** Notes on orientation for the 9250 IMU
 	**   Terms:
@@ -231,8 +247,11 @@ void Map_Accel_2D ( void )
 
   /* Accel x:Fore y:Port z:Zenith
   ** Note: IMU coordinate ref. frame definced in IMU#_Config.h
-  **       Rotation will need to be accounted for */
+  **       Rotation will need to be accounted for
+  */
+	float accel_w[3];
   float Ax, Az, R;
+
   switch( PITCH_O )
   {
   	case 1: /* P: 0:Nadir0/Zenith down  +90:Aft down   -90:Fore down */
@@ -568,6 +587,5 @@ void Estimate_Error ( void )
 //    LOG_PRINT( imuLog );
 //  } */
 } /* End Estimate_Error */
-
 
 
