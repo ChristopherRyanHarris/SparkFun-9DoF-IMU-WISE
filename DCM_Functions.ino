@@ -59,8 +59,8 @@ void Update_Time( void )
   g_control_state.timestamp     = g_emu_data.timestamp;
 
   #else /* Real Time mode */
-  float temp = (float) (TIME_RESOLUTION / (TIME_SR+1.0) ); /* Set Sampling Rate */
-  while( (TIME_FUPDATE - g_control_state.timestamp) < (temp) ) {}
+//  float temp = (float) (TIME_RESOLUTION / (TIME_SR+1.0) ); /* Set Sampling Rate */
+//  while( (TIME_FUPDATE - g_control_state.timestamp) < (temp) ) {}
   /* Update delta T */
   g_control_state.timestamp_old = g_control_state.timestamp;
   g_control_state.timestamp     = TIME_FUPDATE;

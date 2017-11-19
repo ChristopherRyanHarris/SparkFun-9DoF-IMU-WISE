@@ -66,12 +66,31 @@ void Debug_LogOut( void )
     		g_wise_state.accel[1],g_wise_state.accel_ave[1],g_wise_state.accel_delta[1],g_wise_state.omega_ad[1],g_wise_state.omega_ap[1]);
       break;
     case 4:
-    	sprintf(fastlog,"%d,%.0f,%.0f,%.0f,%.0f,%.0f,%.0f,%.4f,%.4f,%.4f\n",
-    		g_control_state.timestamp,
-	    	g_sensor_state.accel[0],g_sensor_state.accel[1],g_sensor_state.accel[2],
-	    	g_sensor_state.gyro[0],g_sensor_state.gyro[1],g_sensor_state.gyro[2],
-	    	TO_DEG(g_sensor_state.yaw),TO_DEG(g_sensor_state.pitch),TO_DEG(g_sensor_state.roll) );
-	    LOG_PRINT( fastlog ); 
+//    	sprintf(fastlog,"%d,%.0f,%.0f,%.0f,%.0f,%.0f,%.0f,%.4f,%.4f,%.4f\n",
+//    		g_control_state.timestamp,
+//	    	g_sensor_state.accel[0],g_sensor_state.accel[1],g_sensor_state.accel[2],
+//	    	g_sensor_state.gyro[0],g_sensor_state.gyro[1],g_sensor_state.gyro[2],
+//	    	TO_DEG(g_sensor_state.yaw),TO_DEG(g_sensor_state.pitch),TO_DEG(g_sensor_state.roll) );S
+    	
+//    	sprintf(fastlog,"%d,%.0f,%.0f,%.0f,%.0f,%.0f,%.0f\n",
+//    		g_control_state.timestamp,
+//	    	g_sensor_state.accel[0],g_sensor_state.accel[1],g_sensor_state.accel[2],
+//	    	g_sensor_state.gyro[0],g_sensor_state.gyro[1],g_sensor_state.gyro[2] );
+//        LOG_PRINT( fastlog );
+
+//        SERIAL_PORT_USBVIRTUAL.println( String(g_control_state.timestamp) );
+
+          {
+            unsigned long int temp2 = g_control_state.timestamp;
+            COMM_PORT.write((byte *)&temp2, sizeof(unsigned long int));
+          }
+          
+//        COMM_PORT.write(g_sensor_state.accel[0]);
+//        COMM_PORT.write(g_sensor_state.accel[1]);
+//        COMM_PORT.write(g_sensor_state.accel[2]);
+//        COMM_PORT.write(g_sensor_state.gyro[0]);
+//        COMM_PORT.write(g_sensor_state.gyro[1]);
+//        COMM_PORT.write(g_sensor_state.gyro[2]);
       break;
     case 5:
     	sprintf(fastlog,"G_ave: %.4f %.4f %.4f G_std: %.4f %.4f %.4f\n",
@@ -80,7 +99,7 @@ void Debug_LogOut( void )
     default:
     	break;
   }
-  LOG_PRINT( fastlog ); 
+  //LOG_PRINT( fastlog ); 
 } /* End Debug_LogOut */
 
 /*************************************************

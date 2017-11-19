@@ -105,45 +105,45 @@ void loop()
   /* Update sensor readings */
   Read_Sensors();
   
-  /* Apply Freq Filter to Input */
-  #if( DSP_ON==1 )
-  FIR_Filter();
-  IIR_Filter();
-  DSP_Shift();
-  #endif
+//  /* Apply Freq Filter to Input */
+//  #if( DSP_ON==1 )
+//  FIR_Filter();
+//  IIR_Filter();
+//  DSP_Shift();
+//  #endif
 
-  #if( CALIBRATE_MODE==1 )
-  Calibrate();
-  #endif
+//  #if( CALIBRATE_MODE==1 )
+//  Calibrate();
+//  #endif
   
   /* Apply the DCM Filter */
   Update_Time();
-  DCM_Filter();
+//  DCM_Filter();
   
   /* Estimate Walking Speed and Incline */
-  #if( WISE_ON==1 )
-  if( ((g_dcm_state.gyro_std[0]+g_dcm_state.gyro_std[1]+g_dcm_state.gyro_std[2])/3 > MOVE_MIN_GYRO_STD) )
-	{
-		WISE_Update();
-	}
-	#endif
+//  #if( WISE_ON==1 )
+//  if( ((g_dcm_state.gyro_std[0]+g_dcm_state.gyro_std[1]+g_dcm_state.gyro_std[2])/3 > MOVE_MIN_GYRO_STD) )
+//	{
+//		WISE_Update();
+//	}
+//	#endif
     
   /* Read/Respond to command */
-  if( COMM_PORT.available()>0 ) { f_RespondToInput( COMM_PORT.available() );  }
+//  if( COMM_PORT.available()>0 ) { f_RespondToInput( COMM_PORT.available() );  }
 
   /* We blink every UART_LOG_RATE millisecods */
-  if ( micros()>(g_control_state.g_LastLogTime+UART_LOG_RATE) )
-  {
+//  if ( micros()>(g_control_state.g_LastLogTime+UART_LOG_RATE) )
+//  {
   	/* Log the current states to the debug port */
     Debug_LogOut();
     
-    g_control_state.g_LastLogTime = micros();
-
-    /* Display number of bytes available on comm port
-    ** Com port is used for real-time communication with
-    ** connected processor */
-    //LOG_PORT.println("> # Available on COMM_PORT: " + String(COMM_PORT.available()) );
-  }
+//    g_control_state.g_LastLogTime = micros();
+//
+//    /* Display number of bytes available on comm port
+//    ** Com port is used for real-time communication with
+//    ** connected processor */
+//    //LOG_PORT.println("> # Available on COMM_PORT: " + String(COMM_PORT.available()) );
+//  }
 
   /* Blink LED 
   ** TO DO: It would be nice to have a blink code
