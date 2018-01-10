@@ -48,6 +48,7 @@ DCM_STATE_TYPE      g_dcm_state;
 SENSOR_STATE_TYPE   g_sensor_state;
 CONTROL_STATE_TYPE  g_control_state;
 WISE_STATE_TYPE     g_wise_state;
+GAPA_STATE_TYPE     g_gapa_state;
 DSP_COMMON_TYPE     g_dsp;
 
 /*******************************************************************
@@ -86,7 +87,8 @@ void setup()
   #endif
 
   DCM_Init();
-  
+  GaPA_Init();
+
   #if( DSP_ON==1 )
   DSP_Filter_Init();
   #endif
@@ -118,7 +120,8 @@ void loop()
   
   /* Apply the DCM Filter */
   Update_Time();
-//  DCM_Filter();
+  DCM_Filter();
+  GaPA_Update();
   
   /* Estimate Walking Speed and Incline */
 //  #if( WISE_ON==1 )

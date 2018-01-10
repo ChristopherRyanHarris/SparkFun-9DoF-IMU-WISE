@@ -12,8 +12,10 @@
 
 
 #include "./Include/Common_Config.h"
+#include "./Include/DCM_Config.h"
 
 #if EXE_MODE==1 /* Emulator Mode */
+#include "../Include/Emulator_Config.h"
 extern CAL_STATE_TYPE      g_calibration;
 extern DCM_STATE_TYPE      g_dcm_state;
 extern DSP_COMMON_TYPE     g_dsp;

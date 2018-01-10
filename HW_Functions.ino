@@ -25,6 +25,7 @@
 #include "./Include/IMU9250_Config.h"
 #endif
 
+#include "./Include/DCM_Config.h"
 #include "./Include/DSP_Config.h"
 #include "./Include/WISE_Config.h"
 #include "./Include/Emulator_Config.h"

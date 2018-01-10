@@ -110,9 +110,9 @@ void Matrix_Vector_Multiply(const float m[3][3], const float v[3], float out[3])
 
 /*************************************************
 ** Rolling_Mean
-** Compute the rolling mean given an inital mean 
+** Compute the rolling mean given an inital mean
 ** a sample, and a sample number.
-** The rolling mean is a real-time meathod of 
+** The rolling mean is a real-time meathod of
 ** computing a mean.
 ** m = m + (x - m)/n
 ** Input:
@@ -127,10 +127,31 @@ float Rolling_Mean( const int n, float m, float x )
 
 
 /*************************************************
+** Windowed_Mean
+** Compute the approximate moving average of the
+** data in a real-time method without storing
+** previous samples.
+** m = m*(1-alpha) + (alpha)*x;
+** Input:
+**	m: Initial mean
+** 	x: New sample value
+**  n: Sample number
+**  a: Exponential factor
+*/
+float Windowed_Mean( float m, float x, int n, float a )
+{
+	/* Error checking */
+	if( n==0 ){ return(0.0f); }
+
+	/* Compute and return the moving average */
+	return( m*(1-a) + x*(a) );
+}
+
+/*************************************************
 ** Rolling_Variance
 ** Compute the rolling standard deviation (xN) given
 ** the current mean, the previous mean, and a sample.
-** The rolling std is a real-time meathod of 
+** The rolling std is a real-time meathod of
 ** computing a stadard deviation.
 ** S = S + (x-m) * (x-m_prev);
 ** Input:
@@ -196,7 +217,60 @@ float f_atan2( float y, float x )
   return t3;
 } /* End f_atan2 */
 
+/*************************************************
+** calc_circle_center
+** compute the center of a circle given 3 points
+*/
+void calc_circle_center( float p1[2], float p2[2], float p3[2], float xcyc[2] )
+{
 
+	float x1, x2, x3;
+	float y1, y2, y3;
+	float mr, mt;
+	int i;
+
+	/* Initialize the center */
+	for( i=0; i<2; i++ ){ xcyc[i]=0; }
+
+	x1 = p1[0];
+	x2 = p2[0];
+	x3 = p3[0];
+	y1 = p1[1];
+	y2 = p2[1];
+	y3 = p3[1];
+
+	/* Chcek for 0 */
+	if( x1==y1 && x1==0 ){ return; }
+	if( x2==y2 && x2==0 ){ return; }
+	if( x3==y3 && x3==0 ){ return; }
+
+	/* Check for 0 denominator later */
+	if( x1==x2 ){ return; }
+	if( x2==x3 ){ return; }
+
+	mr = (y2-y1)/(x2-x1);
+	mt = (y3-y2)/(x3-x2);
+
+	/* More checking */
+	if( mr==mt ){ return; }
+	if( mr==0 ){ return; }
+
+	//idf1  = isinf(mr);
+	//idf2  = isinf(mt);
+	//idf34 = isequaln(mr,mt) | isnan(mr) | isnan(mt);
+	//idmr0 = mr==0;
+
+	/* Compute center */
+	xcyc[0] = (mr*mt*(y3-y1) + mr*(x2+x3) - mt*(x1+x2)) / (2*(mr-mt));
+	//xcyc[idf1]  = (mt(idf1).*(y3(idf1)-y1(idf1))+(x2(idf1)+x3(idf1)))/2;
+	//xcyc(idf2)  = ((x1(idf2)+x2(idf2))-mr(idf2).*(y3(idf2)-y1(idf2)))/2;
+	//xcyc(idf34) = NaN;
+
+	xcyc[1] = -1/mr * (xcyc[0]-(x1+x2)/2) + (y1+y2)/2;
+	//xcyc(2,idmr0) = -1./mt(idmr0).*(xcyc(idmr0)-(x2(idmr0)+x3(idmr0))/2)+(y2(idmr0)+y3(idmr0))/2;
+	//xcyc(2,idf34) = NaN;
+
+}
 
 
 
