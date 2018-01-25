@@ -1,24 +1,28 @@
 
-/*************************************************
-** FILE : Math
-** This file contains all the math helper functions.
-** These functions help compute common functions
-** which are not defined in the standard libraries.
-**************************************************/
+/*******************************************************************
+** FILE:
+**   	Math
+** DESCRIPTION:
+** 		This file contains all the math helper functions.
+** 		These functions help compute common functions
+** 		which are not defined in the standard libraries.
+********************************************************************/
 
 
 /*******************************************************************
 ** Includes ********************************************************
 ********************************************************************/
 
-
-#include "./Include/Common_Config.h"
-
+#ifndef COMMON_CONFIG_H
+	#include "../Include/Common_Config.h"
+#endif
 #if EXE_MODE==1 /* Emulator Mode */
-#include <math.h>
-#include "./Include/Emulator_Config.h"
-#endif /* End Emulator Mode */
-
+	/* In emulatiom mode, "Emulator_Protos" is needed to 
+	** use funcitons in other files.
+	** NOTE: This header should contain the function 
+	** 			 prototypes for all execution functions */
+	#include "../Include/Emulator_Protos.h"
+#endif  /* End Emulator Mode */
 
 /*******************************************************************
 ** Functions *******************************************************
@@ -26,12 +30,17 @@
 
 
 /*************************************************
-** Vector_Dot_Product
-** Computes the dot product of two vectors
-**   scalar = Vector_Dot_Product( v1[], v2[] )
-**   scalar = <v1,v2>
+** FUNCTION: Vector_Dot_Product
+** VARIABLES:
+**		[I ]	const float v1	:
+**		[I ]	const float v2	:
+** RETURN:
+**		float	result
+** DESCRIPTION:
+** 		Computes the dot product of two vectors
+**   	result = <v1,v2>
 */
-float Vector_Dot_Product(const float v1[3], const float v2[3])
+float Vector_Dot_Product ( const float v1[3], const float v2[3] )
 {
   float result = 0;
   for(int c = 0; c < 3; c++) { result += v1[c] * v2[c]; }
@@ -40,10 +49,16 @@ float Vector_Dot_Product(const float v1[3], const float v2[3])
 
 
 /*************************************************
-** Vector_Cross_Product
-** Computes the cross product of two vectors
-**   Vector_Cross_Product( v1[], v2[], out[] )
-**   out[] = v1[] x v2[]
+** FUNCTION: Vector_Cross_Product
+** VARIABLES:
+**		[I ]	const float v1[3]
+**		[I ]	const float v2[3]
+**		[IO]				float out[3]
+** RETURN:
+**		NONE
+** DESCRIPTION:
+** 		Computes the cross product of two vectors
+**   	out[] = v1[] x v2[]
 */
 void Vector_Cross_Product( const float v1[3], const float v2[3], float out[3] )
 {
@@ -54,22 +69,35 @@ void Vector_Cross_Product( const float v1[3], const float v2[3], float out[3] )
 
 
 /*************************************************
-** Vector_Scale
-** Multiply a vector by a scalar (element-wise)
-**   Vector_Scale( v[], scalar, out[] )
-**   out[] = v[] .* scalar
+** FUNCTION: Vector_Scale
+** VARIABLES:
+**		[I ]	const float v[3]
+**		[I ]	const float scalar
+**		[IO]				float out[3]
+** RETURN:
+**		NONE
+** DESCRIPTION:
+** 		Multiply a vector by a scalar (element-wise)
+**   	out[] = v[] .* scalar
 */
-void Vector_Scale( const float v[3], float scale, float out[3] )
+void Vector_Scale( const float v[3], const float scalar, float out[3] )
 {
-  for(int c = 0; c < 3; c++) { out[c] = v[c] * scale; }
+	int i;
+  for( i=0; i<3; i++) { out[i] = v[i] * scalar; }
 } /* End Vector_Scale */
 
 
 /*************************************************
-** Vector_Add
-** Adds two vectors element-wise
-**   Vector_Add( out[], v1[], v2[] )
-**   out[] = v1[] + v2[]
+** FUNCTION: Vector_Add
+** VARIABLES:
+**		[I ]	const float v1[3]
+**		[I ]	const float v2[3]
+**		[IO]				float out[3]
+** RETURN:
+**		NONE
+** DESCRIPTION:
+** 		Adds two vectors element-wise
+**   	out[] = v1[] + v2[]
 */
 void Vector_Add( const float v1[3], const float v2[3], float out[3] )
 {
@@ -78,65 +106,84 @@ void Vector_Add( const float v1[3], const float v2[3], float out[3] )
 
 
 /*************************************************
-** Matrix_Matrix_Multiply
-** Multiply two 3x3 matrices
-**   Matrix_Matrix_Multiply( m1[][], m2[][], out[][] )
-**   out = m1 * m2
+** FUNCTION: Matrix_Matrix_Multiply
+** VARIABLES:
+**		[I ]	const float m1[3][3]
+**		[I ]	const float m2[3][3]
+**		[IO]				float out[3][3]
+** RETURN:
+**		NONE
+** DESCRIPTION:
+** 		Multiply two 3x3 matrices
+**   	out = m1 * m2
 */
 void Matrix_Matrix_Multiply(const float m1[3][3], const float m2[3][3], float out[3][3])
 {
-  for(int x = 0; x < 3; x++)  // rows
+	int i, j;
+  for( i=0; i<3; i++ )
   {
-    for(int y = 0; y < 3; y++)  // columns
+    for( j=0; j<3; j++ )
     {
-      out[x][y] = m1[x][0] * m2[0][y] + m1[x][1] * m2[1][y] + m1[x][2] * m2[2][y];
+      out[i][j] = m1[i][0] * m2[0][j] + m1[i][1] * m2[1][j] + m1[i][2] * m2[2][j];
     }
   }
 } /* End Matrix_Matrix_Multiply */
 
 
 /*************************************************
-** Matrix_Vector_Multiply
-** Multiply 3x3 matrix with 3x1 vector
-** Outputs a 3x1 vector
-**   Matrix_Vector_Multiply( m[][], v[], out[] )
-**   out = m * v
+** FUNCTION: Matrix_Vector_Multiply
+** VARIABLES:
+**		[I ]	const float m[3][3]
+**		[I ]	const float v[3]
+**		[IO]				float out[3]
+** RETURN:
+**		NONE
+** DESCRIPTION:
+** 		Multiply 3x3 matrix with 3x1 vector
+** 		Outputs a 3x1 vector
+**   	out = m * v
 */
 void Matrix_Vector_Multiply(const float m[3][3], const float v[3], float out[3])
 {
-  for(int x = 0; x < 3; x++) { out[x] = m[x][0] * v[0] + m[x][1] * v[1] + m[x][2] * v[2]; }
+	int i;
+  for( i=0; i<3; i++ ) { out[i] = m[i][0]*v[0] + m[i][1]*v[1] + m[i][2]*v[2]; }
 } /* End Matrix_Vector_Multiply */
 
 
 /*************************************************
-** Rolling_Mean
-** Compute the rolling mean given an inital mean
-** a sample, and a sample number.
-** The rolling mean is a real-time meathod of
-** computing a mean.
-** m = m + (x - m)/n
-** Input:
-**	n: Sample Number
-** 	m: An Initial Mean
-**	x: Sample
+** FUNCTION: Rolling_Mean
+** VARIABLES:
+**		[I ]	  const int n	:	Sample number
+**		[I ]	const float m	:	Initial mean
+**		[I ]	const float x	:	Sample value
+** RETURN:
+**		float return
+** DESCRIPTION:
+** 		Compute the rolling mean given an inital mean
+** 		a sample, and a sample number.
+** 		The rolling mean is a real-time meathod of
+** 		computing a mean.
 */
-float Rolling_Mean( const int n, float m, float x )
+float Rolling_Mean( const int n, const float m, const float x )
 {
 	return ( m + (x-m)/n );
 } /* End Rolling_Mean */
 
 
 /*************************************************
-** Windowed_Mean
-** Compute the approximate moving average of the
-** data in a real-time method without storing
-** previous samples.
-** m = m*(1-alpha) + (alpha)*x;
-** Input:
-**	m: Initial mean
-** 	x: New sample value
-**  n: Sample number
-**  a: Exponential factor
+** FUNCTION: Windowed_Mean
+** VARIABLES:
+**		[I ]	const float m	:	Initial mean
+**		[I ]	const float x	:	Sample value
+**		[I ]	  const int n	:	Sample number
+**		[I ]	const float a	:	Exponential factor
+** RETURN:
+**		float return
+** DESCRIPTION:
+** 		Compute the approximate moving average of the
+** 		data in a real-time method without storing
+** 		previous samples.
+** 		m = m*(1-alpha) + (alpha)*x;
 */
 float Windowed_Mean( float m, float x, int n, float a )
 {
@@ -148,33 +195,41 @@ float Windowed_Mean( float m, float x, int n, float a )
 }
 
 /*************************************************
-** Rolling_Variance
-** Compute the rolling standard deviation (xN) given
-** the current mean, the previous mean, and a sample.
-** The rolling std is a real-time meathod of
-** computing a stadard deviation.
-** S = S + (x-m) * (x-m_prev);
-** Input:
-**	m_prev: Previous Mean (at last sample)
-**	m:			Current Mean
-**	x: 			Sample
-**	S: 			Curent STD
+** FUNCTION: Rolling_Variance
+** VARIABLES:
+**		[I ]	const float m_prev	:	Previous Mean (at last sample)
+**		[I ]	const float m				:	Current mean
+**		[I ]	const float x				:	Sample value
+**		[I ]	const float S				:	Prev standard deviation
+** RETURN:
+**		float return
+** DESCRIPTION:
+** 		Compute the rolling standard deviation (xN) given
+** 		the current mean, the previous mean, and a sample.
+** 		The rolling std is a real-time meathod of
+** 		computing a stadard deviation.
+** 		S = S + (x-m) * (x-m_prev);
 */
-float Rolling_Variance( const float m_prev, const float m, float x, float S )
+float Rolling_Variance( const float m_prev, const float m, const float x, const float S )
 {
 	return ( S + (x-m)*(x-m_prev) );
-} /* End Rolling_Std */
+} /* End Rolling_Variance */
 
 
 /*************************************************
-** f_asin
-** A faster arcsin
+** FUNCTION: f_asin
+** VARIABLES:
+**		[I ]	const float x
+** RETURN:
+**		float return
+** DESCRIPTION:
+** 		A faster arcsin
 */
 float f_asin( float x )
 {
   float negate = (float)(x < 0);
-  x = fabs(x);
   float ret = -0.0187293;
+  x = fabs(x);
   ret *= x;
   ret += 0.0742610;
   ret *= x;
@@ -187,8 +242,14 @@ float f_asin( float x )
 
 
 /*************************************************
-** f_atan2
-** A faster arctan2
+** FUNCTION: f_atan2
+** VARIABLES:
+**		[I ]	const float x
+**		[I ]	const float y
+** RETURN:
+**		float return
+** DESCRIPTION:
+** 		A faster arctan2
 */
 float f_atan2( float y, float x )
 {
@@ -218,8 +279,17 @@ float f_atan2( float y, float x )
 } /* End f_atan2 */
 
 /*************************************************
-** calc_circle_center
-** compute the center of a circle given 3 points
+** FUNCTION: calc_circle_center
+** VARIABLES:
+**		[I ]	const float p1[2]		:	First point
+**		[I ]	const float p1[2]		:	Second point
+**		[I ]	const float p1[2]		:	Third point
+**		[IO]	const float xcyc[2]	:	Center
+** RETURN:
+**		NONE
+** DESCRIPTION:
+** 		Compute the center of a circle given 3 points
+**		in x/y
 */
 void calc_circle_center( float p1[2], float p2[2], float p3[2], float xcyc[2] )
 {
@@ -255,20 +325,9 @@ void calc_circle_center( float p1[2], float p2[2], float p3[2], float xcyc[2] )
 	if( mr==mt ){ return; }
 	if( mr==0 ){ return; }
 
-	//idf1  = isinf(mr);
-	//idf2  = isinf(mt);
-	//idf34 = isequaln(mr,mt) | isnan(mr) | isnan(mt);
-	//idmr0 = mr==0;
-
 	/* Compute center */
 	xcyc[0] = (mr*mt*(y3-y1) + mr*(x2+x3) - mt*(x1+x2)) / (2*(mr-mt));
-	//xcyc[idf1]  = (mt(idf1).*(y3(idf1)-y1(idf1))+(x2(idf1)+x3(idf1)))/2;
-	//xcyc(idf2)  = ((x1(idf2)+x2(idf2))-mr(idf2).*(y3(idf2)-y1(idf2)))/2;
-	//xcyc(idf34) = NaN;
-
 	xcyc[1] = -1/mr * (xcyc[0]-(x1+x2)/2) + (y1+y2)/2;
-	//xcyc(2,idmr0) = -1./mt(idmr0).*(xcyc(idmr0)-(x2(idmr0)+x3(idmr0))/2)+(y2(idmr0)+y3(idmr0))/2;
-	//xcyc(2,idf34) = NaN;
 
 }
 

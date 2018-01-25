@@ -1,13 +1,14 @@
-/******************************************************************
-** FILE: IMU10736_Config.h
-** This file contains all header information specific to the
-** 10736 platform
-******************************************************************/
 
-#ifndef IMU10736_H
-#define IMU10736_H
+/*******************************************************************
+** FILE: 
+**   	IMU10736_Config.h
+** DESCRIPTION: 
+** 		This file contains all header information specific to the
+** 		10736 platform
+********************************************************************/
+#ifndef IMU10736_CONFIG_H
+#define IMU10736_CONFIG_H
 
-#include "Common_Config.h"
 
 /******************************************************************
 ** User defined
@@ -16,27 +17,18 @@
 ** These can be changed to suit the users needs
 ******************************************************************/
 
-/* Communication Parameters
-*******************************************************************/
-/* Serial Port Configuration */
-#define LOG_PORT_BAUD 115200
-#define COMM_PORT_BAUD 9600
 
-/* The LED can be used for external debugging */
-//#define UART_BLINK_RATE 100
-#define UART_BLINK_RATE 1000
-
-/* DCM parameters
-*******************************************************************/
-
-/* DCM gain */
-#define Kp_ROLLPITCH 0.3f
-//#define Kp_ROLLPITCH 0.02f
-#define Ki_ROLLPITCH 0.00005f
-//#define Ki_ROLLPITCH 0.00002f
-
-#define Kp_YAW 1.2f
-#define Ki_YAW 0.00002f
+///* DCM parameters
+//*******************************************************************/
+//
+///* DCM gain */
+//#define Kp_ROLLPITCH 0.3f
+////#define Kp_ROLLPITCH 0.02f
+//#define Ki_ROLLPITCH 0.00005f
+////#define Ki_ROLLPITCH 0.00002f
+//
+//#define Kp_YAW 1.2f
+//#define Ki_YAW 0.00002f
 
 
 /*
@@ -120,30 +112,36 @@
   #define ROLL_O 4
 #endif
 
-/* Set which sensors to read */
-#define ACCEL_ON 1
-#define GYRO_ON  1
-#define MAGN_ON  0 /* We removed support for the mag in the DCM! */
-
-
 
 /******************************************************************
 ** HW specific
 ** SparkFun "9DOF Razor IMU" version "SEN-10736" (HMC5883L magnetometer)
 *******************************************************************/
 
-/* COMM Ports
+/* Communication Parameters
 *******************************************************************/
-#define LOG_PORT if(DEBUG)Serial
-//#define LOG_PORT if(DEBUG)SERIAL_PORT_USBVIRTUAL
-#define COMM_PORT Serial
+/* Serial Port Configuration */
+#define LOG_PORT_BAUD 115200
+#define COMM_PORT_BAUD 9600
+
+/* The LED can be used for external debugging */
+//#define UART_BLINK_RATE 100
+#define UART_BLINK_RATE 1000
 
 #if EXE_MODE==0 /* IMU Mode */
-#define LOG_PRINTLN LOG_PORT.println
-#define LOG_PRINT LOG_PORT.print
+	#define LOG_PORT if(DEBUG)Serial
+	//#define LOG_PORT if(DEBUG)SERIAL_PORT_USBVIRTUAL
+	#define COMM_PORT Serial
+
+	#define LOG_PRINTLN LOG_PORT.println
+	#define LOG_PRINT LOG_PORT.print
+	
+	#define COMM_PRINT COMM_PORT.print
+	#define COMM_WRITE COMM_PORT.write
+	#define COMM_AVAILABLE COMM_PORT.available()
+	#define COMM_READ COMM_PORT.read()
 #else /* Emulator Mode */
-#define LOG_PRINTLN(x) fprintf(stdout,x);fprintf(stdout,"\n")
-#define LOG_PRINT(x) fprintf(stdout,x)
+
 #endif
 
 /* Sampling resolution
@@ -226,8 +224,12 @@
 
 /* Calibration Macros
 ******************************************************************/
-#define TO_RAD(x) (x * 0.01745329252)  // deg to rad: *pi/180
-#define TO_DEG(x) (x * 57.2957795131)  // rad to deg: *180/pi
+
+/* Movement Detection Thresholds
+******************************************************************/
+#define MOVE_MIN_GYRO_STD 10000 /* Minimum average gyro std threshold */
+#define MOVE_RESET_RATE (TIME_RESOLUTION*5) /* Reset the movement detection window every 5s */
+
 
 /* Accelerometer Calibration
 ******************************************************************/
@@ -276,7 +278,7 @@
 
 
 
-#endif // IMU10736_H
+#endif /* End IMU10736_CONFIG_H */
 
 
 

@@ -1,15 +1,15 @@
 
-/******************************************************************
-** FILE: WISE_Common.h
-** Header for the Walking Speed and Incline Estimator (WISE)
-** This file should contain only definitions specific to the
-** WISE algorithms
-******************************************************************/
+/*******************************************************************
+** FILE: 
+**   	WISE_Config.h
+** DESCRIPTION:
+** 		Header for the Walking Speed and Incline Estimator (WISE)
+** 		This file should contain only definitions specific to the
+** 		WISE algorithms
+********************************************************************/
+#ifndef WISE_CONFIG_H
+#define WISE_CONFIG_H
 
-#ifndef WISE_COMMON_H
-#define WISE_COMMON_H
-
-#define WISE_ON 0
 
 //#define WISE_GAIN_AD 0.025f
 #define WISE_GAIN_AD 0.05f
@@ -117,6 +117,18 @@ typedef struct
 } WISE_STATE_TYPE;
 
 
-#endif // WISE_COMMON_H
+typedef struct
+{
+	float gain_ad;
+	float gain_ap;
+	float gain_vd;
+	float gain_vp;
+	
+	float correction;
+	float mini_count;	
+}	WISE_PRMS_TYPE;
+
+
+#endif /* End WISE_CONFIG_H */
 
 
