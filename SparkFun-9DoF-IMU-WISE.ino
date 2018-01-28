@@ -25,10 +25,10 @@
 	#include "./Include/IMU10736_Config.h"
 #endif
 
-#ifdef _IMU9250_
+//#ifdef _IMU9250_
 	#include <SparkFunMPU9250-DMP.h>
 	#include "./Include/IMU9250_Config.h"
-#endif
+//#endif
 
 
 /*******************************************************************
@@ -44,20 +44,13 @@ CONTROL_TYPE        g_control;
 SENSOR_STATE_TYPE   g_sensor_state;
 
 /* Calibration Structure */
-//#if CALIBRATION_MODE==1
-	CALIBRATION_TYPE  g_calibration;
-//#endif
+CALIBRATION_TYPE  g_calibration;
 
 /* DCM variables */
 DCM_STATE_TYPE      g_dcm_state;
 
-//#if( WISE_ON==1 )
-	WISE_STATE_TYPE     g_wise_state;
-//#endif 
-
-//#if( DSP_ON==1 )
-	DSP_STATE_TYPE     g_dsp;
-//#endif
+WISE_STATE_TYPE     g_wise_state;
+DSP_STATE_TYPE     g_dsp;
 
 /*******************************************************************
 ** START ***********************************************************
@@ -80,23 +73,18 @@ void setup( void )
 	bool ret;
 	
 	/* Initialize the hardware */
-  #if EXE_MODE==0 /* IMU real-time Mode */
-  	Init_Hardware( &g_control );
-  #endif
+  Init_Hardware( &g_control );
   
 	/* Initilize the control structure */
   Common_Init( &g_control );
   
   /* Initialize the IMU sensors*/
-  #if EXE_MODE==0 /* IMU real-time Mode */
-  	ret = Init_IMU( &g_control, &g_sensor_state );
-  	if ( ret==0 ) 
-  	{
-    	LOG_PRINTLN("ERROR : Setup : Cant Connect to IMU");
-    	while(1){}
-  	}
-  	delay(2000);
-  #endif
+	ret = Init_IMU( &g_control, &g_sensor_state );
+	if ( ret==0 ) 
+	{
+  	LOG_PRINTLN("ERROR : Setup : Cant Connect to IMU");
+  	while(1){}
+	}
   
   /* Set the initial roll/pitch/yaw from 
   ** initial accel/gyro */
@@ -105,21 +93,15 @@ void setup( void )
   Read_Sensors( &g_control, &g_sensor_state );
   
   /* Initialize Freq. Filter */
-  //#if( DSP_ON==1 )
-  	DSP_Filter_Init( &g_control, &g_dsp );
-  //#endif
+  DSP_Filter_Init( &g_control, &g_dsp );
   
-  //#if CALIBRATE_MODE==1
-  	Calibration_Init( &g_control, &g_calibration );
-  //#endif
+  Calibration_Init( &g_control, &g_calibration );
 
 	/* Initialize the Directional Cosine Matrix Filter */
   DCM_Init( &g_control, &g_dcm_state, &g_sensor_state );
   
   /* Initialize Walking Incline and Speed Estimator */
-  //#if( WISE_ON==1 )
-  	WISE_Init( &g_control, &g_sensor_state, &g_wise_state );
-  //#endif
+  WISE_Init( &g_control, &g_sensor_state, &g_wise_state );
   
   LOG_PRINTLN("> IMU Setup Done");
   

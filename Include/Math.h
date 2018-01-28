@@ -31,7 +31,8 @@
 	#define FCONSTRAIN constrain
 #endif /* EXE_MODE */
 
-#define SIGN(x) ( (0<x)-(x<0)+(x==0) )
+//#define SIGN(x) ( (0<x)-(x<0)+(x==0) )
+#define SIGN(x) ( (0<x) : -1 , 1 )
 #define FABS(x)	( (x>=0) ? x : (x*-1) )
 
 #define MAX( a, b ) ( ( a > b) ? a : b )

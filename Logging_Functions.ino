@@ -51,6 +51,7 @@ void Debug_LogOut( CONTROL_TYPE				*p_control,
 									 WISE_STATE_TYPE		*p_wise_state )
 {
   char fastlog[500];
+  String t1,t2,t3;
 
   switch ( p_control->output_mode )
   {
@@ -77,12 +78,11 @@ void Debug_LogOut( CONTROL_TYPE				*p_control,
     		p_wise_state->accel[1],p_wise_state->accel_ave[1],p_wise_state->accel_delta[1],p_wise_state->omega_ad[1],p_wise_state->omega_ap[1]);
       break;
     case 4:
-    	sprintf(fastlog,"%09lu,%.0f,%.0f,%.0f,%.0f,%.0f,%.0f,%.4f,%.4f,%.4f\n",
+    	sprintf(fastlog,"%09lu,(%d,%d,%d),(%d,%d,%d)\n",
     		p_control->timestamp,
-	    	p_sensor_state->accel[0],p_sensor_state->accel[1],p_sensor_state->accel[2],
-	    	p_sensor_state->gyro[0],p_sensor_state->gyro[1],p_sensor_state->gyro[2],
-	    	TO_DEG(p_sensor_state->yaw),TO_DEG(p_sensor_state->pitch),TO_DEG(p_sensor_state->roll) );
-	    LOG_PRINT( fastlog );
+	    	(int)p_sensor_state->accel[0],(int)p_sensor_state->accel[1],(int)p_sensor_state->accel[2],
+	    	(int)p_sensor_state->gyro[0],(int)p_sensor_state->gyro[1],(int)p_sensor_state->gyro[2] );
+        LOG_PRINT( fastlog );
       break;
     case 5:
     	//sprintf(fastlog,"G_ave: %.4f %.4f %.4f G_std: %.4f %.4f %.4f\n",
@@ -91,7 +91,6 @@ void Debug_LogOut( CONTROL_TYPE				*p_control,
     default:
     	break;
   }
-  LOG_PRINT( fastlog );
 } /* End Debug_LogOut */
 
 /*************************************************

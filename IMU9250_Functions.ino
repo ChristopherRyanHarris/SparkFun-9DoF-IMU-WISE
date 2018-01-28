@@ -78,7 +78,7 @@ bool Init_IMU( CONTROL_TYPE	      *p_control,
   if (imu.begin() != INV_SUCCESS) { return FALSE; }
 
   /* Initiate accel and gyro sensors only */
-  //#if 
+  
   /* Turn on or off MPU-9250 sensors. Any of the following defines can be combined: \
   ** 		INV_XYZ_GYRO, INV_X_GYRO, INV_Y_GYRO, or INV_Z_GYRO, 
   **		INV_XYZ_ACCEL, or INV_XYZ_COMPASS
@@ -95,6 +95,7 @@ bool Init_IMU( CONTROL_TYPE	      *p_control,
 		activate_sensors = activate_sensors | INV_XYZ_COMPASS;
 	#endif
   imu.setSensors( activate_sensors );
+  imu.setSensors( INV_XYZ_ACCEL | INV_XYZ_GYRO );
 
   /* Configure sensors: */
   imu.setGyroFSR( IMU_GYRO_FSR );
@@ -124,17 +125,17 @@ void Read_Sensors( CONTROL_TYPE				*p_control,
   /* Read the Accelerometer */
   #if ACCEL_ON==1
   	imu.updateAccel();
-  	p_sensor_state->accel[0] = imu.ax;
-  	p_sensor_state->accel[1] = imu.ay;
-  	p_sensor_state->accel[2] = imu.az;
+  	p_sensor_state->accel[0] = (float)imu.ax;
+  	p_sensor_state->accel[1] = (float)imu.ay;
+  	p_sensor_state->accel[2] = (float)imu.az;
   #endif 
   
  	/* Read the Gyroscope */
   #if GYRO_ON==1
   	imu.updateGyro();
-  	p_sensor_state->gyro[0] = imu.gx;
-  	p_sensor_state->gyro[1] = imu.gy;
-  	p_sensor_state->gyro[2] = imu.gz;
+  	p_sensor_state->gyro[0] = (float)imu.gx;
+  	p_sensor_state->gyro[1] = (float)imu.gy;
+  	p_sensor_state->gyro[2] = (float)imu.gz;
   #endif 
   
   /* Read the Magnometer */

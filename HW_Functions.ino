@@ -51,6 +51,7 @@ void Init_Hardware( CONTROL_TYPE	*p_control )
 {
   /* Initiate the LOG_PORT */
   LOG_PORT.begin(LOG_PORT_BAUD);
+  delay(2000);
 
   LOG_PRINTLN("> Initializing Hardware");
 
