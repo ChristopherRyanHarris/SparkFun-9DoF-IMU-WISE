@@ -75,8 +75,8 @@
 #define DEBUG 1 /* Print log/verbose information */
 
 /* I/O params */
-#define OUTPUT_MODE 4
-#define NUM_COM_MODES 6
+#define OUTPUT_MODE 1
+#define NUM_COM_MODES 2
 
 /* Calibration params  */
 #define CALIBRATION_MODE  0 /* 0:OFF 1:ON */
