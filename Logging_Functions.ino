@@ -78,11 +78,16 @@ void Debug_LogOut( CONTROL_TYPE				*p_control,
     		p_wise_state->accel[1],p_wise_state->accel_ave[1],p_wise_state->accel_delta[1],p_wise_state->omega_ad[1],p_wise_state->omega_ap[1]);
       break;
     case 4:
-    	sprintf(fastlog,"%09lu,(%d,%d,%d),(%d,%d,%d)\n",
+    	sprintf(fastlog,"%09lu,%5d,%5d,%5d,%d,%d,%d,",
     		p_control->timestamp,
 	    	(int)p_sensor_state->accel[0],(int)p_sensor_state->accel[1],(int)p_sensor_state->accel[2],
 	    	(int)p_sensor_state->gyro[0],(int)p_sensor_state->gyro[1],(int)p_sensor_state->gyro[2] );
-        LOG_PRINT( fastlog );
+      LOG_PRINT( fastlog );
+
+      FltToStr(TO_DEG(p_sensor_state->roll),fastlog);  LOG_PRINT( fastlog );LOG_PRINT(",");
+      FltToStr(TO_DEG(p_sensor_state->pitch),fastlog); LOG_PRINT( fastlog );LOG_PRINT(",");
+      FltToStr(TO_DEG(p_sensor_state->yaw),fastlog);   LOG_PRINT( fastlog );
+      LOG_PRINTLN("");
       break;
     case 5:
     	//sprintf(fastlog,"G_ave: %.4f %.4f %.4f G_std: %.4f %.4f %.4f\n",
@@ -131,5 +136,22 @@ void Cal_LogOut(void)
 
 
 
+/*************************************************
+** FUNCTION: FltToStr
+** VARIABLES:
+**    [I ]  float value
+**    [IO]  char *StrBuffer
+** RETURN:
+**    NONE
+** DESCRIPTION:
+**    This function converts a floating point
+**    number into a string. This is needed to 
+**    support logging floats in Arduino.
+*/
+void FltToStr( float value,
+               char *StrBuffer )
+{
+  sprintf(StrBuffer, "%4d.%03d", (int)value, abs((int)(value*1000)%1000) );
+}
 
 
