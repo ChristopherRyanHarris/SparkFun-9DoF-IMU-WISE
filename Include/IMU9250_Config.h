@@ -24,15 +24,30 @@
 /* DCM parameters
 *******************************************************************/
 
+/* DCM gain */
+////#define Kp_ROLLPITCH 0.1f
+//#define Kp_ROLLPITCH 0.0002f
+////#define Ki_ROLLPITCH 0.00005f
+////#define Ki_ROLLPITCH 0.00006f
+////#define Ki_ROLLPITCH 0.00001f
+//#define Ki_ROLLPITCH 0.0000001f
+//
+////#define Kp_YAW 1.2f
+////#define Kp_YAW 1.5f
+//#define Kp_YAW 0.0f
+////#define Ki_YAW 0.00002f
+////#define Ki_YAW 0.00005f
+//#define Ki_YAW 0.0f
+
 /*
 ** Notes on orientation for the 9250 IMU
 **   Terms:
 **     Fore:       (Front) Edge of the USB port
-**     Aft:        (Rear) Edge oposite of the USB port
-**     Starboard:  (Right) Edge oposite of PWR switch
+**     Aft:        (Rear) Edge opposite of the USB port
+**     Starboard:  (Right) Edge opposite of PWR switch
 **     Port:       (Left) Edge with PWR switch
 **     Zenith:     (Up) face with USB port
-**     Nadir:      (Down) face oposite USB port
+**     Nadir:      (Down) face opposite USB port
 **   Contrary to the silk, the axis are positioned as follows:
 **     +x is Fore,       -x is Aft
 **     +y is Starboard,  -y is Port
@@ -51,7 +66,7 @@
 ** PITCH_O:1 - Pitch orientation #1. Angle x-axis w/ Horizontal Plane  +Rot:Aft-Down    0:Nadir0/Zenith down. +90:Aft down   -90:Fore down
 ** PITCH_O:2 - Pitch orientation #2. Angle y-axis w/ Horizontal Plane  +Rot:Port-Down   0:Fore/Aft down       +90:Port down  -90:Starboard down
 ** PITCH_O:3 - Pitch orientation #3. Angle z-axis w/ Horizontal Plane  +Rot:Nadir-Down  0:Fore/Aft down       +90:Nadir down -90:Zenith down */
-#define PITCH_O  1
+#define PITCH_O  2
 
 /* Pitch rotation convention
 ** This sets the sign of rotation for pitch
@@ -81,7 +96,7 @@
 
 
 /******************************************************************
-** User dependant
+** User dependent
 ** DON'T TOUCH!
 ** These are created from user variables
 *******************************************************************/
@@ -129,22 +144,19 @@
 #define COMM_PORT_BAUD 250000
 
 /* DEBUG LOG period (us) */
-//#define UART_LOG_RATE 100000
 #define UART_LOG_RATE 1
 
 /* The LED can be used for external debugging */
-//#define UART_BLINK_RATE 50
-//#define UART_BLINK_RATE 100
 #define UART_BLINK_RATE 300
 
 #if EXE_MODE==0 /* IMU Mode */
+
   //#define LOG_PORT if(DEBUG)Serial
   #define LOG_PORT if(DEBUG)SERIAL_PORT_USBVIRTUAL
-  #define COMM_PORT SERIAL_PORT_USBVIRTUAL
-
-	#define LOG_PRINTLN LOG_PORT.println
+  	#define LOG_PRINTLN LOG_PORT.println
 	#define LOG_PRINT LOG_PORT.print
 
+	#define COMM_PORT SERIAL_PORT_USBVIRTUAL
 	#define COMM_PRINT COMM_PORT.print
 	#define COMM_WRITE COMM_PORT.write
 	#define COMM_AVAILABLE COMM_PORT.available()
@@ -172,18 +184,18 @@
 #define HW_LED_PIN 13
 
 
-/* Accelerometer I2C addresses (Regeister Map)
+/* Accelerometer I2C addresses (Register Map)
 ******************************************************************/
 #define IMU_AG_SAMPLE_RATE 10000 // Accel/gyro sample rate Must be between 4Hz and 1kHz
 #define IMU_ACCEL_FSR      16 // Accel full-scale range (2, 4, 8, or 16)
 #define IMU_AG_LPF         5 // Accel/Gyro LPF corner frequency (5, 10, 20, 42, 98, or 188 Hz)
 
 
-/* Magnometer I2C addresses (Regeister Map)
+/* Magnetometer I2C addresses (Register Map)
 ******************************************************************/
 
 
-/* Gyroscope addresses I2C addresses (Regeister Map)
+/* Gyroscope addresses I2C addresses (Register Map)
 ******************************************************************/
 #define IMU_GYRO_FSR       2000 // Gyro full-scale range (250, 500, 1000, or 2000)
 

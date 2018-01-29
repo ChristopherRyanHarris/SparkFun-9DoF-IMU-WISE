@@ -1,6 +1,6 @@
 
 /*******************************************************************
-** FILE: 
+** FILE:
 **   	Communication_Config.h
 ** DESCRIPTION:
 **
@@ -10,7 +10,7 @@
 
 
 /*******************************************************************
-** Tyedefs *********************************************************
+** Typedefs *********************************************************
 ********************************************************************/
 
 /*
@@ -36,21 +36,21 @@ typedef struct
 typedef struct
 {
   int output_mode;
-  
+
   float accel_min_x;
   float accel_max_x;
   float accel_min_y;
   float accel_max_y;
   float accel_min_z;
   float accel_max_z;
-  
+
   float magn_min_x;
   float magn_max_x;
   float magn_min_y;
   float magn_max_y;
   float magn_min_z;
   float magn_max_z;
-  
+
   float gyro_ave_offset_x;
   float gyro_ave_offset_y;
   float gyro_ave_offset_z;

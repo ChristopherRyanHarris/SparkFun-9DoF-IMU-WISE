@@ -16,9 +16,9 @@
 	#include "../Include/Common_Config.h"
 #endif
 #if EXE_MODE==1 /* Emulator Mode */
-	/* In emulatiom mode, "Emulator_Protos" is needed to 
+	/* In emulatiom mode, "Emulator_Protos" is needed to
 	** use funcitons in other files.
-	** NOTE: This header should contain the function 
+	** NOTE: This header should contain the function
 	** 			 prototypes for all execution functions */
 	#include "../Include/Emulator_Protos.h"
 #endif  /* End Emulator Mode */
@@ -42,6 +42,7 @@
 void GaPA_Init( CONTROL_TYPE			*p_control,
 								GAPA_STATE_TYPE		*p_gapa_state )
 {
+  LOG_PRINTLN("> Initializing GaPA Parameters");
 
 	/*
 	** Initialize GaPA control parameters

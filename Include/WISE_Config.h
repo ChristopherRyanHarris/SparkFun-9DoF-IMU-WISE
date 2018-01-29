@@ -1,6 +1,6 @@
 
 /*******************************************************************
-** FILE: 
+** FILE:
 **   	WISE_Config.h
 ** DESCRIPTION:
 ** 		Header for the Walking Speed and Incline Estimator (WISE)
@@ -30,11 +30,11 @@
 #define WISE_MINCOUNT 50
 
 /*******************************************************************
-** Tyedefs
+** Typedefs
 ********************************************************************/
 
 
-/* 
+/*
 ** TYPE: WISE_GATE_TYPE
 ** This holds the state variables
 ** for a gait cycle at toe-off
@@ -62,7 +62,7 @@ typedef struct
 
 	WISE_GATE_TYPE GaitStart;
 	WISE_GATE_TYPE GaitEnd;
-	
+
 	WISE_GATE_TYPE CrossingP;
 
   float pitch_mem;
@@ -90,8 +90,8 @@ typedef struct
   float vel_delta[3];
   float omega_vd[3];
   float omega_vp[3];
-  
-  
+
+
   /* [r_x, r_y, r_Z]
   ** Integral of gyro data
   ** Used to determine gait toe-off (max point)
@@ -101,9 +101,9 @@ typedef struct
   float rot_total[3];
   float rot_ave[3];
   float rot_delta[3];
-  
+
   float dist[3];
-  
+
   float Incline;
   float Incline_ave;
   float Incline_gait;
@@ -123,9 +123,9 @@ typedef struct
 	float gain_ap;
 	float gain_vd;
 	float gain_vp;
-	
+
 	float correction;
-	float mini_count;	
+	float mini_count;
 }	WISE_PRMS_TYPE;
 
 

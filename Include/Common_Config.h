@@ -28,7 +28,7 @@
 	#include <stdbool.h>
 	#include <string.h>
 	#include <time.h>
-	
+
 	#include "../Include/Calibration_Config.h"
 	#include "../Include/DSP_Config.h"
 	#include "../Include/DCM_Config.h"
@@ -36,16 +36,16 @@
 	#include "../Include/WISE_Config.h"
 	#include "../Include/Communication_Config.h"
 	#include "../Include/Math.h"
-
+
 	#include "../Include/Emulator_Config.h"
-	
+
 	#ifdef _IMU10736_
 		#include "../Include/IMU10736_Config.h"
 	#endif
 	#ifdef _IMU9250_
 		#include "../Include/IMU9250_Config.h"
 	#endif
-	
+
 #else
   #include "./Calibration_Config.h"
 	#include "./DSP_Config.h"
@@ -55,21 +55,21 @@
 	#include "./Communication_Config.h"
 	#include "./Math.h"
 
-	#ifdef _IMU10736_
-		#include "./IMU10736_Config.h"
-	#endif
-	#ifdef _IMU9250_
-    #include <SparkFunMPU9250-DMP.h>
-		#include "./IMU9250_Config.h"
-	#endif
+//	#ifdef _IMU10736_
+//		#include "./IMU10736_Config.h"
+//	#endif
+//	#ifdef _IMU9250_
+//    #include <SparkFunMPU9250-DMP.h>
+//		#include "./IMU9250_Config.h"
+//	#endif
 #endif
 
 
 
-	
+
 /**********************
 ** These are defaults,
-** Future releases are inteded to have the ability to
+** Future releases are intended to have the ability to
 ** hot switch these. */
 
 #define DEBUG 1 /* Print log/verbose information */
@@ -96,7 +96,7 @@
 
 
 /*******************************************************************
-** Tyedefs *********************************************************
+** Typedefs *********************************************************
 ********************************************************************/
 
 
@@ -187,7 +187,7 @@ typedef struct
 	/* Sensor specific parameters */
 	SENSOR_PRMS_TYPE sensor_prms;
 
-	/* Digita Signal Processing parameters */
+	/* Digital Signal Processing parameters */
 	DSP_PRMS_TYPE dsp_prms;
 
 	/* DCM parameters */

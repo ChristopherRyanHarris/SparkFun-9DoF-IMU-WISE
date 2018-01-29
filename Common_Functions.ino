@@ -4,7 +4,7 @@
 **   	Common_Functions
 ** DESCRIPTION:
 ** 		This file contains several setup and initialization functions
-** 		which are common accross all execution platforms.
+** 		which are common across all execution platforms.
 **		Any functions or algorithms added to this file should be common
 **    to all platforms and algorithms.
 ********************************************************************/
@@ -18,9 +18,9 @@
 	#include "../Include/Common_Config.h"
 #endif
 #if EXE_MODE==1 /* Emulator Mode */
-	/* In emulatiom mode, "Emulator_Protos" is needed to 
-	** use funcitons in other files.
-	** NOTE: This header should contain the function 
+	/* In emulation mode, "Emulator_Protos" is needed to
+	** use functions in other files.
+	** NOTE: This header should contain the function
 	** 			 prototypes for all execution functions */
 	#include "../Include/Emulator_Protos.h"
 #endif  /* End Emulator Mode */
@@ -39,11 +39,11 @@
 ** DESCRIPTION:
 ** 		This function initializes variables and constants which
 ** 		are the same across all platforms and which are common
-** 		across all agorithm variants
+** 		across all algorithm variants
 */
 void Common_Init ( CONTROL_TYPE *p_control )
 {
-  LOG_PRINT("> Initializing Common\n");
+  LOG_PRINTLN("> Initializing Common Parameters");
 
 	/* Set default IO mode */
 	p_control->output_mode = OUTPUT_MODE;
@@ -91,6 +91,7 @@ void Common_Init ( CONTROL_TYPE *p_control )
 */
 void Update_Time( CONTROL_TYPE *p_control )
 {
+
   #if EXE_MODE==1 /* Emulator Mode */
   	/* Timestamp is read from file */
   	p_control->timestamp_old = p_control->timestamp;

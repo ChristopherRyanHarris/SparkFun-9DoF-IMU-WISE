@@ -19,8 +19,8 @@
 	#include "../Include/Common_Config.h"
 #endif
 #if EXE_MODE==1 /* Emulator Mode */
-	/* In emulatiom mode, "Emulator_Protos" is needed to
-	** use funcitons in other files.
+	/* In emulation mode, "Emulator_Protos" is needed to
+	** use functions in other files.
 	** NOTE: This header should contain the function
 	** 			 prototypes for all execution functions */
 	#include "../Include/Emulator_Protos.h"
@@ -40,7 +40,7 @@
 ** RETURN:
 **		NONE
 ** DESCRIPTION:
-** 		Initialize DCM varaibles
+** 		Initialize DCM variables
 */
 void DCM_Init( CONTROL_TYPE				*p_control,
 							 DCM_STATE_TYPE 		*p_dcm_state,
@@ -48,7 +48,7 @@ void DCM_Init( CONTROL_TYPE				*p_control,
 {
   int i;
 
-  LOG_PRINTLN("> Initializing DCM Filter");
+  LOG_PRINTLN("> Initializing DCM");
 
 	/*
 	** Initialize DCM control parameters
@@ -60,6 +60,7 @@ void DCM_Init( CONTROL_TYPE				*p_control,
 	p_control->dcm_prms.Ki_Yaw       			= Ki_YAW;
 	p_control->dcm_prms.PitchOrientation  = PITCH_O;
 	p_control->dcm_prms.PitchRotationConv = PITCH_ROT_CONV;
+	p_control->dcm_prms.RollOrientation   = ROLL_O;
 	p_control->dcm_prms.RollRotationConv  = ROLL_ROT_CONV;
 	p_control->dcm_prms.RollRotationRef   = ROLL_ZREF;
 
@@ -92,7 +93,7 @@ void DCM_Init( CONTROL_TYPE				*p_control,
 ** DESCRIPTION:
 ** 		Read every sensor and record a time stamp.
 ** 		Init DCM with unfiltered orientation
-** 		I.e. set inital roll/pitch from inital guess
+** 		I.e. set initial roll/pitch from initial guess
 *       	 and initialize the DCM arrays.
 */
 void Reset_Sensor_Fusion( CONTROL_TYPE			*p_control,
@@ -156,7 +157,7 @@ void Set_Sensor_Fusion( CONTROL_TYPE			*p_control,
 **		NONE
 ** DESCRIPTION:
 ** 		Initialize the DCM rotation matrix using
-** 		euler angles
+** 		Euler angles
 */
 void Init_Rotation_Matrix( CONTROL_TYPE				*p_control,
 													 DCM_STATE_TYPE			*p_dcm_state,
@@ -265,9 +266,6 @@ void DCM_Filter( CONTROL_TYPE				*p_control,
 
   /* Convert the acceleration values
   ** Note: Values read from sensor are fixed point */
-  //Accel_Vector[0] = ACCEL_X_SCALED( p_sensor_state->accel[0] );
-  //Accel_Vector[1] = ACCEL_Y_SCALED( p_sensor_state->accel[1] );
-  //Accel_Vector[2] = ACCEL_Z_SCALED( p_sensor_state->accel[2] );
   Accel_Vector[0] = ( p_sensor_state->accel[0] );
   Accel_Vector[1] = ( p_sensor_state->accel[1] );
   Accel_Vector[2] = ( p_sensor_state->accel[2] );
@@ -275,9 +273,6 @@ void DCM_Filter( CONTROL_TYPE				*p_control,
   /* Apply prop and int gain to rotation
   ** Need to convert the Gyro values to radians
   **    Note: Values read from sensor are fixed point */
-  //Omega_Vector[0] = GYRO_SCALED_RAD( p_sensor_state->gyro[0] ) + p_dcm_state->Omega_I[0] + p_dcm_state->Omega_P[0];
-  //Omega_Vector[1] = GYRO_SCALED_RAD( p_sensor_state->gyro[1] ) + p_dcm_state->Omega_I[1] + p_dcm_state->Omega_P[1];
-  //Omega_Vector[2] = GYRO_SCALED_RAD( p_sensor_state->gyro[2] ) + p_dcm_state->Omega_I[2] + p_dcm_state->Omega_P[2];
   Omega_Vector[0] = GYRO_X_SCALED( p_sensor_state->gyro[0] ) + p_dcm_state->Omega_I[0] + p_dcm_state->Omega_P[0];
   Omega_Vector[1] = GYRO_Y_SCALED( p_sensor_state->gyro[1] ) + p_dcm_state->Omega_I[1] + p_dcm_state->Omega_P[1];
   Omega_Vector[2] = GYRO_Z_SCALED( p_sensor_state->gyro[2] ) + p_dcm_state->Omega_I[2] + p_dcm_state->Omega_P[2];
@@ -331,7 +326,7 @@ void DCM_Filter( CONTROL_TYPE				*p_control,
 
 
   /******************************************************************
-  ** DCM 3. Drift_CorrectionAccel_magnitude
+  ** DCM 3. Drift_Correction Accel_magnitude
   ** Drift correction basically looks at the difference in
   ** the orientation described by the DCM matrix and the
   ** orientation described by the current acceleration vector.
@@ -345,7 +340,7 @@ void DCM_Filter( CONTROL_TYPE				*p_control,
   /* Roll and Pitch
   ** Calculate the magnitude of the accelerometer vector
   ** Scale to gravity */
-  Accel_magnitude = sqrt( Vector_Dot_Product( &Accel_Vector[0], &Accel_Vector[0] ) ) / GRAVITY;
+  Accel_magnitude = sqrt( Vector_Dot_Product( &Accel_Vector[0], &Accel_Vector[0] ) ) / p_control->sensor_prms.gravity; //GRAVITY;
 
   /* Dynamic weighting of accelerometer info (reliability filter)
   ** Weight for accelerometer info (<0.5G = 0.0, 1G = 1.0 , >1.5G = 0.0) */
@@ -382,24 +377,19 @@ void DCM_Filter( CONTROL_TYPE				*p_control,
   Vector_Scale( &p_dcm_state->DCM_Matrix[2][0], p_dcm_state->DCM_Matrix[0][0], errorYaw ); /* Applys the yaw correction to the XYZ rotation of the aircraft, depeding the position. */
 
   /* Update the proportional and integral gains per yaw error */
-  Vector_Scale( &errorYaw[0], Kp_YAW, &ErrorGain[0] ); /* proportional of YAW. */
+  Vector_Scale( &errorYaw[0], p_control->dcm_prms.Kp_Yaw, &ErrorGain[0] ); /* proportional of YAW. */
   //Vector_Add( p_dcm_state->Omega_P, ErrorGain, p_dcm_state->Omega_P ); /* Adding  Proportional. */
 
-  Vector_Scale( &errorYaw[0], Ki_YAW, &ErrorGain[0] ); /* Adding Integrator */
+  Vector_Scale( &errorYaw[0], p_control->dcm_prms.Ki_Yaw, &ErrorGain[0] ); /* Adding Integrator */
   //Vector_Add( p_dcm_state->Omega_I, ErrorGain, p_dcm_state->Omega_I ); /* Adding integrator to the Omega_I */
 
   /******************************************************************
   ** DCM 4. Extract Euler Angles from DCM
-  ** Calculate the euler angles from the orintation
+  ** Calculate the Euler angles from the orientation
   ** described by the DCM matrix.
   ** DCM[2][:] is essentially a vector describing the
   ** orientation of the IMU in space.
   ******************************************************************/
-
-	p_control->dcm_prms.PitchOrientation  = PITCH_O;
-	p_control->dcm_prms.PitchRotationConv = PITCH_ROT_CONV;
-	p_control->dcm_prms.RollRotationConv  = ROLL_ROT_CONV;
-	p_control->dcm_prms.RollRotationRef   = ROLL_ZREF;
 
   /* Pitch Conventions (set in config):
   ** Range: -90:90
@@ -411,15 +401,15 @@ void DCM_Filter( CONTROL_TYPE				*p_control,
   {
     case 1 :
       //p_sensor_state->pitch = -PITCH_ROT_CONV*f_asin( p_dcm_state->DCM_Matrix[2][0] );
-      p_sensor_state->pitch = -PITCH_ROT_CONV*f_asin( p_dcm_state->DCM_Matrix[2][0] );
+      p_sensor_state->pitch = -p_control->dcm_prms.PitchRotationConv*f_asin( p_dcm_state->DCM_Matrix[2][0] );
       break;
     case 2 :
       //p_sensor_state->pitch = -PITCH_ROT_CONV*f_asin( p_dcm_state->DCM_Matrix[2][1] );
-      p_sensor_state->pitch = -PITCH_ROT_CONV*f_asin( p_dcm_state->DCM_Matrix[2][1] );
+      p_sensor_state->pitch = -p_control->dcm_prms.PitchRotationConv*f_asin( p_dcm_state->DCM_Matrix[2][1] );
       break;
     case 3 :
       //p_sensor_state->pitch = -PITCH_ROT_CONV*f_asin( p_dcm_state->DCM_Matrix[2][2] );
-      p_sensor_state->pitch = -PITCH_ROT_CONV*f_asin( p_dcm_state->DCM_Matrix[2][2] );
+      p_sensor_state->pitch = -p_control->dcm_prms.PitchRotationConv*f_asin( p_dcm_state->DCM_Matrix[2][2] );
       break;
   }
 
@@ -434,7 +424,7 @@ void DCM_Filter( CONTROL_TYPE				*p_control,
   ** ROLL_O:5 - Roll orientation #5. Rotation around y-axis (Port-Stbd)    +Rot:Aft-Nadir   0:Aft down      +-180:Fore down
   ** ROLL_O:6 - Roll orientation #6. Rotation around x-axis (Fore-Aft)     +Rot:Port-Nadir  0:Port down     +-180:Stbd down
   ** WARNING: ROLL should be determined from pitch orientation, not set manually */
-  switch ( ROLL_O )
+  switch ( p_control->dcm_prms.RollOrientation )
   {
     case 1 :
       p_sensor_state->roll = -p_control->dcm_prms.RollRotationConv*f_atan2( p_dcm_state->DCM_Matrix[2][0], -p_control->dcm_prms.RollRotationRef*p_dcm_state->DCM_Matrix[2][1] );

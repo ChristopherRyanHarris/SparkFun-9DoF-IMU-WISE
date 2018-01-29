@@ -1,8 +1,8 @@
 
 /*******************************************************************
-** FILE: 
+** FILE:
 **   	IMU10736_Config.h
-** DESCRIPTION: 
+** DESCRIPTION:
 ** 		This file contains all header information specific to the
 ** 		10736 platform
 ********************************************************************/
@@ -86,7 +86,7 @@
 
 
 /******************************************************************
-** User dependant
+** User dependent
 ** DON'T TOUCH!
 ** These are created from user variables
 *******************************************************************/
@@ -130,12 +130,12 @@
 
 #if EXE_MODE==0 /* IMU Mode */
 	#define LOG_PORT if(DEBUG)Serial
-	//#define LOG_PORT if(DEBUG)SERIAL_PORT_USBVIRTUAL
+	//#define LOG_PORT if(DEBUG)SERIAL_PORstdoutT_USBVIRTUAL
 	#define COMM_PORT Serial
 
 	#define LOG_PRINTLN LOG_PORT.println
 	#define LOG_PRINT LOG_PORT.print
-	
+
 	#define COMM_PRINT COMM_PORT.print
 	#define COMM_WRITE COMM_PORT.write
 	#define COMM_AVAILABLE COMM_PORT.available()
@@ -164,7 +164,7 @@
 #define HW_LED_PIN 13
 
 
-/* Accelerometer I2C addresses (Regeister Map)
+/* Accelerometer I2C addresses (Register Map)
 ******************************************************************/
 #define ACCEL_ADDRESS ((int16_t) 0x53) /* 0x53 = 0xA6 / 2 (this is local) */
 #define ACCEL_RATE     0x2C            /* Name:Data rate and power mode control BW_RATE  - Access:R/W */
@@ -173,7 +173,7 @@
 #define ACCEL_DATA     0x32            /* Name:Start of data registers (6 bytes)         - Access:R   */
 
 
-/* Magnometer I2C addresses (Regeister Map)
+/* Magnetometer I2C addresses (Register Map)
 ******************************************************************/
 #define MAGN_ADDRESS  ((int16_t) 0x1E) /* 0x1E = 0x3C / 2 (this is local) */
 #define MAGN_CONFIG_A  0x00            /* Name:Configuration Register A     - Access:Read/Write */
@@ -192,7 +192,7 @@
 
 
 
-/* Gyroscope addresses I2C addresses (Regeister Map)
+/* Gyroscope addresses I2C addresses (Register Map)
 ******************************************************************/
 #define GYRO_ADDRESS  ((int16_t) 0x68) /* 0x68 = 0xD0 / 2 (this is local) */
 #define GYRO_ID        0x00            /* Name:verify identity WHO_AM_I           - Access:R/W */

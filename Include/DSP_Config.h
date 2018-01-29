@@ -1,6 +1,6 @@
 
 /*******************************************************************
-** FILE: 
+** FILE:
 **   	DSP_Config.h
 ** DESCRIPTION:
 ** 		Header for common Digital Signal Processing (DSP) algorithms.
@@ -11,10 +11,10 @@
 
 
 /*******************************************************************
-** DEFINES
+** Defines
 ********************************************************************/
 
-/* Set the default state of the 
+/* Set the default state of the
 ** DSP filters */
 #define DSP_FIR_ON 0
 #define DSP_IIR_ON 0
@@ -24,7 +24,7 @@
 /* Define the number of taps in filter */
 #define NTAPS 3
 
-/* 
+/*
 ** FIR Filter coeffs
 ** All FIR filters have a cutoff of 0.1*nyq
 ** Equation:
@@ -50,7 +50,7 @@
 #endif
 
 
-/* 
+/*
 ** IIR Fitler Coeffs
 ** All IIR Filters are Butterworth by design
 ** with a cutoff of 0.1
@@ -89,7 +89,7 @@
 #endif
 
 /*******************************************************************
-** TYPEDEFS
+** Typedefs
 ********************************************************************/
 
 typedef struct
@@ -110,9 +110,9 @@ typedef struct
 typedef struct
 {
 	int n_taps;
-	
+
 	int FIR_on;
-	int	IIR_on;	
+	int	IIR_on;
 }	DSP_PRMS_TYPE;
 
 
