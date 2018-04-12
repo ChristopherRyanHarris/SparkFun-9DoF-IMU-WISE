@@ -34,6 +34,7 @@
 ** FUNCTION: Common_Init
 ** VARIABLES:
 **		[IO]	CONTROL_TYPE	*p_control
+**		[IO]  
 ** RETURN:
 **		NONE
 ** DESCRIPTION:
@@ -41,10 +42,15 @@
 ** 		are the same across all platforms and which are common
 ** 		across all algorithm variants
 */
-void Common_Init ( CONTROL_TYPE *p_control )
+void Common_Init ( CONTROL_TYPE 			*p_control, 
+									 SENSOR_STATE_TYPE 	*p_sensor_state)
 {
   LOG_PRINTLN("> Initializing Common Parameters");
 
+	/* Initialize sample counter */
+	p_control->SampleNumber         = 0;
+	p_control->SampleNumberOverflow = 0;
+	
 	/* Set default IO mode */
 	p_control->output_mode = OUTPUT_MODE;
 
@@ -75,6 +81,20 @@ void Common_Init ( CONTROL_TYPE *p_control )
 	p_control->sensor_prms.gyro_on     = GYRO_ON;
 	p_control->sensor_prms.magn_on     = MAGN_ON;
 	p_control->sensor_prms.sample_rate = TIME_SR;
+	
+	/* Initialize stats */
+  p_sensor_state->gyro_Ave = 0.0;
+  p_sensor_state->gyro_mAve = 0.0;
+  p_sensor_state->gyro_M2   = 0.0;
+  p_sensor_state->gyro_sVar = 0.0;
+  p_sensor_state->gyro_pVar = 0.0;
+  
+  p_sensor_state->accel_Ave = 0.0;
+  p_sensor_state->accel_mAve = 0.0;
+  p_sensor_state->accel_M2   = 0.0;
+  p_sensor_state->accel_sVar = 0.0;
+  p_sensor_state->accel_pVar = 0.0;
+	
 } /* End Common_Init*/
 
 

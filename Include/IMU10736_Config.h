@@ -227,8 +227,6 @@
 
 /* Movement Detection Thresholds
 ******************************************************************/
-#define MOVE_MIN_GYRO_STD 10000 /* Minimum average gyro std threshold */
-#define MOVE_RESET_RATE (TIME_RESOLUTION*5) /* Reset the movement detection window every 5s */
 
 
 /* Accelerometer Calibration

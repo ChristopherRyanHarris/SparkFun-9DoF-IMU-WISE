@@ -17,9 +17,9 @@
 	#include "../Include/Common_Config.h"
 #endif
 #if EXE_MODE==1 /* Emulator Mode */
-	/* In emulatiom mode, "Emulator_Protos" is needed to 
+	/* In emulatiom mode, "Emulator_Protos" is needed to
 	** use funcitons in other files.
-	** NOTE: This header should contain the function 
+	** NOTE: This header should contain the function
 	** 			 prototypes for all execution functions */
 	#include "../Include/Emulator_Protos.h"
 #endif  /* End Emulator Mode */
@@ -28,6 +28,23 @@
 ** Functions *******************************************************
 ********************************************************************/
 
+/*************************************************
+** FUNCTION: Vector_Magnitude
+** VARIABLES:
+**		[I ]	const float v1	:
+** RETURN:
+**		float	result
+** DESCRIPTION:
+** 		Computes the magnitude of a vector
+**    result = (v[0]*v[0] + v[1]*v[1] + v[2]*v[2])^0.5
+*/
+float Vector_Magnitude ( const float v1[3] )
+{
+  float result = 0;
+  for(int c = 0; c < 3; c++) { result += v1[c] * v1[c]; }
+  result = sqrt(result);
+  return result;
+} /* End Vector_Magnitude */
 
 /*************************************************
 ** FUNCTION: Vector_Dot_Product
@@ -159,9 +176,9 @@ void Matrix_Vector_Multiply(const float m[3][3], const float v[3], float out[3])
 ** RETURN:
 **		float return
 ** DESCRIPTION:
-** 		Compute the rolling mean given an inital mean
+** 		Compute the rolling mean given an initial mean
 ** 		a sample, and a sample number.
-** 		The rolling mean is a real-time meathod of
+** 		The rolling mean is a real-time method of
 ** 		computing a mean.
 */
 float Rolling_Mean( const int n, const float m, const float x )
@@ -195,25 +212,59 @@ float Windowed_Mean( float m, float x, int n, float a )
 }
 
 /*************************************************
-** FUNCTION: Rolling_Variance
+** FUNCTION: Rolling_SumOfSquares
 ** VARIABLES:
 **		[I ]	const float m_prev	:	Previous Mean (at last sample)
 **		[I ]	const float m				:	Current mean
 **		[I ]	const float x				:	Sample value
-**		[I ]	const float S				:	Prev standard deviation
+**		[I ]	const float S				:	Prev sum of squares
 ** RETURN:
 **		float return
 ** DESCRIPTION:
-** 		Compute the rolling standard deviation (xN) given
+** 		Compute the rolling sum of squares given
 ** 		the current mean, the previous mean, and a sample.
-** 		The rolling std is a real-time meathod of
-** 		computing a stadard deviation.
-** 		S = S + (x-m) * (x-m_prev);
+** 		The rolling sum of squares is used as a real-time method of
+** 		computing a standard deviation.
+** 		M2 = M2 + (x-m) * (x-m_prev);
 */
-float Rolling_Variance( const float m_prev, const float m, const float x, const float S )
+float Rolling_SumOfSquares( const float m_prev, const float m, const float x, const float M2 )
 {
-	return ( S + (x-m)*(x-m_prev) );
-} /* End Rolling_Variance */
+	return ( M2 + (x-m)*(x-m_prev) );
+} /* End Rolling_SumOfSquares */
+
+
+/*************************************************
+** FUNCTION: Rolling_Sample_Variance
+** VARIABLES:
+**		[I ]	const int N 	      :	Number of samples
+**		[I ]  const float M2      :	Current sum of squares
+** RETURN:
+**		float return
+** DESCRIPTION:
+**    Compute the sample variance from the sum of squares.
+**    S2 = M2/(N-1);
+*/
+float Rolling_Sample_Variance( const int N, const float M2 )
+{
+  return( M2/(N-1) );
+} /* End Rolling_Sample_Variance */
+
+
+/*************************************************
+** FUNCTION: Rolling_Population_Variance
+** VARIABLES:
+**		[I ]	const int N 	      :	Number of samples
+**		[I ]  const float M2      :	Current sum of squares
+** RETURN:
+**		float return
+** DESCRIPTION:
+**    Compute the population variance from the sum of squares.
+**    S2 = M2/(N);
+*/
+float Rolling_Population_Variance( const int N, const float M2 )
+{
+  return( M2/N );
+} /* End Rolling_Population_Variance */
 
 
 /*************************************************
@@ -309,7 +360,7 @@ void calc_circle_center( float p1[2], float p2[2], float p3[2], float xcyc[2] )
 	y2 = p2[1];
 	y3 = p3[1];
 
-	/* Chcek for 0 */
+	/* Check for 0 */
 	if( x1==y1 && x1==0 ){ return; }
 	if( x2==y2 && x2==0 ){ return; }
 	if( x3==y3 && x3==0 ){ return; }

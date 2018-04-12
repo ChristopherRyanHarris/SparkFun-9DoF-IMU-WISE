@@ -26,7 +26,7 @@
 #define MPSTOMPH (2.23694)
 
 #define PI (3.14159265359)
-
+#define TWOPI (6.28318530718)
 
 /* Macros */
 
@@ -35,18 +35,18 @@
 
 
 #if EXE_MODE==1 /* Emulator mode */
-	#define FCONSTRAIN(x,m,M) (fmin(fmax(x,m),M))
+	#define FCONSTRAIN(x,m,M) (fmin(fmax((x),m),M))
 #else
 	#define FCONSTRAIN constrain
 #endif /* EXE_MODE */
 
 //#define SIGN(x) ( (0<x)-(x<0)+(x==0) )
 #define SIGN(x) ( (0<(x)) ? (-1) : (1) )
-#define FABS(x)	( (x>=0) ? x : -(x) )
-#define ABS(x)	( (x>=0) ? x : -(x) )
+#define FABS(x)	( ( (x)>=0) ? (x) : -(x) )
+#define ABS(x)	( ( (x)>=0) ? (x) : -(x) )
 
-#define MAX( a, b ) ( ( a > b) ? a : b )
-#define MIN( a, b ) ( ( a < b) ? a : b )
+#define MAX( a, b ) ( ( (a) > (b) ) ? (a) : (b) )
+#define MIN( a, b ) ( ( (a) < (b) ) ? (a) : (b) )
 
 
 #endif /* End MATH_H */

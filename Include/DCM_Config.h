@@ -19,14 +19,15 @@
 //#define Kp_ROLLPITCH 0.0f
 //#define Kp_ROLLPITCH 0.1f
 //#define Kp_ROLLPITCH 0.0002f
-#define Kp_ROLLPITCH 0.002f
+#define Kp_ROLLPITCH 0.0008f
 
 //#define Ki_ROLLPITCH 0.0f
 //#define Ki_ROLLPITCH 0.00005f
 //#define Ki_ROLLPITCH 0.00006f
 //#define Ki_ROLLPITCH 0.00001f /*1E-5*/
-#define Ki_ROLLPITCH 0.000001f /*1E-6*/
+//#define Ki_ROLLPITCH 0.000001f /*1E-6*/
 //#define Ki_ROLLPITCH 0.0000001f /*1E-7*/
+#define Ki_ROLLPITCH 0.00000001f /*1E-8*/
 
 #define Kp_YAW 0.0f
 //#define Kp_YAW 1.2f

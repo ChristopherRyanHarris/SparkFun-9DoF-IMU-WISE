@@ -48,7 +48,8 @@
 */
 void Debug_LogOut( CONTROL_TYPE				*p_control,
 									 SENSOR_STATE_TYPE	*p_sensor_state,
-									 WISE_STATE_TYPE		*p_wise_state )
+                   GAPA_STATE_TYPE    *p_gapa_state,
+                   WISE_STATE_TYPE    *p_wise_state )
 {
   char LogBuffer[500];
 
@@ -69,13 +70,17 @@ void Debug_LogOut( CONTROL_TYPE				*p_control,
       FltToStr(TO_DEG(p_sensor_state->pitch),4,LogBuffer); LOG_PRINT( LogBuffer );
       sprintf(LogBuffer,", Y:");LOG_PRINT( LogBuffer );
       FltToStr(TO_DEG(p_sensor_state->yaw),4,LogBuffer);   LOG_PRINT( LogBuffer );
-      sprintf(LogBuffer,", A:%06d,%06d,%06d",
-        (int)p_sensor_state->accel[0], (int)p_sensor_state->accel[1], (int)p_sensor_state->accel[2] );
-      LOG_PRINT( LogBuffer );
-      sprintf(LogBuffer,", G:%07d,%07d,%07d",
-        (int)p_sensor_state->gyro[0],  (int)p_sensor_state->gyro[1],  (int)p_sensor_state->gyro[2] );
-      LOG_PRINT( LogBuffer );
+      
+      //sprintf(LogBuffer,", A:%06d,%06d,%06d",
+      //  (int)p_sensor_state->accel[0], (int)p_sensor_state->accel[1], (int)p_sensor_state->accel[2] );
+      //LOG_PRINT( LogBuffer );
+      //sprintf(LogBuffer,", G:%07d,%07d,%07d",
+      //  (int)p_sensor_state->gyro[0],  (int)p_sensor_state->gyro[1],  (int)p_sensor_state->gyro[2] );
+      //LOG_PRINT( LogBuffer );
 
+      sprintf(LogBuffer,", PA(N):");LOG_PRINT( LogBuffer );
+      FltToStr(p_gapa_state->nu_normalized,4,LogBuffer);  LOG_PRINT( LogBuffer );
+      
       LOG_PRINTLN(" ");
       break;
 

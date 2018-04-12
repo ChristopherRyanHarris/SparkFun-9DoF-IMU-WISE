@@ -57,7 +57,10 @@ void GaPA_Init( CONTROL_TYPE			*p_control,
 	p_control->gapa_prms.phimw_alpha 				= GAPA_phimw_ALPHA;
 	p_control->gapa_prms.min_gyro 				  = GAPA_MIN_GYRO;
 	p_control->gapa_prms.gait_end_threshold = GAPA_GAIT_END_THRESH;
-
+	p_control->gapa_prms.default_z_phi      = GAPA_DEFAULT_Z_phi;
+	p_control->gapa_prms.default_z_PHI      = GAPA_DEFAULT_Z_PHI;
+	
+		
 	/*
 	** Initialize GaPA state parameters
 	*/
@@ -80,8 +83,8 @@ void GaPA_Init( CONTROL_TYPE			*p_control,
 	p_gapa_state->PHI_min_next = 0.0f;
 	p_gapa_state->gamma        = 0.0f;
 	p_gapa_state->GAMMA        = 0.0f;
-	p_gapa_state->z_phi        = 1.0f;
-	p_gapa_state->z_PHI        = 1.0f;
+	p_gapa_state->z_phi        = p_control->gapa_prms.default_z_phi;
+	p_gapa_state->z_PHI        = p_control->gapa_prms.default_z_PHI;
 	p_gapa_state->phi_mw       = 0.0f;
 	p_gapa_state->PHI_mw       = 0.0f;
 	p_gapa_state->PErr_phi     = 0.0f;
@@ -111,8 +114,8 @@ void GaPA_Reset( CONTROL_TYPE			*p_control,
 	p_gapa_state->PHI_min_next = 0.0f;
 	p_gapa_state->gamma        = 0.0f;
 	p_gapa_state->GAMMA        = 0.0f;
-	p_gapa_state->z_phi        = 0.0f;
-	p_gapa_state->z_PHI        = 0.0f;
+	p_gapa_state->z_phi        = p_control->gapa_prms.default_z_phi;
+	p_gapa_state->z_PHI        = p_control->gapa_prms.default_z_PHI;
 }/* End GaPA_Reset */
 
 
@@ -200,10 +203,11 @@ void GaPA_Update( CONTROL_TYPE			*p_control,
 	p_gapa_state->PHI_max = MAX( p_gapa_state->PHI_max, p_gapa_state->PHI );
 
 	/* Scale by z */
-	if(p_gapa_state->z_phi==0){p_gapa_state->z_phi=1;}
-	if(p_gapa_state->z_PHI==0){p_gapa_state->z_PHI=1;}
-	p_gapa_state->phin = p_gapa_state->phi/p_gapa_state->z_phi;
-	p_gapa_state->PHIn = p_gapa_state->PHI/p_gapa_state->z_PHI;
+	if(p_gapa_state->z_phi==0){ p_gapa_state->z_phi=p_control->gapa_prms.default_z_phi; }
+	p_gapa_state->phin = (p_gapa_state->phi/p_gapa_state->z_phi);
+	
+	if(p_gapa_state->z_PHI==0){ p_gapa_state->z_PHI=p_control->gapa_prms.default_z_PHI; }
+	p_gapa_state->PHIn = (p_gapa_state->PHI/p_gapa_state->z_PHI);
 
 	/* Normalize to 1 */
 	R = sqrt( p_gapa_state->phin*p_gapa_state->phin + p_gapa_state->PHIn*p_gapa_state->PHIn );
@@ -231,19 +235,47 @@ void GaPA_Update( CONTROL_TYPE			*p_control,
 	/* Get the phase angle */
 	p_gapa_state->nu = f_atan2( leftParam, rightParam );
 
-	/* Detect the end of gait */
-	if( fabs(p_gapa_state->nu-p_gapa_state->nu_prev) > p_control->gapa_prms.gait_end_threshold )
+	/* No Motion detected (subject assumed stopped)
+	** Reset phase variables to prepare for motion */
+	if( (p_sensor_state->gyro_mAve<p_control->gapa_prms.min_gyro) )
 	{
-		p_gapa_state->z_phi = p_gapa_state->phi_max;
-		if(p_gapa_state->z_phi==0){p_gapa_state->z_phi=1;}
-		p_gapa_state->z_PHI = p_gapa_state->PHI_max;
-		if(p_gapa_state->z_PHI==0){p_gapa_state->z_PHI=1;}
-
-		p_gapa_state->phi_max = fabs( p_gapa_state->phi );
-		p_gapa_state->PHI_max = fabs( p_gapa_state->PHI );
+		p_gapa_state->phi     = 0.0;
+		p_gapa_state->phin    = 0.0;
+		p_gapa_state->phi_max = 0.0;
+		p_gapa_state->z_phi   = p_control->gapa_prms.default_z_phi;
+		
+		p_gapa_state->PHI     = 0.0;
+		p_gapa_state->PHIn    = 0.0;
+		p_gapa_state->PHI_max = 0.0;
+		p_gapa_state->z_PHI   = p_control->gapa_prms.default_z_PHI;
+				
+		p_gapa_state->nu_normalized = 0.0;
 	}
+	else
+	{
+		/* There is motion */
+		
+		/* Detect the end of gait */
+		if( (FABS(p_gapa_state->nu-p_gapa_state->nu_prev)>p_control->gapa_prms.gait_end_threshold) )
+		{
+			/* Update phi "z" scaling parameter */
+			p_gapa_state->z_phi = p_gapa_state->phi_max;
+			if(p_gapa_state->z_phi==0){ p_gapa_state->z_phi=p_control->gapa_prms.default_z_phi; }
+			p_gapa_state->phi_max = FABS( p_gapa_state->phi );
 
-	/* If no motion, reset phase variables */
+			/* Update PHI "z" scaling parameter */
+			p_gapa_state->z_PHI = p_gapa_state->PHI_max;
+			if(p_gapa_state->z_PHI==0){ p_gapa_state->z_PHI=p_control->gapa_prms.default_z_PHI; }
+			p_gapa_state->PHI_max = FABS( p_gapa_state->PHI );
+
+			/* Mark the end of gain flag
+			** This will indicate when we believe we have completed a cycle. */
+			p_gapa_state->Gait_End = TRUE;
+		}
+		
+		/* Compute normalized (reported) gait phasae angle */
+		p_gapa_state->nu_normalized = (p_gapa_state->nu+PI)/(TWOPI);
+	}
 
 }/* End GaPA_Update */
 

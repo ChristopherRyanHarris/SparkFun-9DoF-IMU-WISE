@@ -66,7 +66,7 @@
 ** PITCH_O:1 - Pitch orientation #1. Angle x-axis w/ Horizontal Plane  +Rot:Aft-Down    0:Nadir0/Zenith down. +90:Aft down   -90:Fore down
 ** PITCH_O:2 - Pitch orientation #2. Angle y-axis w/ Horizontal Plane  +Rot:Port-Down   0:Fore/Aft down       +90:Port down  -90:Starboard down
 ** PITCH_O:3 - Pitch orientation #3. Angle z-axis w/ Horizontal Plane  +Rot:Nadir-Down  0:Fore/Aft down       +90:Nadir down -90:Zenith down */
-#define PITCH_O  2
+#define PITCH_O  1
 
 /* Pitch rotation convention
 ** This sets the sign of rotation for pitch
@@ -153,8 +153,12 @@
 
   //#define LOG_PORT if(DEBUG)Serial
   #define LOG_PORT if(DEBUG)SERIAL_PORT_USBVIRTUAL
-  	#define LOG_PRINTLN LOG_PORT.println
-	#define LOG_PRINT LOG_PORT.print
+  
+  #define LOG_PRINTLN(...) {char _buffer_[50];sprintf(_buffer_,__VA_ARGS__);LOG_PORT.println(_buffer_);}
+  //#define LOG_PRINTLN LOG_PORT.println
+  
+	//#define LOG_PRINT LOG_PORT.print
+  #define LOG_PRINT(...) {char _buffer_[50];sprintf(_buffer_,__VA_ARGS__);LOG_PORT.print(_buffer_);}
 
 	#define COMM_PORT SERIAL_PORT_USBVIRTUAL
 	#define COMM_PRINT COMM_PORT.print
@@ -215,13 +219,9 @@
 
 /* Calibration Macros
 ******************************************************************/
-//#define TO_RAD(x) (x * 0.01745329252)  // deg to rad: *pi/180
-//#define TO_DEG(x) (x * 57.2957795131)  // rad to deg: *180/pi
 
 /* Movement Detection Thresholds
 ******************************************************************/
-#define MOVE_MIN_GYRO_STD 10000 /* Minimum average gyro std threshold */
-#define MOVE_RESET_RATE (TIME_RESOLUTION*5) /* Reset the movement detection window every 5s */
 
 /* Accelerometer Calibration
 ******************************************************************/
@@ -268,6 +268,7 @@
 ******************************************************************/
 // Gain for gyroscope (ITG-3200)
 #define GYRO_GAIN 0.06957 // Same gain on all axes
+//#define GYRO_GAIN 0.001214
 #define GYRO_AVERAGE_OFFSET_X ((float) 0.0)
 #define GYRO_AVERAGE_OFFSET_Y ((float) 0.0)
 #define GYRO_AVERAGE_OFFSET_Z ((float) 0.0)

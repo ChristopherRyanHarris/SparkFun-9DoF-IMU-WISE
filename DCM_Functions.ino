@@ -64,6 +64,17 @@ void DCM_Init( CONTROL_TYPE				*p_control,
 	p_control->dcm_prms.RollRotationConv  = ROLL_ROT_CONV;
 	p_control->dcm_prms.RollRotationRef   = ROLL_ZREF;
 
+  LOG_PRINTLN("Kp_RollPitch : %f",p_control->dcm_prms.Kp_RollPitch);
+  LOG_PRINTLN("Ki_RollPitch : %f",p_control->dcm_prms.Ki_RollPitch);
+  LOG_PRINTLN("Kp_Yaw : %f",p_control->dcm_prms.Kp_Yaw);
+  LOG_PRINTLN("Ki_Yaw : %f",p_control->dcm_prms.Ki_Yaw);
+  LOG_PRINTLN("PitchOrientation : %i",p_control->dcm_prms.PitchOrientation);
+  LOG_PRINTLN("PitchRotationConv : %i",p_control->dcm_prms.PitchRotationConv);
+  LOG_PRINTLN("RollOrientation : %i",p_control->dcm_prms.RollOrientation);
+  LOG_PRINTLN("RollRotationConv : %i",p_control->dcm_prms.RollRotationConv);
+  LOG_PRINTLN("RollRotationRef : %i\n",p_control->dcm_prms.RollRotationRef);
+
+
 	/*
 	** Initialize DCM state parameters
 	*/
@@ -73,11 +84,6 @@ void DCM_Init( CONTROL_TYPE				*p_control,
   p_dcm_state->SampleNumber=0;
 
   Reset_Sensor_Fusion( p_control, p_dcm_state, p_sensor_state );
-
-  for(i=0;i<3;i++) p_sensor_state->gyro_ave[i] = p_sensor_state->gyro[i];
-  for(i=0;i<3;i++) p_sensor_state->gyro_var[i] = 0.0f;
-  for(i=0;i<3;i++) p_sensor_state->gyro_std[i] = 0.0f;
-  p_sensor_state->std_time=0;
 } /* End DCM_Init */
 
 
@@ -227,32 +233,6 @@ void DCM_Filter( CONTROL_TYPE				*p_control,
   float ErrorGain[3];
   float errorRollPitch[3];
   float errorYaw[3];
-
-  /* Clear Rolling Std/Average after set time
-  ** NOTE: This should be moved elsewhere */
-  if( p_control->WISE_on==1 )
-  {
-    p_sensor_state->std_time+=(p_control->G_Dt*TIME_RESOLUTION);
-  	if( p_sensor_state->std_time>MOVE_RESET_RATE )
- 		{
-	  	for(i=0;i<3;i++) p_sensor_state->gyro_ave[i] = p_sensor_state->gyro[i];
-	  	for(i=0;i<3;i++) p_sensor_state->gyro_var[i] = 0.0f;
-	  	for(i=0;i<3;i++) p_sensor_state->gyro_std[i] = 0.0f;
-	  	p_sensor_state->std_time=0;
-	  	p_dcm_state->SampleNumber=0;
- 		}
-
-  	/* Update Rolling Std */
-  	p_dcm_state->SampleNumber++;
-  	for( i=0;i<3;i++)
-		{
-  		temp = Rolling_Mean( p_dcm_state->SampleNumber, p_sensor_state->gyro_ave[i], p_sensor_state->gyro[i] );
-  		p_sensor_state->gyro_var[i] = Rolling_Variance( p_sensor_state->gyro_ave[i], temp, p_sensor_state->gyro[i], p_sensor_state->gyro_var[i] );
-  		p_sensor_state->gyro_ave[i] = temp;
-  		p_sensor_state->gyro_std[i] = p_sensor_state->gyro_var[i]/p_dcm_state->SampleNumber;
-  	}
-  }
-
 
   /******************************************************************
   ** DCM 1. Update the Direction Cosine Matrix
