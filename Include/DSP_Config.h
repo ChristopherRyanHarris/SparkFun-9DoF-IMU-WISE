@@ -1,32 +1,35 @@
-/******************************************************************
-** FILE: DSP_Common.h
-** Header for common Digital Signal Processing (DSP) algorithms.
-** These definitions are used for all FIR and IIR applications.
+
+/*******************************************************************
+** FILE:
+**   	DSP_Config.h
+** DESCRIPTION:
+** 		Header for common Digital Signal Processing (DSP) algorithms.
+** 		These definitions are used for all FIR and IIR applications.
 ********************************************************************/
-
-#ifndef DSP_COMMON_H
-#define DSP_COMMON_H
-
-#if EXE_MODE==1 /* Emulator mode */
-#include <inttypes.h>
-#endif
+#ifndef DSP_CONFIG_H
+#define DSP_CONFIG_H
 
 
 /*******************************************************************
-** DEFINES
+** Defines
 ********************************************************************/
 
-#define DSP_ON 0
+/* Set the default state of the
+** DSP filters */
+#define DSP_FIR_ON 0
+#define DSP_IIR_ON 0
+
+
 
 /* Define the number of taps in filter */
 #define NTAPS 3
 
-/* FIR Filter coeffs
+/*
+** FIR Filter coeffs
 ** All FIR filters have a cutoff of 0.1*nyq
 ** Equation:
-**	y[n] = b[0]*x[n] + b[1]*x[n-1] + ... + b[N]*x[n-N]
+**	 y[n] = b[0]*x[n] + b[1]*x[n-1] + ... + b[N]*x[n-N]
 */
-
 #define FIR_LPF_9 {0.014408,0.043863,0.120212,0.202534,0.237966,0.202534,0.120212,0.043863,0.014408}
 #define FIR_LPF_5 {0.033833,0.240127,0.452079,0.240127,0.033833}
 #define FIR_LPF_3 {0.067990,0.864020,0.067990}
@@ -46,13 +49,14 @@
 	#define FIR_HPF FIR_HPF_9
 #endif
 
-/* IIR Fitler Coeffs
+
+/*
+** IIR Fitler Coeffs
 ** All IIR Filters are Butterworth by design
 ** with a cutoff of 0.1
 ** Equation:
-**	y[n] = (1/a[0]) * ( b[0]*x[n] + ... + b[P]*x[n-P] - a[1]*y[n-1] - ... - a[Q]*y[n-Q] )
+**	 y[n] = (1/a[0]) * ( b[0]*x[n] + ... + b[P]*x[n-P] - a[1]*y[n-1] - ... - a[Q]*y[n-Q] )
 */
-
 #define IIR_LPF_3a {1.000000,-1.561018,0.641352}
 #define IIR_LPF_3b {0.020083,0.040167,0.020083}
 #define IIR_LPF_5a {1.000000,-3.180639,3.861194,-2.112155,0.438265}
@@ -85,24 +89,34 @@
 #endif
 
 /*******************************************************************
-** TYPEDEFS
+** Typedefs
 ********************************************************************/
 
 typedef struct
 {
-	float IIR_coeffs_La[NTAPS];// = IIR_LPF_a;
-	float IIR_coeffs_Lb[NTAPS];// = IIR_LPF_b;
-	float IIR_coeffs_Ha[NTAPS];// = IIR_HPF_a;
-	float IIR_coeffs_Hb[NTAPS];// = IIR_HPF_b;
+	float IIR_coeffs_La[NTAPS];
+	float IIR_coeffs_Lb[NTAPS];
+	float IIR_coeffs_Ha[NTAPS];
+	float IIR_coeffs_Hb[NTAPS];
 
-	float FIR_coeffs_L[NTAPS];// = FIR_LPF;
-	float FIR_coeffs_H[NTAPS];// = FIR_HPF;
+	float FIR_coeffs_L[NTAPS];
+	float FIR_coeffs_H[NTAPS];
 
 	float accel_mem[3][NTAPS];
 	float gyro_mem[3][NTAPS];
-} DSP_COMMON_TYPE;
+} DSP_STATE_TYPE;
 
-#endif /* End DSP_COMMON_H */
+
+typedef struct
+{
+	int n_taps;
+
+	int FIR_on;
+	int	IIR_on;
+}	DSP_PRMS_TYPE;
+
+
+#endif /* End DSP_CONFIG_H */
 
 
 
