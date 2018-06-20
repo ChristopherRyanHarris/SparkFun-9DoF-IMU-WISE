@@ -1,12 +1,12 @@
 
 /*******************************************************************
 ** FILE:
-**   	Communication_Functions
+**    Communication_Functions
 ** DESCRIPTION:
-** 		This file contains all the serial communication functions
-**		and protocols for use in the real-time execution code. These
-**		functions are intended for the final executable.
-**		These functions cannot be used in emulation mode.
+**    This file contains all the serial communication functions
+**    and protocols for use in the real-time execution code. These
+**    functions are intended for the final executable.
+**    These functions cannot be used in emulation mode.
 ********************************************************************/
 
 
@@ -15,14 +15,14 @@
 ********************************************************************/
 
 #ifndef COMMON_CONFIG_H
-	#include "../Include/Common_Config.h"
+  #include "../Include/Common_Config.h"
 #endif
 #if EXE_MODE==1 /* Emulator Mode */
-	/* In emulation mode, "Emulator_Protos" is needed to
-	** use functions in other files.
-	** NOTE: This header should contain the function
-	** 			 prototypes for all execution functions */
-	#include "../Include/Emulator_Protos.h"
+  /* In emulation mode, "Emulator_Protos" is needed to
+  ** use functions in other files.
+  ** NOTE: This header should contain the function
+  **       prototypes for all execution functions */
+  #include "../Include/Emulator_Protos.h"
 #endif  /* End Emulator Mode */
 
 /*******************************************************************
@@ -33,21 +33,21 @@
 /*************************************************
 ** FUNCTION: f_RespondToInput
 ** VARIABLES:
-**		[I ]	CONTROL_TYPE			*p_control
-**		[I ]	SENSOR_STATE_TYPE	*p_sensor_state
-**		[I ]	WISE_STATE_TYPE		*p_wise_state
-**		[I ]	int								nBytes
+**    [I ]  CONTROL_TYPE      *p_control
+**    [I ]  SENSOR_STATE_TYPE *p_sensor_state
+**    [I ]  WISE_STATE_TYPE   *p_wise_state
+**    [I ]  int               nBytes
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION:
-** 		We have received a request
-** 		The request will be a single character (one Byte)
-** 		which will correspond to a given type of data being
+**    We have received a request
+**    The request will be a single character (one Byte)
+**    which will correspond to a given type of data being
 ** requested by the master
 */
-void f_RespondToInput( CONTROL_TYPE 			*p_control,
-											 SENSOR_STATE_TYPE 	*p_sensor_state,
-											 CALIBRATION_TYPE		*p_calibration,
+void f_RespondToInput( CONTROL_TYPE       *p_control,
+                       SENSOR_STATE_TYPE  *p_sensor_state,
+                       CALIBRATION_TYPE   *p_calibration,
                        int nBytesIn )
 {
   int i;
@@ -99,7 +99,7 @@ void f_RespondToInput( CONTROL_TYPE 			*p_control,
         **   Ints are signed */
 
         /* Some Log outputs (usb) */
-  			sprintf(fastlog,"\tReceived Debug Request: %x",RequestByte); LOG_PRINTLN( fastlog );
+        sprintf(fastlog,"\tReceived Debug Request: %x",RequestByte); LOG_PRINTLN( fastlog );
         Response.PacketType     = 11;
         Response.Buffer_nBytes  = sizeof(uint8_t)*2*1;
         Response.Packet_nBytes  = sizeof(uint16_t)*2 + sizeof(uint8_t)*(1 + Response.Buffer_nBytes);
@@ -114,7 +114,7 @@ void f_RespondToInput( CONTROL_TYPE 			*p_control,
         ** Data buffer
         **   1 x 32 bit float
         **   Float is sent bit for bit */
-  			sprintf(fastlog,"\tReceived Debug Request: %x",RequestByte); LOG_PRINTLN( fastlog );
+        sprintf(fastlog,"\tReceived Debug Request: %x",RequestByte); LOG_PRINTLN( fastlog );
         Response.PacketType     = 12;
         Response.Buffer_nBytes  = sizeof(uint8_t)*4*1;
         Response.Packet_nBytes  = sizeof(uint16_t)*2 + sizeof(uint8_t)*(1 + Response.Buffer_nBytes);
@@ -132,7 +132,7 @@ void f_RespondToInput( CONTROL_TYPE 			*p_control,
         **    floats are signed */
 
         /* Some Log outputs (usb) */
-  			sprintf(fastlog,"\tReceived Roll Pitch request ... Case : %d",RequestByte); LOG_PRINTLN( fastlog );
+        sprintf(fastlog,"\tReceived Roll Pitch request ... Case : %d",RequestByte); LOG_PRINTLN( fastlog );
         Response.PacketType     = 1;
         Response.Buffer_nBytes  = sizeof(uint8_t)*2*3;
         Response.Packet_nBytes  = sizeof(uint16_t)*2 + sizeof(uint8_t)*(1 + Response.Buffer_nBytes);
@@ -150,7 +150,7 @@ void f_RespondToInput( CONTROL_TYPE 			*p_control,
         **    3 x 32 bit floats
         **    floats are packed bit for bit */
         /* Some Log outputs (usb) */
-  			sprintf(fastlog,"\tReceived Roll Pitch request ... Case : %d",RequestByte); LOG_PRINTLN( fastlog );
+        sprintf(fastlog,"\tReceived Roll Pitch request ... Case : %d",RequestByte); LOG_PRINTLN( fastlog );
         Response.PacketType     = 2;
         Response.Buffer_nBytes  = sizeof(uint8_t)*4*3;
         Response.Packet_nBytes  = sizeof(uint16_t)*2 + sizeof(uint8_t)*(1 + Response.Buffer_nBytes);
@@ -168,7 +168,7 @@ void f_RespondToInput( CONTROL_TYPE 			*p_control,
         ** calibration output
         ** 0:Accel (min/ave/max) in text
         ** 1:Gyro  (current/ave) in text */
-  			sprintf(fastlog,"\t> Received Output Toggle Request ... Case : %d",RequestByte); LOG_PRINTLN( fastlog );
+        sprintf(fastlog,"\t> Received Output Toggle Request ... Case : %d",RequestByte); LOG_PRINTLN( fastlog );
         if( p_control->calibration_on==1 ) { p_control->calibration_prms.output_mode = (p_control->calibration_prms.output_mode+1)%NUM_CALCOM_MODES; }
         else { p_control->output_mode = (p_control->output_mode+1)%NUM_COM_MODES; }
         break;
@@ -176,20 +176,20 @@ void f_RespondToInput( CONTROL_TYPE 			*p_control,
       case 0x63:
         /* DEBUG - Reset Calibration Variables
         ** Resets all calibration states */
-  			sprintf(fastlog,"\t> Received Calibration Reset Request ... Case : %d",RequestByte); LOG_PRINTLN( fastlog );
+        sprintf(fastlog,"\t> Received Calibration Reset Request ... Case : %d",RequestByte); LOG_PRINTLN( fastlog );
         Calibration_Init( p_control, p_calibration );
         break;
 
       case 0x64:
         /* WISE - Reset WISE state variables
         ** Simulate heel strike */
-  			sprintf(fastlog,"\t> Received WISE Reset Request ... Case : %d",RequestByte); LOG_PRINTLN( fastlog );
+        sprintf(fastlog,"\t> Received WISE Reset Request ... Case : %d",RequestByte); LOG_PRINTLN( fastlog );
         //WISE_Reset( p_control, p_wise_state );
         break;
 
       default:
         LOG_PRINTLN("\t ERROR: I don't understand the request!");
-  			sprintf(fastlog,"\t> Unidentified Request Code (DEC): %d",RequestByte); LOG_PRINTLN( fastlog );
+        sprintf(fastlog,"\t> Unidentified Request Code (DEC): %d",RequestByte); LOG_PRINTLN( fastlog );
         break;
     }
 
@@ -202,13 +202,13 @@ void f_RespondToInput( CONTROL_TYPE 			*p_control,
 /*************************************************
 ** FUNCTION: f_SendPacket
 ** VARIABLES:
-**		[I ]	COMMUNICATION_PACKET_TYPE Response
+**    [I ]  COMMUNICATION_PACKET_TYPE Response
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION:
-** 		This code builds the contiguous byte array
-** 		from the defined "Response" packet then sends
-** 		the data as a singly stream over the UART line
+**    This code builds the contiguous byte array
+**    from the defined "Response" packet then sends
+**    the data as a singly stream over the UART line
 */
 void f_SendPacket( COMMUNICATION_PACKET_TYPE Response )
 {
@@ -217,7 +217,7 @@ void f_SendPacket( COMMUNICATION_PACKET_TYPE Response )
   int i;
 
   /* Debug Logging */
-	char fastlog[500];
+  char fastlog[500];
 
   /* Initialize the array */
   for( ret=0; ret<100; ret++) Packet[ret] = 0;
@@ -232,24 +232,21 @@ void f_SendPacket( COMMUNICATION_PACKET_TYPE Response )
 
   for( i=0; i<Response.Packet_nBytes+2; i++ )
   {
-		sprintf(fastlog,"%x",Packet[i]); LOG_PRINT( fastlog );
-    LOG_PRINT(" , ");
     COMM_WRITE(&Packet[i],1);
   }
-  LOG_PRINTLN(" ");
 } /* End f_SendPacket */
 
 
 /*************************************************
 ** FUNCTION: f_WriteIToPacket
 ** VARIABLES:
-**		[IO]	uint8_t			*Packet
-**		[I ]	uint16_t		InputBuffer
+**    [IO]  uint8_t     *Packet
+**    [I ]  uint16_t    InputBuffer
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION:
-** 		This is a helper function which copies an 2 byte integer
-** 		into an array of single bytes
+**    This is a helper function which copies an 2 byte integer
+**    into an array of single bytes
 */
 void f_WriteIToPacket( uint8_t *Packet, uint16_t InputBuffer )
 {
@@ -265,24 +262,24 @@ void f_WriteIToPacket( uint8_t *Packet, uint16_t InputBuffer )
 /*************************************************
 ** FUNCTION: f_WriteFToPacket_u16
 ** VARIABLES:
-**		[IO]	unsigned char	*Packet
-**		[I ]	float					Input
+**    [IO]  unsigned char *Packet
+**    [I ]  float         Input
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION:
-** 		This is a helper function which copies an 4 byte float
-** 		into an array of single bytes
-** 		Because the master (the C200) uses half precision floats,
-** 		we cannot send the full 4 byte float.
-** 		Instead, we:
-**    	1) Convert the 4 byte float into a 2 byte unsigned integer
-**    	2) Pack the 2 byte integer into an array of single bytes
-** 		When the data is received by the master, it is converted to
-** 		a 2 byte float.
-** 		This function assumes that we are sending signed floats.
-** 		If we can assume that the data is unsigned, we would be able
-** 		to shift an additional bit. This could be implemented as another
-** 		packet "Type"
+**    This is a helper function which copies an 4 byte float
+**    into an array of single bytes
+**    Because the master (the C200) uses half precision floats,
+**    we cannot send the full 4 byte float.
+**    Instead, we:
+**      1) Convert the 4 byte float into a 2 byte unsigned integer
+**      2) Pack the 2 byte integer into an array of single bytes
+**    When the data is received by the master, it is converted to
+**    a 2 byte float.
+**    This function assumes that we are sending signed floats.
+**    If we can assume that the data is unsigned, we would be able
+**    to shift an additional bit. This could be implemented as another
+**    packet "Type"
 */
 void f_WriteFToPacket_u16( unsigned char *Packet, float Input )
 {
@@ -303,14 +300,14 @@ void f_WriteFToPacket_u16( unsigned char *Packet, float Input )
 /*************************************************
 ** FUNCTION: f_WriteFToPacket_s32
 ** VARIABLES:
-**		[IO]	unsigned char	*Packet
-**		[I ]	float					Input
+**    [IO]  unsigned char *Packet
+**    [I ]  float         Input
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION:
-** 		This function writes a float to the packet
-** 		in a bit for bit fashion. Ie. we pack the float
-**		as it is stored in memory
+**    This function writes a float to the packet
+**    in a bit for bit fashion. Ie. we pack the float
+**    as it is stored in memory
 */
 void f_WriteFToPacket_s32( unsigned char *Packet, float Input )
 {
@@ -329,15 +326,15 @@ void f_WriteFToPacket_s32( unsigned char *Packet, float Input )
 /*************************************************
 ** FUNCTION: f_Handshake
 ** VARIABLES:
-**		[I ]	CONTROL_TYPE	*p_control
+**    [I ]  CONTROL_TYPE  *p_control
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION:
-** 		The Handshake code waits for the TI board to
-** 		initiate the handshake. Handshake is initiated
-** 		by receiving any character(s). Once Initiated,
-** 		we must send the baud lock character "a" or "A"
-** 		and then wait for the confirmation character
+**    The Handshake code waits for the TI board to
+**    initiate the handshake. Handshake is initiated
+**    by receiving any character(s). Once Initiated,
+**    we must send the baud lock character "a" or "A"
+**    and then wait for the confirmation character
 */
 void f_Handshake( CONTROL_TYPE *p_control )
 {
@@ -385,7 +382,7 @@ void f_Handshake( CONTROL_TYPE *p_control )
     delay( 5 );
     nBytesIn = COMM_AVAILABLE;
 
-  	sprintf(fastlog,"> Clearing %d characters from buffer",nBytesIn); LOG_PRINTLN( fastlog );
+    sprintf(fastlog,"> Clearing %d characters from buffer",nBytesIn); LOG_PRINTLN( fastlog );
     while( nBytesIn-- > 0 ) { JunkByte = COMM_READ; }
 
     /* Once handshake is initiated by the master,
@@ -394,7 +391,7 @@ void f_Handshake( CONTROL_TYPE *p_control )
     ** character */
     // Serial.print to Tx pin
     COMM_PRINT( BaudLockChar );
-  	sprintf(fastlog,"> BaudLockChar \"%c\" sent",BaudLockChar); LOG_PRINTLN( fastlog );
+    sprintf(fastlog,"> BaudLockChar \"%c\" sent",BaudLockChar); LOG_PRINTLN( fastlog );
 
     /* We delay a few ms to allow the
     ** master to detect and answer the handshake */
@@ -408,8 +405,8 @@ void f_Handshake( CONTROL_TYPE *p_control )
     if( nBytesIn>0 ) { IncomingByte = COMM_READ; }
 
     /* Some Log Output (usb) */
-  	sprintf(fastlog,"> Recieved %d Bytes",nBytesIn); LOG_PRINTLN( fastlog );
-  	sprintf(fastlog,"  Character (int): %d",IncomingByte); LOG_PRINTLN( fastlog );
+    sprintf(fastlog,"> Recieved %d Bytes",nBytesIn); LOG_PRINTLN( fastlog );
+    sprintf(fastlog,"  Character (int): %d",IncomingByte); LOG_PRINTLN( fastlog );
 
     /* If confirmation character detected, Baud is locked
     ** Reply with confirmation character to end handshake
@@ -437,7 +434,7 @@ void f_Handshake( CONTROL_TYPE *p_control )
       delay( 5 );
       nBytesIn = COMM_AVAILABLE;
 
-  		sprintf(fastlog,"> Clearing %d characters from buffer",nBytesIn); LOG_PRINTLN( fastlog );
+      sprintf(fastlog,"> Clearing %d characters from buffer",nBytesIn); LOG_PRINTLN( fastlog );
       while( nBytesIn-- > 0 ) { JunkByte = COMM_READ; }
 
       /* Reply with Error char
@@ -458,15 +455,15 @@ void f_Handshake( CONTROL_TYPE *p_control )
 /*************************************************
 ** FUNCTION: f_CheckSum
 ** VARIABLES:
-**		[I ]	unsigned char	*p_Buffer
-**		[I ]	uint16_t			nBytes
+**    [I ]  unsigned char *p_Buffer
+**    [I ]  uint16_t      nBytes
 ** RETURN:
-**		uint8_t		checksum
+**    uint8_t   checksum
 ** DESCRIPTION:
-** 		This function gets a simple checksum for
-** 		the response packet. This checksum simply sums
-** 		the response buffer (modulated to keep within 1 byte)
-** 		This allows for proper data transmission
+**    This function gets a simple checksum for
+**    the response packet. This checksum simply sums
+**    the response buffer (modulated to keep within 1 byte)
+**    This allows for proper data transmission
 */
 uint8_t f_CheckSum( unsigned char *p_Buffer, uint16_t nBytes )
 {

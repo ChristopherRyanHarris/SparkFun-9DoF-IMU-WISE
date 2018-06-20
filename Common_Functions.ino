@@ -67,8 +67,18 @@ void Common_Init ( CONTROL_TYPE 			*p_control,
 		p_control->emu_data.OutputFID = NULL;
 	#endif
 
-
 	p_control->verbose        = DEBUG;
+	if( ENABLE_SD_LOGGING )
+	{
+		p_control->SDCardPresent  = (SD.begin(SD_PIN));
+	  if( p_control->SDCardPresent==TRUE )
+	  {
+	  	p_control->LogFileIdx = 0;
+			GetNextLogFileName( p_control );
+			p_control->LogFile_fh = SD.open( p_control->LogFileName, FILE_WRITE );
+		}
+	}
+	
 	p_control->calibration_on = CALIBRATION_MODE;
 	p_control->DSP_on         = DSP_ON;
 	p_control->DCM_on					= DCM_ON;

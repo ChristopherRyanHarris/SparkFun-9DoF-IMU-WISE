@@ -243,3 +243,34 @@ void FltToStr( float value,
 }
 
 
+
+
+/*************************************************
+** FUNCTION: GetNextLogFileName
+** VARIABLES:
+**    void
+** RETURN:
+**    string
+** DESCRIPTION:
+**    This is a helper function.
+**    It is used for logging to an SD card.
+**    This function creates a filename which does not
+**    exist on the card, to which we will log our data.
+*/
+void GetNextLogFileName( CONTROL_TYPE *p_control )
+{
+  int  i;
+
+  for( i=p_control->LogFileIdx; i<LOG_FILE_INDEX_MAX; i++ )
+  {
+    /* Construct a file with PREFIX[Index].SUFFIX */
+    sprintf( p_control->LogFileName, "%s%i.%s", LOG_FILE_PREFIX, i, LOG_FILE_SUFFIX );
+    
+    /* If the file name doesn't exist, return it */
+    if( !SD.exists(p_control->LogFileName) )
+    { 
+    	p_control->LogFileIdx = i + 1;
+    	break;
+    }
+  }
+} /* End GetNextLogFileName() */

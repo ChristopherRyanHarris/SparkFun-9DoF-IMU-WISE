@@ -61,6 +61,7 @@
 	#ifdef _IMU9250_
     #include <SparkFunMPU9250-DMP.h>
     //#include "./SparkFunMPU9250-DMP.h"
+    //#include <Time.h>
 		#include "./IMU9250_Config.h"
 	#endif
 #endif
@@ -188,10 +189,15 @@ typedef struct
   bool     BaudLock;    /* Used to set baud rate */
   uint32_t LastLogTime; /* Sets the UART LOG Rate */
   /* LED state globals */
-  bool      LedState; /* Used to set LED state */
-  uint32_t  LastBlinkTime; /* Used to set LED state */
-
-
+  bool     LedState; /* Used to set LED state */
+  uint32_t LastBlinkTime; /* Used to set LED state */
+	/* SD control */
+	bool     SDCardPresent;
+	char     LogFileName[50]; /* TO DO : Need change name buffer to define */
+	int      LogFileIdx;
+	File     LogFile_fh;
+	
+	
 
 	int verbose;
 	int calibration_on;

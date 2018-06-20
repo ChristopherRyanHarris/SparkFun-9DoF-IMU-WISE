@@ -15,6 +15,7 @@
 ** Includes ********************************************************
 ********************************************************************/
 
+#include <SD.h>
 #include "./Include/Common_Config.h"
 
 #include <Wire.h>
@@ -109,6 +110,7 @@ WISE_STATE_TYPE   g_wise_state;
 void setup( void )
 {
 	bool ret;
+	CONTROL_TYPE *p_control = &g_control;
 	
 	/* Initialize the hardware */
   Init_Hardware( &g_control );
@@ -162,7 +164,8 @@ void setup( void )
 **		It loops while there is power.		
 */
 void loop( void )
-{ 
+{
+	
   /* Update sensor readings */
   Read_Sensors( &g_control, &g_sensor_state );
   
