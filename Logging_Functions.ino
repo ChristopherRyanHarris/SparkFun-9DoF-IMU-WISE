@@ -260,15 +260,22 @@ void FltToStr( float value,
 void GetNextLogFileName( CONTROL_TYPE *p_control )
 {
   int  i;
+  char buffer[50];
 
   for( i=p_control->LogFileIdx; i<LOG_FILE_INDEX_MAX; i++ )
   {
     /* Construct a file with PREFIX[Index].SUFFIX */
     sprintf( p_control->LogFileName, "%s%i.%s", LOG_FILE_PREFIX, i, LOG_FILE_SUFFIX );
     
+    sprintf( buffer, " > Trying File %s\n", p_control->LogFileName);
+    LOG_PORT.print(buffer);
+    
     /* If the file name doesn't exist, return it */
     if( !SD.exists(p_control->LogFileName) )
     { 
+    	sprintf( buffer, " > File %s Available\n", p_control->LogFileName);
+    	LOG_PORT.print(buffer);
+    	
     	p_control->LogFileIdx = i + 1;
     	break;
     }

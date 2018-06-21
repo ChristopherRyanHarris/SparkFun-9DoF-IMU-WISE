@@ -196,6 +196,8 @@ typedef struct
 	char     LogFileName[50]; /* TO DO : Need change name buffer to define */
 	int      LogFileIdx;
 	File     LogFile_fh;
+	int      LogBufferLen;
+	char     LogBuffer[2048];
 	
 	
 

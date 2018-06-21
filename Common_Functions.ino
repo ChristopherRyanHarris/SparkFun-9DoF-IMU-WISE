@@ -45,6 +45,8 @@
 void Common_Init ( CONTROL_TYPE 			*p_control, 
 									 SENSOR_STATE_TYPE 	*p_sensor_state)
 {
+  char buffer[50];
+  
   LOG_PRINTLN("> Initializing Common Parameters");
 
 	/* Initialize sample counter */
@@ -70,13 +72,33 @@ void Common_Init ( CONTROL_TYPE 			*p_control,
 	p_control->verbose        = DEBUG;
 	if( ENABLE_SD_LOGGING )
 	{
+    sprintf( buffer, " > SD Logging enabled\n");
+    LOG_PORT.print(buffer);
+    	
 		p_control->SDCardPresent  = (SD.begin(SD_PIN));
+	  p_control->LogBufferLen = 0;
 	  if( p_control->SDCardPresent==TRUE )
 	  {
+    	sprintf( buffer, " > SD Card Detected\n");
+    	LOG_PORT.print(buffer);
+    
 	  	p_control->LogFileIdx = 0;
 			GetNextLogFileName( p_control );
 			p_control->LogFile_fh = SD.open( p_control->LogFileName, FILE_WRITE );
+			
+    	sprintf( buffer, " > Using File %s\n", p_control->LogFileName);
+    	LOG_PORT.print(buffer);
+    	if( p_control->LogFile_fh!=NULL )
+    	{
+    		sprintf( buffer, " > Open Successful\n");
+    		LOG_PORT.print(buffer);
+    	}
 		}
+		else
+		{
+    	sprintf( buffer, " > SD Card Not Detected, Disabling SD Logging\n");
+    	LOG_PORT.print(buffer);
+    }
 	}
 	
 	p_control->calibration_on = CALIBRATION_MODE;
