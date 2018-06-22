@@ -77,6 +77,7 @@ void Common_Init ( CONTROL_TYPE 			*p_control,
     	
 		p_control->SDCardPresent  = (SD.begin(SD_PIN));
 	  p_control->LogBufferLen = 0;
+	  sprintf(p_control->LogBuffer,'\0');
 	  if( p_control->SDCardPresent==TRUE )
 	  {
     	sprintf( buffer, " > SD Card Detected\n");
@@ -92,6 +93,13 @@ void Common_Init ( CONTROL_TYPE 			*p_control,
     	{
     		sprintf( buffer, " > Open Successful\n");
     		LOG_PORT.print(buffer);
+	    	p_control->LogFile_fh.close();
+    	}
+    	else
+    	{
+    		sprintf( buffer, " > Open Failed, Disabline SD Logging\n");
+    		LOG_PORT.print(buffer);
+    		p_control->SDCardPresent = FALSE;
     	}
 		}
 		else

@@ -172,93 +172,93 @@
 //    #define LOG_PRINT(...) { char _buffer[100];sprintf(_buffer,__VA_ARGS__);LOG_PORT.print(_buffer); }
     #define LOG_PRINTLN(...) { char _buffer[100];sprintf(_buffer, __VA_ARGS__);LOG_PORT.println(_buffer);}
     
-		#define LOG_PRINT(...) { \
-    	char _buffer[100]; \
-    	char _buffer2[100]; \
-      sprintf(_buffer2,__VA_ARGS__); \
-      LOG_PORT.print(_buffer); \
+    #define LOG_PRINT(...) { \
+      char _buffer_dat[100]; \
+      char _buffer_db[100]; \
+      sprintf(_buffer_dat,__VA_ARGS__); \
+      LOG_PORT.print(_buffer_dat); \
       if(p_control->SDCardPresent==TRUE) \
       { \
-	      sprintf(_buffer," > SD Detected"); \
-	      LOG_PORT.print(_buffer); \
-      	p_control->LogBufferLen += strlen(_buffer2); \
-      	sprintf(p_control->LogBuffer,"%s%s",p_control->LogBuffer,_buffer2); \
-      	if(p_control->LogBufferLen>512) \
-      	{ \
-		      sprintf(_buffer," > Buffer len above thresh"); \
-		      LOG_PORT.print(_buffer); \
-      		if(p_control->LogFile_fh!=NULL) \
-	      	{ \
-			      sprintf(_buffer," > Valid fh"); \
-			      LOG_PORT.print(_buffer); \
-	      		if(p_control->LogFile_fh.size()>SD_MAX_FILE_SIZE) \
-	        	{ \
-				      sprintf(_buffer," > Getting new name"); \
-				      LOG_PORT.print(_buffer); \
-	        		p_control->LogFile_fh.close(); \
-	          	GetNextLogFileName(p_control); \
-	          	p_control->LogFile_fh=SD.open( p_control->LogFileName, FILE_WRITE ); \
-	        	} \
-		      	if(p_control->LogFile_fh==NULL) \
-		      	{ \
-		      		sprintf(_buffer,"ERROR : Can't open file %s ... Disabling SD logging",p_control->LogFileName); \
-					    LOG_PORT.print(_buffer); \
-			      	p_control->SDCardPresent = FALSE; \
-			      } \
-			      else \
-			      { \
-				      sprintf(_buffer," > Logging to SD"); \
-				      LOG_PORT.print(_buffer); \
-				      LOG_PORT.print(p_control->LogBuffer); \
-	        		p_control->LogFile_fh.print(p_control->LogBuffer); \
-	        		p_control->LogBufferLen = 0; \
-	        	} \
-	      	} \
-	      	else \
-	      	{ \
-			      sprintf(_buffer,"ERROR : Can't open file %s ... Disabling SD logging",p_control->LogFileName); \
-			      LOG_PORT.print(_buffer); \
-	      		p_control->SDCardPresent = FALSE; \
-	      	} \
-      	} \
+        p_control->LogBufferLen += strlen(_buffer_dat); \
+        sprintf(p_control->LogBuffer,"%s%s",p_control->LogBuffer,_buffer_dat); \
+        if(p_control->LogBufferLen>512) \
+        { \
+          sprintf(_buffer_db,"<Buffer len above thresh>"); \
+          LOG_PORT.print(_buffer_db); \
+          p_control->LogFile_fh=SD.open( p_control->LogFileName, FILE_WRITE ); \
+          if(p_control->LogFile_fh!=NULL) \
+          { \
+            sprintf(_buffer_db,"<Valid fh>"); \
+            LOG_PORT.print(_buffer_db); \
+            if(p_control->LogFile_fh.size()>SD_MAX_FILE_SIZE) \
+            { \
+              sprintf(_buffer_db,"<File reached max size, closing %s ... Getting new file name>",p_control->LogFileName); \
+              LOG_PORT.print(_buffer_db); \
+              p_control->LogFile_fh.close(); \
+              GetNextLogFileName(p_control); \
+              p_control->LogFile_fh=SD.open( p_control->LogFileName, FILE_WRITE ); \
+            } \
+            if(p_control->LogFile_fh==NULL) \
+            { \
+              sprintf(_buffer_db,"<ERROR: Can't open file %s ... Disabling SD logging>",p_control->LogFileName); \
+              LOG_PORT.print(_buffer_db); \
+              p_control->SDCardPresent = FALSE; \
+            } \
+            else \
+            { \
+              sprintf(_buffer_db,"<Logging to SD file %s>\n  >> Data being logged to SD : \n",p_control->LogFileName); \
+              LOG_PORT.print(_buffer_db); \
+              LOG_PORT.print(p_control->LogBuffer); \
+              p_control->LogFile_fh.print(p_control->LogBuffer); \
+              p_control->LogFile_fh.flush(); \
+              p_control->LogFile_fh.close(); \
+              sprintf(p_control->LogBuffer,'\0'); \
+              p_control->LogBufferLen = 0; \
+            } \
+          } \
+          else \
+          { \
+            sprintf(_buffer_db,"<ERROR: Can't open file %s ... Disabling SD logging>",p_control->LogFileName); \
+            LOG_PORT.print(_buffer_db); \
+            p_control->SDCardPresent = FALSE; \
+          } \
+        } \
       } \
-			sprintf(_buffer," > Done"); \
-			LOG_PORT.print(_buffer); \
     }
-//	      if(p_control->LogFile_fh!=NULL) \
-//	      { \
-//	      	if(p_control->LogFile_fh.size()>SD_MAX_FILE_SIZE) \
-//	        { \
-//	        	p_control->LogFile_fh.close(); \
-//	          GetNextLogFileName(p_control); \
-//	          p_control->LogFile_fh=SD.open( p_control->LogFileName, FILE_WRITE ); \
-//	        } \
-//	        SD_FH_VAR.print(_buffer); \
-//	        SD_FH_VAR.close(); \
-//	        p_control->LogBufferLen = 0; \
-//	      } \
+//        if(p_control->LogFile_fh!=NULL) \
+//        { \
+//          if(p_control->LogFile_fh.size()>SD_MAX_FILE_SIZE) \
+//          { \
+//            p_control->LogFile_fh.close(); \
+//            GetNextLogFileName(p_control); \
+//            p_control->LogFile_fh=SD.open( p_control->LogFileName, FILE_WRITE ); \
+//          } \
+//          SD_FH_VAR.print(_buffer); \
+//          SD_FH_VAR.close(); \
+//          p_control->LogBufferLen = 0; \
+//        } \
 //      } \
     
-//		#define LOG_PRINTLN(...) { \
-//    	char _buffer[100]; \
-//    	char _buffern[100]; \
+//    #define LOG_PRINTLN(...) { \
+//      char _buffer[100]; \
+//      char _buffern[100]; \
 //      sprintf(_buffer,__VA_ARGS__); \
 //      sprintf(_buffer,"%s\n",_buffer); \
 //      LOG_PORT.print(_buffer); \
 //      SD_FH_VAR=SD.open( SD_FN_VAR, FILE_WRITE ); \
 //      if(SD_FH_VAR!=NULL) \
 //      { \
-//      	if(SD_FH_VAR.size()>SD_MAX_FILE_SIZE) \
+//        if(SD_FH_VAR.size()>SD_MAX_FILE_SIZE) \
 //        { \
-//      		sprintf(_buffern," <Closing Log File:%s>\n",p_control->LogFileName); \
-//        	LOG_PORT.print(_buffern); \
-//        	SD_FH_VAR.print(_buffern); \
-//        	SD_FH_VAR.close(); \
+//          sprintf(_buffern," <Closing Log File:%s>\n",p_control->LogFileName); \
+//          LOG_PORT.print(_buffern); \
+//          SD_FH_VAR.print(_buffern); \
+//          SD_FH_VAR.close(); \
 //          GetNextLogFileName(p_control); \
 //          SD_FH_VAR=SD.open( p_control->LogFileName, FILE_WRITE ); \
-//      		sprintf(_buffern," <Opening Log File:%s>\n",p_control->LogFileName); \
-//        	LOG_PORT.print(_buffern); \
-//        	SD_FH_VAR.print(_buffern); \
+//          sprintf(_buffern," <Opening Log File:%s>\n",p_control->LogFileName); \
+//          LOG_PORT.print(_buffern); \
+//          SD_FH_VAR.print(_buffern); \
 //        } \
 //        SD_FH_VAR.print(_buffer); \
 //        SD_FH_VAR.close(); \
