@@ -1,11 +1,11 @@
 
 /*******************************************************************
 ** FILE:
-**   	GaPA_Config.h
+**    GaPA_Config.h
 ** DESCRIPTION:
-** 		Header for the Gait Phase Angle estimator (GaPA)
-** 		This file should contain only definitions specific to the
-**		GaPA algorithms
+**    Header for the Gait Phase Angle estimator (GaPA)
+**    This file should contain only definitions specific to the
+**    GaPA algorithms
 ********************************************************************/
 #ifndef GAPA_CONFIG_H
 #define GAPA_CONFIG_H
@@ -47,57 +47,57 @@
 */
 typedef struct
 {
-	int version; /* Phase portrait version (PHI/PHV) */
+  int version; /* Phase portrait version (PHI/PHV) */
 
-	int iteration;
+  int iteration;
 
-	float phi; /* "thigh angle wrt vertical down (i.e. Pitch) */
-	float phi_max, phi_min; /* max/min pitch in previous gait */
-	float phi_max_next, phi_min_next; /* max/min pitch in this gait (for use in next cycle) */
-	float PHI; /* Time integral of the thigh angle (i.e. Integral of the Pitch) */
-	float PHI_max, PHI_min; /* max/min pitch integral in previous gait */
-	float PHI_max_next, PHI_min_next; /* max/min swing distance in this gait (for use in next cycle) */
+  float phi; /* "thigh angle wrt vertical down (i.e. Pitch) */
+  float phi_max, phi_min; /* max/min pitch in previous gait */
+  float phi_max_next, phi_min_next; /* max/min pitch in this gait (for use in next cycle) */
+  float PHI; /* Time integral of the thigh angle (i.e. Integral of the Pitch) */
+  float PHI_max, PHI_min; /* max/min pitch integral in previous gait */
+  float PHI_max_next, PHI_min_next; /* max/min swing distance in this gait (for use in next cycle) */
 
-	float gamma; /* "right shift variable" */
-	float GAMMA; /* "left shift variable" */
-	float z_phi; /* the "scale factor" */
-	float z_PHI; /* the "scale factor" */
+  float gamma; /* "right shift variable" */
+  float GAMMA; /* "left shift variable" */
+  float z_phi; /* the "scale factor" */
+  float z_PHI; /* the "scale factor" */
 
-	float PErr_phi, IErr_phi;
-	float PErr_PHI, IErr_PHI;
+  float PErr_phi, IErr_phi;
+  float PErr_PHI, IErr_PHI;
 
-	float phi_mw, PHI_mw;
-	float phin, PHIn;
+  float phi_mw, PHI_mw;
+  float phin, PHIn;
 
-	float prev_phi[3], prev_PHI[3];
+  float prev_phi[3], prev_PHI[3];
 
-	float nu;	/* The Phase Angle */
-	float nu_prev;	/* The previous Phase Angle */
-	float nu_normalized;	/* The phase angle on the region [0,1] */
-	
-	/* Boolean to mark the end of a gait cycle */
-	bool Gait_End;
-	
+  float nu; /* The Phase Angle */
+  float nu_prev;  /* The previous Phase Angle */
+  float nu_normalized;  /* The phase angle on the region [0,1] */
+  
+  /* Boolean to mark the end of a gait cycle */
+  bool Gait_End;
+  
 } GAPA_STATE_TYPE;
 
 
 typedef struct
 {
-	int phase_method;
+  int phase_method;
 
-	float Kp_PHI;
-	float Ki_PHI;
-	float Kp_phi;
-	float Ki_phi;
+  float Kp_PHI;
+  float Ki_PHI;
+  float Kp_phi;
+  float Ki_phi;
 
-	float PHImw_alpha;
-	float phimw_alpha;
+  float PHImw_alpha;
+  float phimw_alpha;
 
-	float default_z_phi;
-	float default_z_PHI;
+  float default_z_phi;
+  float default_z_PHI;
 
-	float min_gyro;
-	float gait_end_threshold;
+  float min_gyro;
+  float gait_end_threshold;
 } GAPA_PERMS_TYPE;
 
 /*

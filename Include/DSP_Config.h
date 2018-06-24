@@ -1,10 +1,10 @@
 
 /*******************************************************************
 ** FILE:
-**   	DSP_Config.h
+**    DSP_Config.h
 ** DESCRIPTION:
-** 		Header for common Digital Signal Processing (DSP) algorithms.
-** 		These definitions are used for all FIR and IIR applications.
+**    Header for common Digital Signal Processing (DSP) algorithms.
+**    These definitions are used for all FIR and IIR applications.
 ********************************************************************/
 #ifndef DSP_CONFIG_H
 #define DSP_CONFIG_H
@@ -28,7 +28,7 @@
 ** FIR Filter coeffs
 ** All FIR filters have a cutoff of 0.1*nyq
 ** Equation:
-**	 y[n] = b[0]*x[n] + b[1]*x[n-1] + ... + b[N]*x[n-N]
+**   y[n] = b[0]*x[n] + b[1]*x[n-1] + ... + b[N]*x[n-N]
 */
 #define FIR_LPF_9 {0.014408,0.043863,0.120212,0.202534,0.237966,0.202534,0.120212,0.043863,0.014408}
 #define FIR_LPF_5 {0.033833,0.240127,0.452079,0.240127,0.033833}
@@ -39,14 +39,14 @@
 #define FIR_HPF_3 {-0.008593,0.982814,-0.008593}
 
 #if NTAPS==3
-	#define FIR_LPF FIR_LPF_3
-	#define FIR_HPF FIR_HPF_3
+  #define FIR_LPF FIR_LPF_3
+  #define FIR_HPF FIR_HPF_3
 #elif NTAPS==5
-	#define FIR_LPF FIR_LPF_5
-	#define FIR_HPF FIR_HPF_5
+  #define FIR_LPF FIR_LPF_5
+  #define FIR_HPF FIR_HPF_5
 #elif NTAPS==9
-	#define FIR_LPF FIR_LPF_9
-	#define FIR_HPF FIR_HPF_9
+  #define FIR_LPF FIR_LPF_9
+  #define FIR_HPF FIR_HPF_9
 #endif
 
 
@@ -55,7 +55,7 @@
 ** All IIR Filters are Butterworth by design
 ** with a cutoff of 0.1
 ** Equation:
-**	 y[n] = (1/a[0]) * ( b[0]*x[n] + ... + b[P]*x[n-P] - a[1]*y[n-1] - ... - a[Q]*y[n-Q] )
+**   y[n] = (1/a[0]) * ( b[0]*x[n] + ... + b[P]*x[n-P] - a[1]*y[n-1] - ... - a[Q]*y[n-Q] )
 */
 #define IIR_LPF_3a {1.000000,-1.561018,0.641352}
 #define IIR_LPF_3b {0.020083,0.040167,0.020083}
@@ -72,20 +72,20 @@
 #define IIR_HPF_9b {0.445084,-3.560674,12.462360,-24.924719,31.155899,-24.924719,12.462360,-3.560674,0.445084}
 
 #if NTAPS==3
-	#define IIR_LPF_a IIR_LPF_3a
-	#define IIR_LPF_b IIR_LPF_3b
-	#define IIR_HPF_a IIR_HPF_3a
-	#define IIR_HPF_b IIR_HPF_3b
+  #define IIR_LPF_a IIR_LPF_3a
+  #define IIR_LPF_b IIR_LPF_3b
+  #define IIR_HPF_a IIR_HPF_3a
+  #define IIR_HPF_b IIR_HPF_3b
 #elif NTAPS==5
-	#define IIR_LPF_a IIR_LPF_5a
-	#define IIR_LPF_b IIR_LPF_5b
-	#define IIR_HPF_a IIR_HPF_5a
-	#define IIR_HPF_b IIR_HPF_5b
+  #define IIR_LPF_a IIR_LPF_5a
+  #define IIR_LPF_b IIR_LPF_5b
+  #define IIR_HPF_a IIR_HPF_5a
+  #define IIR_HPF_b IIR_HPF_5b
 #elif NTAPS==9
-	#define IIR_LPF_a IIR_LPF_9a
-	#define IIR_LPF_b IIR_LPF_9b
-	#define IIR_HPF_a IIR_HPF_9a
-	#define IIR_HPF_b IIR_HPF_9b
+  #define IIR_LPF_a IIR_LPF_9a
+  #define IIR_LPF_b IIR_LPF_9b
+  #define IIR_HPF_a IIR_HPF_9a
+  #define IIR_HPF_b IIR_HPF_9b
 #endif
 
 /*******************************************************************
@@ -94,26 +94,26 @@
 
 typedef struct
 {
-	float IIR_coeffs_La[NTAPS];
-	float IIR_coeffs_Lb[NTAPS];
-	float IIR_coeffs_Ha[NTAPS];
-	float IIR_coeffs_Hb[NTAPS];
+  float IIR_coeffs_La[NTAPS];
+  float IIR_coeffs_Lb[NTAPS];
+  float IIR_coeffs_Ha[NTAPS];
+  float IIR_coeffs_Hb[NTAPS];
 
-	float FIR_coeffs_L[NTAPS];
-	float FIR_coeffs_H[NTAPS];
+  float FIR_coeffs_L[NTAPS];
+  float FIR_coeffs_H[NTAPS];
 
-	float accel_mem[3][NTAPS];
-	float gyro_mem[3][NTAPS];
+  float accel_mem[3][NTAPS];
+  float gyro_mem[3][NTAPS];
 } DSP_STATE_TYPE;
 
 
 typedef struct
 {
-	int n_taps;
+  int n_taps;
 
-	int FIR_on;
-	int	IIR_on;
-}	DSP_PRMS_TYPE;
+  int FIR_on;
+  int IIR_on;
+} DSP_PRMS_TYPE;
 
 
 #endif /* End DSP_CONFIG_H */

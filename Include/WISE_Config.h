@@ -1,11 +1,11 @@
 
 /*******************************************************************
 ** FILE:
-**   	WISE_Config.h
+**    WISE_Config.h
 ** DESCRIPTION:
-** 		Header for the Walking Speed and Incline Estimator (WISE)
-** 		This file should contain only definitions specific to the
-** 		WISE algorithms
+**    Header for the Walking Speed and Incline Estimator (WISE)
+**    This file should contain only definitions specific to the
+**    WISE algorithms
 ********************************************************************/
 #ifndef WISE_CONFIG_H
 #define WISE_CONFIG_H
@@ -41,11 +41,11 @@
 */
 typedef struct
 {
-	float vel[3];
-	float vel_total[3];
-	float drift[3];
-	long int Time;
-	float Nsamples;
+  float vel[3];
+  float vel_total[3];
+  float drift[3];
+  long int Time;
+  float Nsamples;
 } WISE_GATE_TYPE;
 
 
@@ -60,10 +60,10 @@ typedef struct
   bool toe_off;
   int minCount;
 
-	WISE_GATE_TYPE GaitStart;
-	WISE_GATE_TYPE GaitEnd;
+  WISE_GATE_TYPE GaitStart;
+  WISE_GATE_TYPE GaitEnd;
 
-	WISE_GATE_TYPE CrossingP;
+  WISE_GATE_TYPE CrossingP;
 
   float pitch_mem;
   float pitch_delta;
@@ -111,7 +111,7 @@ typedef struct
   float pe[3];
   float pave;
 
-	float Time;
+  float Time;
   float Nsamples;
   float Ncycles;
 } WISE_STATE_TYPE;
@@ -119,14 +119,14 @@ typedef struct
 
 typedef struct
 {
-	float gain_ad;
-	float gain_ap;
-	float gain_vd;
-	float gain_vp;
+  float gain_ad;
+  float gain_ap;
+  float gain_vd;
+  float gain_vp;
 
-	float correction;
-	float mini_count;
-}	WISE_PRMS_TYPE;
+  float correction;
+  float mini_count;
+} WISE_PRMS_TYPE;
 
 
 #endif /* End WISE_CONFIG_H */

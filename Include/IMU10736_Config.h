@@ -1,10 +1,10 @@
 
 /*******************************************************************
 ** FILE:
-**   	IMU10736_Config.h
+**    IMU10736_Config.h
 ** DESCRIPTION:
-** 		This file contains all header information specific to the
-** 		10736 platform
+**    This file contains all header information specific to the
+**    10736 platform
 ********************************************************************/
 #ifndef IMU10736_CONFIG_H
 #define IMU10736_CONFIG_H
@@ -129,17 +129,17 @@
 #define UART_BLINK_RATE 1000
 
 #if EXE_MODE==0 /* IMU Mode */
-	#define LOG_PORT if(DEBUG)Serial
-	//#define LOG_PORT if(DEBUG)SERIAL_PORstdoutT_USBVIRTUAL
-	#define COMM_PORT Serial
+  #define LOG_PORT if(DEBUG)Serial
+  //#define LOG_PORT if(DEBUG)SERIAL_PORstdoutT_USBVIRTUAL
+  #define COMM_PORT Serial
 
-	#define LOG_PRINTLN LOG_PORT.println
-	#define LOG_PRINT LOG_PORT.print
+  #define LOG_PRINTLN LOG_PORT.println
+  #define LOG_PRINT LOG_PORT.print
 
-	#define COMM_PRINT COMM_PORT.print
-	#define COMM_WRITE COMM_PORT.write
-	#define COMM_AVAILABLE COMM_PORT.available()
-	#define COMM_READ COMM_PORT.read()
+  #define COMM_PRINT COMM_PORT.print
+  #define COMM_WRITE COMM_PORT.write
+  #define COMM_AVAILABLE COMM_PORT.available()
+  #define COMM_READ COMM_PORT.read()
 #else /* Emulator Mode */
 
 #endif

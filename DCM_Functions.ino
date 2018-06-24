@@ -1,13 +1,13 @@
 
 /*******************************************************************
 ** FILE:
-**   	DCM_Functions
+**    DCM_Functions
 ** DESCRIPTION:
-**		The Directional Cosine Matrix filtering algorithm.
-** 		This file contains the DCM filter functions
-** 		These functions take the accel/magn/gyro data
-** 		and (via the DCM filter) output filtered
-** 		Euler angles.
+**    The Directional Cosine Matrix filtering algorithm.
+**    This file contains the DCM filter functions
+**    These functions take the accel/magn/gyro data
+**    and (via the DCM filter) output filtered
+**    Euler angles.
 ********************************************************************/
 
 
@@ -16,14 +16,14 @@
 ********************************************************************/
 
 #ifndef COMMON_CONFIG_H
-	#include "../Include/Common_Config.h"
+  #include "../Include/Common_Config.h"
 #endif
 #if EXE_MODE==1 /* Emulator Mode */
-	/* In emulation mode, "Emulator_Protos" is needed to
-	** use functions in other files.
-	** NOTE: This header should contain the function
-	** 			 prototypes for all execution functions */
-	#include "../Include/Emulator_Protos.h"
+  /* In emulation mode, "Emulator_Protos" is needed to
+  ** use functions in other files.
+  ** NOTE: This header should contain the function
+  **       prototypes for all execution functions */
+  #include "../Include/Emulator_Protos.h"
 #endif  /* End Emulator Mode */
 
 /*******************************************************************
@@ -34,50 +34,50 @@
 /*************************************************
 ** FUNCTION: DCM_Init
 ** VARIABLES:
-**		[IO]	CONTROL_TYPE			*p_control
-**		[IO]	DCM_STATE_TYPE		*p_dcm_state
-**		[IO]	SENSOR_STATE_TYPE	*p_sensor_state
+**    [IO]  CONTROL_TYPE      *p_control
+**    [IO]  DCM_STATE_TYPE    *p_dcm_state
+**    [IO]  SENSOR_STATE_TYPE *p_sensor_state
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION:
-** 		Initialize DCM variables
+**    Initialize DCM variables
 */
-void DCM_Init( CONTROL_TYPE				*p_control,
-							 DCM_STATE_TYPE 		*p_dcm_state,
-							 SENSOR_STATE_TYPE	*p_sensor_state )
+void DCM_Init( CONTROL_TYPE       *p_control,
+               DCM_STATE_TYPE     *p_dcm_state,
+               SENSOR_STATE_TYPE  *p_sensor_state )
 {
   int i;
 
-  LOG_PRINTLN("> Initializing DCM");
+  UART_LOG( "> Initializing DCM" );
 
-	/*
-	** Initialize DCM control parameters
-	*/
+  /*
+  ** Initialize DCM control parameters
+  */
 
-	p_control->dcm_prms.Kp_RollPitch 			= Kp_ROLLPITCH;
-	p_control->dcm_prms.Ki_RollPitch 			= Ki_ROLLPITCH;
-	p_control->dcm_prms.Kp_Yaw       			= Kp_YAW;
-	p_control->dcm_prms.Ki_Yaw       			= Ki_YAW;
-	p_control->dcm_prms.PitchOrientation  = PITCH_O;
-	p_control->dcm_prms.PitchRotationConv = PITCH_ROT_CONV;
-	p_control->dcm_prms.RollOrientation   = ROLL_O;
-	p_control->dcm_prms.RollRotationConv  = ROLL_ROT_CONV;
-	p_control->dcm_prms.RollRotationRef   = ROLL_ZREF;
+  p_control->dcm_prms.Kp_RollPitch      = Kp_ROLLPITCH;
+  p_control->dcm_prms.Ki_RollPitch      = Ki_ROLLPITCH;
+  p_control->dcm_prms.Kp_Yaw            = Kp_YAW;
+  p_control->dcm_prms.Ki_Yaw            = Ki_YAW;
+  p_control->dcm_prms.PitchOrientation  = PITCH_O;
+  p_control->dcm_prms.PitchRotationConv = PITCH_ROT_CONV;
+  p_control->dcm_prms.RollOrientation   = ROLL_O;
+  p_control->dcm_prms.RollRotationConv  = ROLL_ROT_CONV;
+  p_control->dcm_prms.RollRotationRef   = ROLL_ZREF;
 
-  LOG_PRINTLN("Kp_RollPitch : %f",p_control->dcm_prms.Kp_RollPitch);
-  LOG_PRINTLN("Ki_RollPitch : %f",p_control->dcm_prms.Ki_RollPitch);
-  LOG_PRINTLN("Kp_Yaw : %f",p_control->dcm_prms.Kp_Yaw);
-  LOG_PRINTLN("Ki_Yaw : %f",p_control->dcm_prms.Ki_Yaw);
-  LOG_PRINTLN("PitchOrientation : %i",p_control->dcm_prms.PitchOrientation);
-  LOG_PRINTLN("PitchRotationConv : %i",p_control->dcm_prms.PitchRotationConv);
-  LOG_PRINTLN("RollOrientation : %i",p_control->dcm_prms.RollOrientation);
-  LOG_PRINTLN("RollRotationConv : %i",p_control->dcm_prms.RollRotationConv);
-  LOG_PRINTLN("RollRotationRef : %i\n",p_control->dcm_prms.RollRotationRef);
+  UART_LOG( "Kp_RollPitch : %f",      p_control->dcm_prms.Kp_RollPitch );
+  UART_LOG( "Ki_RollPitch : %f",      p_control->dcm_prms.Ki_RollPitch );
+  UART_LOG( "Kp_Yaw : %f",            p_control->dcm_prms.Kp_Yaw );
+  UART_LOG( "Ki_Yaw : %f",            p_control->dcm_prms.Ki_Yaw );
+  UART_LOG( "PitchOrientation : %i",  p_control->dcm_prms.PitchOrientation );
+  UART_LOG( "PitchRotationConv : %i", p_control->dcm_prms.PitchRotationConv );
+  UART_LOG( "RollOrientation : %i",   p_control->dcm_prms.RollOrientation );
+  UART_LOG( "RollRotationConv : %i",  p_control->dcm_prms.RollRotationConv );
+  UART_LOG( "RollRotationRef : %i",   p_control->dcm_prms.RollRotationRef );
 
 
-	/*
-	** Initialize DCM state parameters
-	*/
+  /*
+  ** Initialize DCM state parameters
+  */
 
   for(i=0;i<3;i++) p_dcm_state->Omega_I[i] = 0.0f;
   for(i=0;i<3;i++) p_dcm_state->Omega_P[i] = 0.0f;
@@ -91,22 +91,22 @@ void DCM_Init( CONTROL_TYPE				*p_control,
 ** Reset_Sensor_Fusion
 ** FUNCTION: Reset_Sensor_Fusion
 ** VARIABLES:
-**		[I ]	CONTROL_TYPE			*p_control
-**		[IO]	DCM_STATE_TYPE		*p_dcm_state
-**		[IO]	SENSOR_STATE_TYPE	*p_sensor_state
+**    [I ]  CONTROL_TYPE      *p_control
+**    [IO]  DCM_STATE_TYPE    *p_dcm_state
+**    [IO]  SENSOR_STATE_TYPE *p_sensor_state
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION:
-** 		Read every sensor and record a time stamp.
-** 		Init DCM with unfiltered orientation
-** 		I.e. set initial roll/pitch from initial guess
-*       	 and initialize the DCM arrays.
+**    Read every sensor and record a time stamp.
+**    Init DCM with unfiltered orientation
+**    I.e. set initial roll/pitch from initial guess
+*          and initialize the DCM arrays.
 */
-void Reset_Sensor_Fusion( CONTROL_TYPE			*p_control,
-													DCM_STATE_TYPE		*p_dcm_state,
-													SENSOR_STATE_TYPE	*p_sensor_state )
+void Reset_Sensor_Fusion( CONTROL_TYPE      *p_control,
+                          DCM_STATE_TYPE    *p_dcm_state,
+                          SENSOR_STATE_TYPE *p_sensor_state )
 {
-	/* Initialize roll/pitch/yaw from accelerations */
+  /* Initialize roll/pitch/yaw from accelerations */
   Set_Sensor_Fusion( p_control, p_sensor_state );
 
   /* Init rotation matrix */
@@ -117,18 +117,18 @@ void Reset_Sensor_Fusion( CONTROL_TYPE			*p_control,
 /*************************************************
 ** FUNCTION: Set_Sensor_Fusion
 ** VARIABLES:
-**		[I ]	CONTROL_TYPE			*p_control
-**		[IO]	SENSOR_STATE_TYPE	*p_sensor_state
+**    [I ]  CONTROL_TYPE      *p_control
+**    [IO]  SENSOR_STATE_TYPE *p_sensor_state
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION:
-** 		Similar to Reset_Sensor_Fusion, except we do not
-** 		re-initialize the DCM arrays. This is used to
-** 		reset the roll/pitch values without touching the
-** 		DCM matrix state.
+**    Similar to Reset_Sensor_Fusion, except we do not
+**    re-initialize the DCM arrays. This is used to
+**    reset the roll/pitch values without touching the
+**    DCM matrix state.
 */
-void Set_Sensor_Fusion( CONTROL_TYPE			*p_control,
-												SENSOR_STATE_TYPE	*p_sensor_state )
+void Set_Sensor_Fusion( CONTROL_TYPE      *p_control,
+                        SENSOR_STATE_TYPE *p_sensor_state )
 {
   float temp1[3];
   float temp2[3];
@@ -144,7 +144,7 @@ void Set_Sensor_Fusion( CONTROL_TYPE			*p_control,
   Vector_Cross_Product( xAxis, temp1, temp2 );
 
   /* Normally using x-z-plane-component/y-component of compensated gravity vector
-  ** 	roll = atan2(temp2[1], sqrt(temp2[0] * temp2[0] + temp2[2] * temp2[2]));
+  **  roll = atan2(temp2[1], sqrt(temp2[0] * temp2[0] + temp2[2] * temp2[2]));
   ** Since we compensated for pitch, x-z-plane-component equals z-component: */
   p_sensor_state->roll = f_atan2(temp2[1], temp2[2]);
 
@@ -156,23 +156,23 @@ void Set_Sensor_Fusion( CONTROL_TYPE			*p_control,
 /*************************************************
 ** FUNCTION: Init_Rotation_Matrix
 ** VARIABLES:
-**		[I ]	CONTROL_TYPE			*p_control
-**		[IO]	DCM_STATE_TYPE		*p_dcm_state
-**		[I ]	SENSOR_STATE_TYPE	*p_sensor_state
+**    [I ]  CONTROL_TYPE      *p_control
+**    [IO]  DCM_STATE_TYPE    *p_dcm_state
+**    [I ]  SENSOR_STATE_TYPE *p_sensor_state
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION:
-** 		Initialize the DCM rotation matrix using
-** 		Euler angles
+**    Initialize the DCM rotation matrix using
+**    Euler angles
 */
-void Init_Rotation_Matrix( CONTROL_TYPE				*p_control,
-													 DCM_STATE_TYPE			*p_dcm_state,
-													 SENSOR_STATE_TYPE	*p_sensor_state )
+void Init_Rotation_Matrix( CONTROL_TYPE       *p_control,
+                           DCM_STATE_TYPE     *p_dcm_state,
+                           SENSOR_STATE_TYPE  *p_sensor_state )
 {
-	float	*m		= &(p_dcm_state->DCM_Matrix[0][0]);
-	float roll 	= p_sensor_state->roll;
-	float pitch = p_sensor_state->pitch;
-	float yaw 	= p_sensor_state->yaw;
+  float *m    = &(p_dcm_state->DCM_Matrix[0][0]);
+  float roll  = p_sensor_state->roll;
+  float pitch = p_sensor_state->pitch;
+  float yaw   = p_sensor_state->yaw;
 
   float c1 = cos(roll);
   float s1 = sin(roll);
@@ -200,11 +200,11 @@ void Init_Rotation_Matrix( CONTROL_TYPE				*p_control,
 /******************************************************************
 ** FUNCTION: DCM_Filter
 ** VARIABLES:
-**		[I ]	CONTROL_TYPE			*p_control
-**		[IO]	DCM_STATE_TYPE		*p_dcm_state
-**		[IO]	SENSOR_STATE_TYPE	*p_sensor_state
+**    [I ]  CONTROL_TYPE      *p_control
+**    [IO]  DCM_STATE_TYPE    *p_dcm_state
+**    [IO]  SENSOR_STATE_TYPE *p_sensor_state
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION:
 ** There are 4 parts to the DCM filter
 **   1. Matrix_Update    - Update the DCM
@@ -212,9 +212,9 @@ void Init_Rotation_Matrix( CONTROL_TYPE				*p_control,
 **   3. Drift_Correction - Correct for drift in orientation
 **   4. Get_Euler_Angles - Extract Euler angles from DCM
 */
-void DCM_Filter( CONTROL_TYPE				*p_control,
-								 DCM_STATE_TYPE			*p_dcm_state,
-								 SENSOR_STATE_TYPE	*p_sensor_state )
+void DCM_Filter( CONTROL_TYPE       *p_control,
+                 DCM_STATE_TYPE     *p_dcm_state,
+                 SENSOR_STATE_TYPE  *p_sensor_state )
 {
   int i;
 

@@ -1,12 +1,12 @@
 
 /*******************************************************************
 ** FILE:
-**   	DCM_Config.h
+**    DCM_Config.h
 ** DESCRIPTION:
-** 		Header file for the Directional Cosine Matrix (DCM) "filter"
-** 		and orientation algorithms.
-** 		This file should contain only definitions specific to the
-** 		DCM algorithms
+**    Header file for the Directional Cosine Matrix (DCM) "filter"
+**    and orientation algorithms.
+**    This file should contain only definitions specific to the
+**    DCM algorithms
 ********************************************************************/
 #ifndef DCM_CONFIG_H
 #define DCM_CONFIG_H

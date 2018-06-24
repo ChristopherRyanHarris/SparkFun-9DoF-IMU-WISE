@@ -1,10 +1,10 @@
 
 /*******************************************************************
 ** FILE:
-**   	Common_Config.h
+**    Common_Config.h
 ** DESCRIPTION:
-** 		Header containing IMU definitions which are platform agnostic.
-** 		Definitions in this file should be independent of IMU version.
+**    Header containing IMU definitions which are platform agnostic.
+**    Definitions in this file should be independent of IMU version.
 ********************************************************************/
 #ifndef COMMON_CONFIG_H
 #define COMMON_CONFIG_H
@@ -18,52 +18,55 @@
 //#define _IMU10736_ /* Using IMU10736 */
 #define _IMU9250_ /* Using IMU9250 */
 
+#define DEBUG 1 /* Print log/verbose information */
 
 #if EXE_MODE==1
-	/* Emulator mode */
-	#include <math.h>
-	#include <stdio.h>
-	#include <stdio.h>
-	#include <inttypes.h>
-	#include <stdbool.h>
-	#include <string.h>
-	#include <time.h>
-
-	#include "../Include/Calibration_Config.h"
-	#include "../Include/DSP_Config.h"
-	#include "../Include/DCM_Config.h"
-	#include "../Include/GaPA_Config.h"
-	#include "../Include/WISE_Config.h"
-	#include "../Include/Communication_Config.h"
-	#include "../Include/Math.h"
+  /* Emulator mode */
+  #include <math.h>
+  #include <stdio.h>
+  #include <stdio.h>
+  #include <inttypes.h>
+  #include <stdbool.h>
+  #include <string.h>
+  #include <time.h>
+  
+  #include "../Include/Math.h"
+  #include "../Include/Calibration_Config.h"
+  #include "../Include/DSP_Config.h"
+  #include "../Include/DCM_Config.h"
+  #include "../Include/GaPA_Config.h"
+  #include "../Include/WISE_Config.h"
+  #include "../Include/Communication_Config.h"
+  #include "../Include/Log_Config.h"
 
-	#include "../Include/Emulator_Config.h"
+  #include "../Include/Emulator_Config.h"
 
-	#ifdef _IMU10736_
-		#include "../Include/IMU10736_Config.h"
-	#endif
-	#ifdef _IMU9250_
-		#include "../Include/IMU9250_Config.h"
-	#endif
+  #ifdef _IMU10736_
+    #include "../Include/IMU10736_Config.h"
+  #endif
+  #ifdef _IMU9250_
+    #include "../Include/IMU9250_Config.h"
+  #endif
 
 #else
   #include "./Calibration_Config.h"
-	#include "./DSP_Config.h"
-	#include "./DCM_Config.h"
-	#include "./GaPA_Config.h"
-	#include "./WISE_Config.h"
-	#include "./Communication_Config.h"
-	#include "./Math.h"
+  #include "./DSP_Config.h"
+  #include "./DCM_Config.h"
+  #include "./GaPA_Config.h"
+  #include "./WISE_Config.h"
+  #include "./Communication_Config.h"
+  #include "./Math.h"
+  #include "./Log_Config.h"
 
-	#ifdef _IMU10736_
-		#include "./IMU10736_Config.h"
-	#endif
-	#ifdef _IMU9250_
+  #ifdef _IMU10736_
+    #include "./IMU10736_Config.h"
+  #endif
+  #ifdef _IMU9250_
     #include <SparkFunMPU9250-DMP.h>
     //#include "./SparkFunMPU9250-DMP.h"
     //#include <Time.h>
-		#include "./IMU9250_Config.h"
-	#endif
+    #include "./IMU9250_Config.h"
+  #endif
 #endif
 
 
@@ -73,8 +76,6 @@
 ** These are defaults,
 ** Future releases are intended to have the ability to
 ** hot switch these. */
-
-#define DEBUG 1 /* Print log/verbose information */
 
 /* I/O params */
 #define OUTPUT_MODE 1
@@ -109,7 +110,7 @@
 ** variables */
 typedef struct
 {
-	
+  
   float yaw;
   float pitch;
   float roll;
@@ -123,8 +124,8 @@ typedef struct
   float gyro[3];
   float mag[3]; /* not used */
 
-	/* Stats are computed from
-	** magnitudes */
+  /* Stats are computed from
+  ** magnitudes */
   float gyro_Ave;
   float gyro_mAve;
   float gyro_M2;
@@ -147,15 +148,15 @@ typedef struct
 ** Sensor specific parameters */
 typedef struct
 {
-	int gravity;
+  int gravity;
 
-	int accel_on;
-	int gyro_on;
-	int magn_on;
+  int accel_on;
+  int gyro_on;
+  int magn_on;
 
-	int sample_rate;
+  int sample_rate;
 
-}	SENSOR_PRMS_TYPE;
+} SENSOR_PRMS_TYPE;
 
 
 
@@ -167,19 +168,19 @@ typedef struct
 ** execution. */
 typedef struct
 {
-	/* Full count of number of samples */
-	unsigned long int SampleNumber;
-	bool SampleNumberOverflow;
-	
-	/* Common exe parameters */
+  /* Full count of number of samples */
+  unsigned long int SampleNumber;
+  bool SampleNumberOverflow;
+  
+  /* Common exe parameters */
   unsigned long timestamp;
   unsigned long timestamp_old;
   float G_Dt;
 
-	/* If in Emulation mode,
+  /* If in Emulation mode,
   ** include the emulation structure */
   #if EXE_MODE==1
-  	EMULATION_TYPE emu_data;
+    EMULATION_TYPE emu_data;
   #endif
 
 
@@ -191,37 +192,37 @@ typedef struct
   /* LED state globals */
   bool     LedState; /* Used to set LED state */
   uint32_t LastBlinkTime; /* Used to set LED state */
-	/* SD control */
-	bool     SDCardPresent;
-	char     LogFileName[50]; /* TO DO : Need change name buffer to define */
-	int      LogFileIdx;
-	File     LogFile_fh;
-	int      LogBufferLen;
-	char     LogBuffer[2048];
-	
-	
+  /* SD control */
+  bool     SDCardPresent;
+  char     LogFileName[50]; /* TO DO : Need change name buffer to define */
+  int      LogFileIdx;
+  File     LogFile_fh;
+  int      LogBufferLen;
+  char     LogBuffer[2048];
+  
+  
 
-	int verbose;
-	int calibration_on;
-	int DCM_on;
-	int DSP_on;
-	int GaPA_on;
-	int WISE_on;
+  int verbose;
+  int calibration_on;
+  int DCM_on;
+  int DSP_on;
+  int GaPA_on;
+  int WISE_on;
 
-	/* Sensor specific parameters */
-	SENSOR_PRMS_TYPE sensor_prms;
+  /* Sensor specific parameters */
+  SENSOR_PRMS_TYPE sensor_prms;
 
-	/* Digital Signal Processing parameters */
-	DSP_PRMS_TYPE dsp_prms;
+  /* Digital Signal Processing parameters */
+  DSP_PRMS_TYPE dsp_prms;
 
-	/* DCM parameters */
-	DCM_PRMS_TYPE	dcm_prms;
+  /* DCM parameters */
+  DCM_PRMS_TYPE dcm_prms;
 
-	/* GaPA parameters */
-	GAPA_PERMS_TYPE gapa_prms;
+  /* GaPA parameters */
+  GAPA_PERMS_TYPE gapa_prms;
 
-	/* WISE parameters */
-	WISE_PRMS_TYPE wise_prms;
+  /* WISE parameters */
+  WISE_PRMS_TYPE wise_prms;
 
   /* If calibration mode,
   ** include calibration struct */

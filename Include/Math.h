@@ -1,10 +1,10 @@
 
 /*******************************************************************
 ** FILE:
-**   	Math.h
+**    Math.h
 ** DESCRIPTION:
-** 		This header file is intended to hold common mathematical
-**		macros and commonly used constants.
+**    This header file is intended to hold common mathematical
+**    macros and commonly used constants.
 ********************************************************************/
 #ifndef MATH_H
 #define MATH_H
@@ -19,6 +19,10 @@
 #define FALSE 0
 #define TRUE 1
 
+/* Data sizes */
+#define ONE_KILOBYTE 1024       /* bYTES */
+#define ONE_MEGABYTE 1048576    /* bYTES */
+#define ONE_GIGABYTE 1073741824 /* bYTES */
 
 /* Constants */
 
@@ -35,15 +39,15 @@
 
 
 #if EXE_MODE==1 /* Emulator mode */
-	#define FCONSTRAIN(x,m,M) (fmin(fmax((x),m),M))
+  #define FCONSTRAIN(x,m,M) (fmin(fmax((x),m),M))
 #else
-	#define FCONSTRAIN constrain
+  #define FCONSTRAIN constrain
 #endif /* EXE_MODE */
 
 //#define SIGN(x) ( (0<x)-(x<0)+(x==0) )
 #define SIGN(x) ( (0<(x)) ? (-1) : (1) )
-#define FABS(x)	( ( (x)>=0) ? (x) : -(x) )
-#define ABS(x)	( ( (x)>=0) ? (x) : -(x) )
+#define FABS(x) ( ( (x)>=0) ? (x) : -(x) )
+#define ABS(x)  ( ( (x)>=0) ? (x) : -(x) )
 
 #define MAX( a, b ) ( ( (a) > (b) ) ? (a) : (b) )
 #define MIN( a, b ) ( ( (a) < (b) ) ? (a) : (b) )

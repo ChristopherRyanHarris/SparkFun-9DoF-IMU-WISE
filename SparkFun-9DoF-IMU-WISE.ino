@@ -1,13 +1,13 @@
 
 /*******************************************************************
 ** FILE: 
-**		SparkFun-9DoF-IMU-WISE
+**    SparkFun-9DoF-IMU-WISE
 ** DESCRIPTION:
-** 		This is the calling executable for the real-time
-** 		Sparkfun IMU code.
-** 		To use, this code must be embedded into a compatible IMU and the 
-** 		appropriate header files must be referenced.
-** 		See the common header file for more specific information.
+**    This is the calling executable for the real-time
+**    Sparkfun IMU code.
+**    To use, this code must be embedded into a compatible IMU and the 
+**    appropriate header files must be referenced.
+**    See the common header file for more specific information.
 ********************************************************************/
 
 
@@ -23,12 +23,12 @@
 #include <math.h>
 
 #ifdef _IMU10736_
-	#include "./Include/IMU10736_Config.h"
+  #include "./Include/IMU10736_Config.h"
 #endif
 
 #ifdef _IMU9250_
-	#include <SparkFunMPU9250-DMP.h>
-	#include "./Include/IMU9250_Config.h"
+  #include <SparkFunMPU9250-DMP.h>
+  #include "./Include/IMU9250_Config.h"
 #endif
 
 
@@ -37,7 +37,7 @@
 ********************************************************************/
 
 #ifdef _IMU9250_
-	MPU9250_DMP imu; 
+  MPU9250_DMP imu; 
 #endif
 
 /* Control Structure
@@ -62,7 +62,7 @@ CALIBRATION_TYPE  g_calibration;
 ** data feeds. This structure holds the state variables
 ** for the algorithm.
 ** NOTE: At the moment, this is a very simple FIR and IIR
-**			 filter set. Could easily be expanded. */
+**       filter set. Could easily be expanded. */
 DSP_STATE_TYPE   g_dsp;
 
 
@@ -99,32 +99,32 @@ WISE_STATE_TYPE   g_wise_state;
 /*************************************************
 ** FUNCTION: setup
 ** VARIABLES:
-**		NONE
+**    NONE
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION:
-** 		This function contains the setup functions 
-** 		including the initialization of the hardware
-** 		and the initialization of the serial ports
+**    This function contains the setup functions 
+**    including the initialization of the hardware
+**    and the initialization of the serial ports
 */
 void setup( void )
 {
-	bool ret;
-	CONTROL_TYPE *p_control = &g_control;
-	
-	/* Initialize the hardware */
+  bool ret;
+  CONTROL_TYPE *p_control = &g_control;
+  
+  /* Initialize the hardware */
   Init_Hardware( &g_control );
   
-	/* Initialize the control structure */
+  /* Initialize the control structure */
   Common_Init( &g_control, &g_sensor_state );
   
   /* Initialize the IMU sensors*/
-	ret = Init_IMU( &g_control, &g_sensor_state );
-	if ( ret==0 ) 
-	{
-  	LOG_PRINTLN("ERROR : Setup : Cant Connect to IMU");
-  	while(1){}
-	}
+  ret = Init_IMU( &g_control, &g_sensor_state );
+  if ( ret==0 ) 
+  {
+    LOG_PRINT( "ERROR : Setup : Cant Connect to IMU" );
+    while(1){}
+  }
   
   /* Set the initial roll/pitch/yaw from 
   ** initial accel/gyro */
@@ -135,19 +135,19 @@ void setup( void )
   /* Initialize Freq. Filter */
   if( g_control.DSP_on==1 ){ DSP_Filter_Init( &g_control, &g_dsp ); }
 
-	/* Initialize calibration parameters */
+  /* Initialize calibration parameters */
   if( g_control.calibration_on==1 ){ Calibration_Init( &g_control, &g_calibration ); }
 
-	/* Initialize the Directional Cosine Matrix algorithm parameters */
+  /* Initialize the Directional Cosine Matrix algorithm parameters */
   if( g_control.DCM_on==1 ){ DCM_Init( &g_control, &g_dcm_state, &g_sensor_state ); }
 
-	/* Initialize GaPA parameters */
+  /* Initialize GaPA parameters */
   if( g_control.GaPA_on==1 ){ GaPA_Init( &g_control, &g_gapa_state ); }
 
   /* Initialize Walking Incline and Speed Estimator */
   if( g_control.WISE_on==1 ){ WISE_Init( &g_control, &g_sensor_state, &g_wise_state ); }
-  	
-  LOG_PRINTLN("> IMU Setup Done");
+    
+  UART_LOG( "> IMU Setup Done" );
   
 } /* End setup */
 
@@ -155,60 +155,60 @@ void setup( void )
 /*************************************************
 ** FUNCTION: loop
 ** VARIABLES:
-**		NONE
+**    NONE
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION:
-**		In the case of IMU real-time execution, 
-**		this is the main loop for the executable.
-**		It loops while there is power.		
+**    In the case of IMU real-time execution, 
+**    this is the main loop for the executable.
+**    It loops while there is power.    
 */
 void loop( void )
 {
-	
+  
   /* Update sensor readings */
   Read_Sensors( &g_control, &g_sensor_state );
   
   /* Update the timestamp */
   Update_Time( &g_control );
   
-	/* If in calibration mode,
-	** call calibration function */
-	if( g_control.calibration_on==1 ){ Calibrate( &g_control, &g_calibration, &g_sensor_state ); }
+  /* If in calibration mode,
+  ** call calibration function */
+  if( g_control.calibration_on==1 ){ Calibrate( &g_control, &g_calibration, &g_sensor_state ); }
 
-	/* Apply Freq Filter to Input */
-	if( g_control.DSP_on==1 )
-	{
-		if( g_control.dsp_prms.IIR_on==1 ){ FIR_Filter( &g_control, &g_dsp, &g_sensor_state ); }
-		if( g_control.dsp_prms.IIR_on==1 ){ IIR_Filter( &g_control, &g_dsp, &g_sensor_state ); }
-		DSP_Shift( &g_control, &g_dsp );
-	}
+  /* Apply Freq Filter to Input */
+  if( g_control.DSP_on==1 )
+  {
+    if( g_control.dsp_prms.IIR_on==1 ){ FIR_Filter( &g_control, &g_dsp, &g_sensor_state ); }
+    if( g_control.dsp_prms.IIR_on==1 ){ IIR_Filter( &g_control, &g_dsp, &g_sensor_state ); }
+    DSP_Shift( &g_control, &g_dsp );
+  }
 
-	/* Apply the DCM Filter */
-	if( g_control.DCM_on==1 ){ DCM_Filter( &g_control, &g_dcm_state, &g_sensor_state ); }
+  /* Apply the DCM Filter */
+  if( g_control.DCM_on==1 ){ DCM_Filter( &g_control, &g_dcm_state, &g_sensor_state ); }
 
-	/* Estimate the Gait Phase Angle */
-	if( g_control.GaPA_on==1 ){ GaPA_Update( &g_control, &g_sensor_state, &g_gapa_state ); }
+  /* Estimate the Gait Phase Angle */
+  if( g_control.GaPA_on==1 ){ GaPA_Update( &g_control, &g_sensor_state, &g_gapa_state ); }
 
-	/* Estimate Walking Speed and Incline */
-	if( g_control.WISE_on==1 )
-	{
-		if( (g_sensor_state.gyro_mAve<g_control.gapa_prms.min_gyro) )
-		{
-			WISE_Update(&g_control, &g_sensor_state, &g_wise_state );
-		}
-	}
+  /* Estimate Walking Speed and Incline */
+  if( g_control.WISE_on==1 )
+  {
+    if( (g_sensor_state.gyro_mAve<g_control.gapa_prms.min_gyro) )
+    {
+      WISE_Update(&g_control, &g_sensor_state, &g_wise_state );
+    }
+  }
     
   /* Read/Respond to command */
-  if( COMM_AVAILABLE>0 )
+  if( SERIAL_AVAILABLE>0 )
   { 
-    f_RespondToInput( &g_control, &g_sensor_state, &g_calibration, COMM_AVAILABLE );  
+    f_RespondToInput( &g_control, &g_sensor_state, &g_calibration, SERIAL_AVAILABLE );  
   }
 
   /* We blink every UART_LOG_RATE millisecods */
-  if ( micros()>(g_control.LastLogTime+UART_LOG_RATE) )
+  if ( micros()>(g_control.LastLogTime+DATA_LOG_RATE) )
   {
-  	/* Log the current states to the debug port */
+    /* Log the current states to the debug port */
     Debug_LogOut( &g_control, &g_sensor_state, &g_gapa_state, &g_wise_state );
     
     g_control.LastLogTime = micros();
@@ -216,7 +216,7 @@ void loop( void )
     /* Display number of bytes available on comm port
     ** Com port is used for real-time communication with
     ** connected processor */
-    //LOG_PORT.println("> # Available on COMM_PORT: " + String(COMM_PORT.available()) );
+    //LOG_PORT.println("> # Available on SERIAL_PORT: " + String(SERIAL_PORT.available()) );
   }
 
   /* Blink LED 

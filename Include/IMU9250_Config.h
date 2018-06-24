@@ -20,10 +20,8 @@
 ** These can be changed to suit the users needs
 ******************************************************************/
 
-/* TO DO : Move this somehow */
-#define ENABLE_SD_LOGGING 1
-
-/* TO DO : Move this somehow */
+/* TO DO : Move this somehow 
+** Count the number of arguments */
 #define PP_NARG(...) \
          PP_NARG_(__VA_ARGS__,PP_RSEQ_N())
 #define PP_NARG_(...) \
@@ -183,11 +181,6 @@
 ******************************************************************/
 #define IMU_GYRO_FSR       2000 // Gyro full-scale range (250, 500, 1000, or 2000)
 
-
-/* I2C Macros I2C addresses
-******************************************************************/
-#define WIRE_SEND(b) Wire.write((byte) b)
-#define WIRE_RECEIVE() Wire.read()
 
 
 /******************************************************************

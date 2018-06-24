@@ -1,14 +1,14 @@
 
 /*******************************************************************
 ** FILE: 
-**   	IMU10736_Functions
+**    IMU10736_Functions
 ** DESCRIPTION:
-** 		This file contains some IMU 10736 (HW specific)
-** 		functions. Specifically, for initializing and
-** 		reading the sensor registeres.
-**		These functions cannot be used in emulation mode.
-**		Furhter, these functions can only be used for the IMU10736 
-**		platform.
+**    This file contains some IMU 10736 (HW specific)
+**    functions. Specifically, for initializing and
+**    reading the sensor registeres.
+**    These functions cannot be used in emulation mode.
+**    Furhter, these functions can only be used for the IMU10736 
+**    platform.
 ********************************************************************/
 
 
@@ -37,7 +37,7 @@
 ********************************************************************/
 
 #ifndef COMMON_CONFIG_H
-	#include "../Include/Common_Config.h"
+  #include "../Include/Common_Config.h"
 #endif
 
 /* Only link if using IMU10736 */
@@ -51,38 +51,38 @@
 /*************************************************
 ** FUNCTION: Init_IMU
 ** VARIABLES:
-**		[I ]	CONTROL_TYPE 			*p_control
-**		[IO]	SENSOR_STATE_TYPE *p_sensor_state
+**    [I ]  CONTROL_TYPE      *p_control
+**    [IO]  SENSOR_STATE_TYPE *p_sensor_state
 ** RETURN:
-**		BOOL	1:Successful initialization
-**					0:Failure
+**    BOOL  1:Successful initialization
+**          0:Failure
 ** DESCRIPTION: 
-** 		This function initiates I2C communicatino with
-** 		the gyro/magn/accel sensors. Further, it initializes
-** 		the sensors (setting sampling rate, data format, etc.)
+**    This function initiates I2C communicatino with
+**    the gyro/magn/accel sensors. Further, it initializes
+**    the sensors (setting sampling rate, data format, etc.)
 */
-bool Init_IMU( CONTROL_TYPE				*p_control,
-							 SENSOR_STATE_TYPE	*p_sensor_state )
+bool Init_IMU( CONTROL_TYPE       *p_control,
+               SENSOR_STATE_TYPE  *p_sensor_state )
 {
-	LOG_PRINTLN("> Initializing IMU10736");
-	
+  UART_LOG( "> Initializing IMU10736" );
+  
   /* Initialize sensors */
   delay(20);
   I2C_Init( p_control );
   
   /* Initialize Gyroscope */
   #if GYRO_ON==1
-  	Gyro_Init( p_control );
+    Gyro_Init( p_control );
   #endif
   
   /* Initialize Accelerometer */
   #if ACCEL_ON==1
-  	Accel_Init( p_control );
+    Accel_Init( p_control );
   #endif
   
   /* Initialize Magnometer */
   #if MAGN_ON==1
-  	Magn_Init( p_control );
+    Magn_Init( p_control );
   #endif
 
   return TRUE;
@@ -92,31 +92,31 @@ bool Init_IMU( CONTROL_TYPE				*p_control,
 /*************************************************
 ** FUNCTION: Read_Sensors
 ** VARIABLES:
-**		[I ]	CONTROL_TYPE 			*p_control
-**		[IO]	SENSOR_STATE_TYPE *p_sensor_state
+**    [I ]  CONTROL_TYPE      *p_control
+**    [IO]  SENSOR_STATE_TYPE *p_sensor_state
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION: 
-** 		This function calls the read functions
-** 		which read the data registers from the
-** 		sensors.
+**    This function calls the read functions
+**    which read the data registers from the
+**    sensors.
 */
-void Read_Sensors( CONTROL_TYPE				*p_control,
-								 	 SENSOR_STATE_TYPE	*p_sensor_state )
+void Read_Sensors( CONTROL_TYPE       *p_control,
+                   SENSOR_STATE_TYPE  *p_sensor_state )
 {
-	/* Read Gyroscope */
-	#if GYRO_ON==1
-		Read_Gyro( p_control, p_sensor_state );
-	#endif
-	
-	/* Read Accelerometer */
+  /* Read Gyroscope */
+  #if GYRO_ON==1
+    Read_Gyro( p_control, p_sensor_state );
+  #endif
+  
+  /* Read Accelerometer */
   #if ACCEL_ON==1
-  	Read_Accel( p_control, p_sensor_state );
+    Read_Accel( p_control, p_sensor_state );
   #endif
   
   /* Read Magnometer */
   #if MAGN_ON==1
-  	Read_Magn( p_control, p_sensor_state );
+    Read_Magn( p_control, p_sensor_state );
   #endif
 } /* End Read_Sensors */
 
@@ -124,29 +124,29 @@ void Read_Sensors( CONTROL_TYPE				*p_control,
 /*************************************************
 ** FUNCTION: I2C_Init
 ** VARIABLES:
-**		[I ]	CONTROL_TYPE 			*p_control
+**    [I ]  CONTROL_TYPE      *p_control
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION: 
-** 		This function initiates I2C communication
-** 		with the gyro/magn/accel. This board only
-** 		has the one wire port available, so here we
-** 		simply initate wire.
+**    This function initiates I2C communication
+**    with the gyro/magn/accel. This board only
+**    has the one wire port available, so here we
+**    simply initate wire.
 */
 void I2C_Init( CONTROL_TYPE *p_control )
 { 
-	Wire.begin(); 
+  Wire.begin(); 
 } /* End I2C_Init */
 
 
 /*************************************************
 ** FUNCTION: Accel_Init
 ** VARIABLES:
-**		[I ]	CONTROL_TYPE 			*p_control
+**    [I ]  CONTROL_TYPE      *p_control
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION: 
-** 		This function initializes the accelerometer
+**    This function initializes the accelerometer
 */
 void Accel_Init( CONTROL_TYPE *p_control )
 {
@@ -181,16 +181,16 @@ void Accel_Init( CONTROL_TYPE *p_control )
 /*************************************************
 ** FUNCTION: Read_Accel
 ** VARIABLES:
-**		[I ]	CONTROL_TYPE 			*p_control
-**		[IO]	SENSOR_STATE_TYPE *p_sensor_state
+**    [I ]  CONTROL_TYPE      *p_control
+**    [IO]  SENSOR_STATE_TYPE *p_sensor_state
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION: 
-** 		This function reads x/y/z data from the
-** 		accelerometer
+**    This function reads x/y/z data from the
+**    accelerometer
 */
-void Read_Accel( CONTROL_TYPE				*p_control,
-								 SENSOR_STATE_TYPE	*p_sensor_state )
+void Read_Accel( CONTROL_TYPE       *p_control,
+                 SENSOR_STATE_TYPE  *p_sensor_state )
 {
   int i = 0;
   uint8_t buff[6];
@@ -209,8 +209,8 @@ void Read_Accel( CONTROL_TYPE				*p_control,
     i++;
     if ( i>6 )
     {
-    	LOG_PRINTLN("ERROR : Reading Accelerometer : Buffer Overflow");
-    	return;
+      UART_LOG( "ERROR : Reading Accelerometer : Buffer Overflow" );
+      return;
     }
   }
   Wire.endTransmission();
@@ -226,7 +226,7 @@ void Read_Accel( CONTROL_TYPE				*p_control,
   }
   else
   {
-    Serial.println("ERROR : Reading Accelerometer : Lost Bytes");
+    UART_LOG( "ERROR : Reading Accelerometer : Lost Bytes" );
   }
 } /* End Read_Accel */
 
@@ -234,11 +234,11 @@ void Read_Accel( CONTROL_TYPE				*p_control,
 /*************************************************
 ** FUNCTION: Magn_Init
 ** VARIABLES:
-**		[I ]	CONTROL_TYPE 			*p_control
+**    [I ]  CONTROL_TYPE      *p_control
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION: 
-** 		This function initializes the magnetometer
+**    This function initializes the magnetometer
 */
 void Magn_Init( CONTROL_TYPE *p_control )
 {
@@ -267,16 +267,16 @@ void Magn_Init( CONTROL_TYPE *p_control )
 /*************************************************
 ** FUNCTION: Read_Magn
 ** VARIABLES:
-**		[I ]	CONTROL_TYPE 			*p_control
-**		[IO]	SENSOR_STATE_TYPE *p_sensor_state
+**    [I ]  CONTROL_TYPE      *p_control
+**    [IO]  SENSOR_STATE_TYPE *p_sensor_state
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION: 
-** 		This function reads x/y/z data from the
-** 		magnetometer.
+**    This function reads x/y/z data from the
+**    magnetometer.
 */
-void Read_Magn( CONTROL_TYPE 			*p_control,
-								SENSOR_STATE_TYPE *p_sensor_state )
+void Read_Magn( CONTROL_TYPE      *p_control,
+                SENSOR_STATE_TYPE *p_sensor_state )
 {
   int i = 0;
   uint8_t buff[6];
@@ -295,8 +295,8 @@ void Read_Magn( CONTROL_TYPE 			*p_control,
     i++;
     if ( i>6 )
     {
-    	LOG_PRINTLN("ERROR : Reading Magnetometer : Buffer Overflow");
-    	return;
+      UART_LOG( "ERROR : Reading Magnetometer : Buffer Overflow" );
+      return;
     }
   }
   Wire.endTransmission();
@@ -317,7 +317,7 @@ void Read_Magn( CONTROL_TYPE 			*p_control,
   }
   else
   {
-    LOG_PRINTLN("ERROR : Reading Magnetometer : Lost Bytes");
+    UART_LOG( "ERROR : Reading Magnetometer : Lost Bytes" );
   }
 } /* End Read_Magn */
 
@@ -325,11 +325,11 @@ void Read_Magn( CONTROL_TYPE 			*p_control,
 /*************************************************
 ** FUNCTION: Gyro_Init
 ** VARIABLES:
-**		[I ]	CONTROL_TYPE 			*p_control
+**    [I ]  CONTROL_TYPE      *p_control
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION: 
-** 		This function initializes the gyroscope
+**    This function initializes the gyroscope
 */
 void Gyro_Init( CONTROL_TYPE *p_control )
 {
@@ -377,16 +377,16 @@ void Gyro_Init( CONTROL_TYPE *p_control )
 /*************************************************
 ** FUNCTION: Read_Gyro
 ** VARIABLES:
-**		[I ]	CONTROL_TYPE 			*p_control 
-**		[IO]	SENSOR_STATE_TYPE *p_sensor_state
+**    [I ]  CONTROL_TYPE      *p_control 
+**    [IO]  SENSOR_STATE_TYPE *p_sensor_state
 ** RETURN:
-**		NONE
+**    NONE
 ** DESCRIPTION: 
-** 		This function reads x/y/z data from the
-** 		gyroscope.
+**    This function reads x/y/z data from the
+**    gyroscope.
 */
-void Read_Gyro( CONTROL_TYPE 			*p_control, 
-								SENSOR_STATE_TYPE *p_sensor_state )
+void Read_Gyro( CONTROL_TYPE      *p_control, 
+                SENSOR_STATE_TYPE *p_sensor_state )
 {
   int i = 0;
   uint8_t buff[7];
@@ -405,8 +405,8 @@ void Read_Gyro( CONTROL_TYPE 			*p_control,
     i++;
     if ( i>6 )
     {
-    	LOG_PRINTLN("ERROR : Reading Gyroscope : Buffer Overflow");
-    	return;
+      UART_LOG( "ERROR : Reading Gyroscope : Buffer Overflow" );
+      return;
     }
   }
   Wire.endTransmission();
@@ -414,7 +414,7 @@ void Read_Gyro( CONTROL_TYPE 			*p_control,
   /* Unpack Data */
   if ( i==6 )
   {
-		/* X axis (internal sensor -y axis) */
+    /* X axis (internal sensor -y axis) */
     p_sensor_state->gyro[0] = -1 * (int16_t)(((((uint16_t) buff[2]) << 8) | buff[3]));   
     /* Y axis (internal sensor -x axis) */
     p_sensor_state->gyro[1] = -1 * (int16_t)(((((uint16_t) buff[0]) << 8) | buff[1]));    
@@ -423,7 +423,7 @@ void Read_Gyro( CONTROL_TYPE 			*p_control,
   }
   else
   {
-    LOG_PRINTLN("ERROR : Reading Gyroscope : Lost Bytes");
+    UART_LOG( "ERROR : Reading Gyroscope : Lost Bytes" );
   }
 } /* End Read_Gyro */
 
