@@ -1,4 +1,18 @@
 
+/*******************************************************************
+** FILE:
+**    Log_Config.h
+** DESCRIPTION:
+**    The header contains all the logging functions, regardless 
+**    of platform. Note that the "communiction" functions typically
+**    refer to the binary messaging type functions.
+********************************************************************/
+
+#ifndef LOGGING_CONFIG_H
+#define LOGGING_CONFIG_H
+
+
+
 /******************************************************************
 ** Communication Parameters
 *******************************************************************/
@@ -176,6 +190,11 @@
 #define WIRE_RECEIVE() Wire.read()
 
 
+
+
+
+
+#endif /* End LOG_CONFIG_H */
 
 
 
