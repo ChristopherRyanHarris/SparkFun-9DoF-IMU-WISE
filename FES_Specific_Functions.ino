@@ -42,7 +42,7 @@ void FES_Init ( CONTROL_TYPE *p_control )
   /* Relays are Normally-Open. 
   ** Initialize low to set relay closed */
   
-  pinMode( RELAY_1_PIN, OUTPUT )
+  pinMode( RELAY_1_PIN, OUTPUT );
   digitalWrite( RELAY_1_PIN,LOW );
   
   pinMode( RELAY_1_PIN, OUTPUT );
