@@ -40,6 +40,10 @@
   MPU9250_DMP imu; 
 #endif
 
+/* FES Structure
+** This is specific to the FES test */
+FES_TEST_TYPE g_fes_state;
+
 /* Control Structure
 ** This will contain all the various settings */
 CONTROL_TYPE        g_control;
@@ -147,6 +151,20 @@ void setup( void )
   /* Initialize Walking Incline and Speed Estimator */
   if( g_control.WISE_on==1 ){ WISE_Init( &g_control, &g_sensor_state, &g_wise_state ); }
     
+  
+  /* Initialize the FES state 
+  ** Set both relays low (open) */
+  g_fes_state.relays_on 						   = FALSE;
+  g_fes_state.relay_start_micros      = 0;
+  g_fes_state.relay_start_iteration   = 0;
+  g_fes_state.foot_sensor_1_val_ave   = 0;
+  g_fes_state.foot_sensor_2_val_ave   = 0;
+  g_fes_state.foot_sensor_1_volts_ave = 0;
+  g_fes_state.foot_sensor_2_volts_ave = 0;
+	RELAY_1_SET_LOW;
+	RELAY_2_SET_LOW;
+  
+  
   UART_LOG( "> IMU Setup Done" );
   
 } /* End setup */
@@ -198,10 +216,75 @@ void loop( void )
       WISE_Update(&g_control, &g_sensor_state, &g_wise_state );
     }
   }
-    
+  
+  /* ***************** **
+  ** FES Test Specific **
+  ** ***************** */
+  /* Read foot switch values */
+  g_fes_state.foot_sensor_1_val       = FOOT_SENSOR_1_VAL;
+  g_fes_state.foot_sensor_2_val       = FOOT_SENSOR_2_VAL;
+  g_fes_state.foot_sensor_1_val_ave   = Windowed_Mean( g_fes_state.foot_sensor_1_val_ave, (float)g_fes_state.foot_sensor_1_val, g_control.SampleNumber, FOOT_SENSOR_1_VAL_ALPHA );
+  g_fes_state.foot_sensor_2_val_ave   = Windowed_Mean( g_fes_state.foot_sensor_2_val_ave, (float)g_fes_state.foot_sensor_2_val, g_control.SampleNumber, FOOT_SENSOR_2_VAL_ALPHA );
+  g_fes_state.foot_sensor_1_volts     = FOOT_SENSOR_1_VOLTS;
+  g_fes_state.foot_sensor_2_volts     = FOOT_SENSOR_2_VOLTS;
+  g_fes_state.foot_sensor_1_volts_ave = Windowed_Mean( g_fes_state.foot_sensor_1_volts_ave, g_fes_state.foot_sensor_1_volts, g_control.SampleNumber, FOOT_SENSOR_1_VOLTS_ALPHA );
+  g_fes_state.foot_sensor_2_volts_ave = Windowed_Mean( g_fes_state.foot_sensor_2_volts_ave, g_fes_state.foot_sensor_2_volts, g_control.SampleNumber, FOOT_SENSOR_2_VOLTS_ALPHA );
+  /* At given event, trigger relay */
+	if( PHASE_ANGLE_SWITCH_ON_EVENT )
+	{
+		/* Relay : On (High), update state variables */
+		if( g_fes_state.relays_on==FALSE )
+		{
+			/* Update current relay state */
+			g_fes_state.relays_on = TRUE;
+			
+			/* Set both relays on */
+			RELAY_1_SET_HIGH;
+			RELAY_2_SET_HIGH;
+			
+			/* Record relay on start time variable */
+			g_fes_state.relay_start_micros = micros();
+			/* Record relay on start iteration variable */
+			g_fes_state.relay_start_iteration = g_control.SampleNumber;
+		}
+		/* Update time up counter */
+		g_fes_state.relay_on_micros     = g_fes_state.relay_start_micros - micros();
+		/* Update iterations up counter */
+		g_fes_state.relay_on_iterations = g_fes_state.relay_start_iteration - g_control.SampleNumber;
+	}
+	else
+	{
+		/* Relay : Off (Low), reset state variables */
+		if( g_fes_state.relays_on==TRUE )
+		{
+			/* Update current relay state */
+			g_fes_state.relays_on = FALSE;
+			
+			/* Set both relays off */
+			RELAY_1_SET_LOW;
+			RELAY_2_SET_LOW;
+			
+			/* NOTE:
+			** By maxing the counter, we ensure we only 
+			** trigger the relay on at the desired moment 
+			** See the header file for more info */
+			
+			/* Reset recorded start time variable */
+			g_fes_state.relay_start_micros    = -1;
+			/* Reset recorded start iteration variable */
+			g_fes_state.relay_start_iteration = -1;
+			
+			/* Reset time up counter */
+			g_fes_state.relay_on_micros       = -1;
+			/* Reset iterations up counter */
+			g_fes_state.relay_on_iterations   = -1;
+		}
+	}
+  		
+  		
   /* Read/Respond to command */
   if( SERIAL_AVAILABLE>0 )
-  { 
+  {
     f_RespondToInput( &g_control, &g_sensor_state, &g_calibration, SERIAL_AVAILABLE );  
   }
 
