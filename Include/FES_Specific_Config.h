@@ -36,32 +36,46 @@
   #define PHASE_ANGLE_SWITCH_ON_EVENT ( ((fmod((g_gapa_state.nu_prev+PHASE_ANGLE_OFFSET),1)<PHASE_ANGLE_SWITCH_ON_VAL)&&(fmod((g_gapa_state.nu+PHASE_ANGLE_OFFSET),1)>PHASE_ANGLE_SWITCH_ON_VAL))||(g_fes_test.relay_on_micros<SWITCH_HOLD_MICROS) )
 
 #elif RELAY_SWITCH_METHOD==4
-  /* Method 4: On at foot sensors 1 and 2 raw values above threshold. Hold for N iterations */
-  #define FOOT_SENSOR_1_THRESHOLD_VAL (0.0)
-  #define FOOT_SENSOR_2_THRESHOLD_VAL (0.0)
-  #define SWITCH_HOLD_ITERATIONS (1)
-  #define PHASE_ANGLE_SWITCH_ON_EVENT ( ((g_fes_state.foot_sensor_1_val>FOOT_SENSOR_1_THRESHOLD_VAL)&&(g_fes_state.foot_sensor_2_val>FOOT_SENSOR_2_THRESHOLD_VAL))||(g_fes_test.relay_on_iterations<SWITCH_HOLD_ITERATIONS) )
-
-#elif RELAY_SWITCH_METHOD==5
-  /* Method 4: On at foot sensors 1 and 2 raw values above threshold. Hold for N micros */
-  #define FOOT_SENSOR_1_THRESHOLD_VAL (0.0)
-  #define FOOT_SENSOR_2_THRESHOLD_VAL (0.0)
-  #define SWITCH_HOLD_MICROS (1)
-  #define PHASE_ANGLE_SWITCH_ON_EVENT ( ((g_fes_state.foot_sensor_1_val>FOOT_SENSOR_1_THRESHOLD_VAL)&&(g_fes_state.foot_sensor_2_val>FOOT_SENSOR_2_THRESHOLD_VAL))||(g_fes_test.relay_on_micros<SWITCH_HOLD_MICROS) )
-
-#elif RELAY_SWITCH_METHOD==6
-  /* Method 4: On at foot sensors 1 and 2 ave values above threshold. Hold for N iterations */
-  #define FOOT_SENSOR_1_THRESHOLD_VAL (0.0)
-  #define FOOT_SENSOR_2_THRESHOLD_VAL (0.0)
+  /* Method 4: On at foot sensors 1 and 2 AVE values above threshold. Hold for N iterations */
+  #define FOOT_SENSOR_1_THRESHOLD_VAL (300.0f)
+  #define FOOT_SENSOR_2_THRESHOLD_VAL (300.0f)
   #define SWITCH_HOLD_ITERATIONS (1)
   #define PHASE_ANGLE_SWITCH_ON_EVENT ( ((g_fes_state.foot_sensor_1_val_ave>FOOT_SENSOR_1_THRESHOLD_VAL)&&(g_fes_state.foot_sensor_2_val_ave>FOOT_SENSOR_2_THRESHOLD_VAL))||(g_fes_test.relay_on_iterations<SWITCH_HOLD_ITERATIONS) )
 
-#elif RELAY_SWITCH_METHOD==7
-  /* Method 4: On at foot sensors 1 and 2 ave values above threshold. Hold for N micros */
-  #define FOOT_SENSOR_1_THRESHOLD_VAL (0.0)
-  #define FOOT_SENSOR_2_THRESHOLD_VAL (0.0)
+#elif RELAY_SWITCH_METHOD==5
+  /* Method 4: On at foot sensors 1 and 2 AVE values above threshold. Hold for N micros */
+  #define FOOT_SENSOR_1_THRESHOLD_VAL (300.0f)
+  #define FOOT_SENSOR_2_THRESHOLD_VAL (300.0f)
   #define SWITCH_HOLD_MICROS (1)
   #define PHASE_ANGLE_SWITCH_ON_EVENT ( ((g_fes_state.foot_sensor_1_val_ave>FOOT_SENSOR_1_THRESHOLD_VAL)&&(g_fes_state.foot_sensor_2_val_ave>FOOT_SENSOR_2_THRESHOLD_VAL))||(g_fes_test.relay_on_micros<SWITCH_HOLD_MICROS) )
+  
+#elif RELAY_SWITCH_METHOD==6
+  /* Method 4: On at foot sensors 1 and 2 AVE volts above threshold. Hold for N iterations */
+  #define FOOT_SENSOR_1_THRESHOLD_VOLTS (300.0f)
+  #define FOOT_SENSOR_2_THRESHOLD_VOLTS (300.0f)
+  #define SWITCH_HOLD_ITERATIONS (1)
+  #define PHASE_ANGLE_SWITCH_ON_EVENT ( ((g_fes_state.foot_sensor_1_volts_ave>FOOT_SENSOR_1_THRESHOLD_VOLTS)&&(g_fes_state.foot_sensor_2_volts_ave>FOOT_SENSOR_2_THRESHOLD_VOLTS))||(g_fes_test.relay_on_iterations<SWITCH_HOLD_ITERATIONS) )
+
+#elif RELAY_SWITCH_METHOD==7
+  /* Method 4: On at foot sensors 1 and 2 AVE volts above threshold. Hold for N micros */
+  #define FOOT_SENSOR_1_THRESHOLD_VOLTS (300.0f)
+  #define FOOT_SENSOR_2_THRESHOLD_VOLTS (300.0f)
+  #define SWITCH_HOLD_MICROS (1)
+  #define PHASE_ANGLE_SWITCH_ON_EVENT ( ((g_fes_state.foot_sensor_1_volts_ave>FOOT_SENSOR_1_THRESHOLD_VOLTS)&&(g_fes_state.foot_sensor_2_volts_ave>FOOT_SENSOR_2_THRESHOLD_VOLTS))||(g_fes_test.relay_on_micros<SWITCH_HOLD_MICROS) )
+
+#elif RELAY_SWITCH_METHOD==8
+  /* Method 4: On at foot sensors 1 and 2 AVE volts above threshold. Hold until 1 and 2 AVE volts are below threshold */
+  #define FOOT_SENSOR_1_THRESHOLD_VOLTS (300.0f)
+  #define FOOT_SENSOR_2_THRESHOLD_VOLTS (300.0f)
+  #define SWITCH_HOLD_ITERATIONS (1)
+  #define PHASE_ANGLE_SWITCH_ON_EVENT ((g_fes_state.foot_sensor_1_volts_ave>FOOT_SENSOR_1_THRESHOLD_VOLTS)&&(g_fes_state.foot_sensor_2_volts_ave>FOOT_SENSOR_2_THRESHOLD_VOLTS))
+
+#elif RELAY_SWITCH_METHOD==9
+  /* Method 4: On at foot sensors 1 and 2 AVE volts above threshold. Hold until 1 and 2 AVE volts are below threshold */
+  #define FOOT_SENSOR_1_THRESHOLD_VOLTS (300.0f)
+  #define FOOT_SENSOR_2_THRESHOLD_VOLTS (300.0f)
+  #define SWITCH_HOLD_MICROS (1)
+  #define PHASE_ANGLE_SWITCH_ON_EVENT ((g_fes_state.foot_sensor_1_volts_ave>FOOT_SENSOR_1_THRESHOLD_VOLTS)&&(g_fes_state.foot_sensor_2_volts_ave>FOOT_SENSOR_2_THRESHOLD_VOLTS))
   
 #endif
 

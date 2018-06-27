@@ -29,7 +29,7 @@
 //#define GAPA_phimw_ALPHA 0.01
 #define GAPA_phimw_ALPHA 0.006
 
-#define GAPA_MIN_GYRO (500)
+#define GAPA_MIN_GYRO (200)
 #define GAPA_GAIT_END_THRESH 1.5708
 
 #define GAPA_DEFAULT_Z_phi 0.5f
