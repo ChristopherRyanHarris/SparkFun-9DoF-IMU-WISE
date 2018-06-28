@@ -130,6 +130,9 @@ void setup( void )
     while(1){}
   }
   
+  /* Write the meta header */
+  Meta_LogOut( &g_control, &g_sensor_state, &g_gapa_state, &g_wise_state );
+  
   /* Set the initial roll/pitch/yaw from 
   ** initial accel/gyro */
   
@@ -293,6 +296,7 @@ void loop( void )
   {
     /* Log the current states to the debug port */
     Debug_LogOut( &g_control, &g_sensor_state, &g_gapa_state, &g_wise_state );
+    Data_LogOut( &g_control, &g_sensor_state, &g_gapa_state, &g_wise_state );
     
     g_control.LastLogTime = micros();
 

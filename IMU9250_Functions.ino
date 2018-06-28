@@ -68,7 +68,7 @@ bool Init_IMU( CONTROL_TYPE       *p_control,
 {
   unsigned char activate_sensors = 0;
   
-  UART_LOG( "> Initializing IMU9250" );
+  LOG_INFO( "> Initializing IMU9250" );
   
   /* Set up MPU-9250 interrupt input (active-low) */
   pinMode(MPU9250_INT_PIN, INPUT_PULLUP);

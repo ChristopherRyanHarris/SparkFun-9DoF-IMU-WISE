@@ -47,6 +47,7 @@ void DCM_Init( CONTROL_TYPE       *p_control,
                SENSOR_STATE_TYPE  *p_sensor_state )
 {
   int i;
+  char tmpBuffer[MAX_LINE_LEN];
 
   LOG_INFO( "> Initializing DCM" );
 
@@ -63,16 +64,21 @@ void DCM_Init( CONTROL_TYPE       *p_control,
   p_control->dcm_prms.RollOrientation   = ROLL_O;
   p_control->dcm_prms.RollRotationConv  = ROLL_ROT_CONV;
   p_control->dcm_prms.RollRotationRef   = ROLL_ZREF;
-
-  LOG_INFO( "Kp_RollPitch : %f",      p_control->dcm_prms.Kp_RollPitch );
-  LOG_INFO( "Ki_RollPitch : %f",      p_control->dcm_prms.Ki_RollPitch );
-  LOG_INFO( "Kp_Yaw : %f",            p_control->dcm_prms.Kp_Yaw );
-  LOG_INFO( "Ki_Yaw : %f",            p_control->dcm_prms.Ki_Yaw );
-  LOG_INFO( "PitchOrientation : %i",  p_control->dcm_prms.PitchOrientation );
-  LOG_INFO( "PitchRotationConv : %i", p_control->dcm_prms.PitchRotationConv );
-  LOG_INFO( "RollOrientation : %i",   p_control->dcm_prms.RollOrientation );
-  LOG_INFO( "RollRotationConv : %i",  p_control->dcm_prms.RollRotationConv );
-  LOG_INFO( "RollRotationRef : %i",   p_control->dcm_prms.RollRotationRef );
+  
+  FltToStr( Kp_ROLLPITCH, 8, tmpBuffer );
+  LOG_INFO( "Kp_RollPitch       : %s", tmpBuffer );
+  FltToStr( Ki_ROLLPITCH, 8, tmpBuffer );
+  LOG_INFO( "Ki_RollPitch       : %s", tmpBuffer );
+  FltToStr( Kp_YAW, 8, tmpBuffer );
+  LOG_INFO( "Kp_Yaw             : %s", tmpBuffer );
+  FltToStr( Ki_YAW, 8, tmpBuffer );
+  LOG_INFO( "Ki_Yaw             : %s", tmpBuffer );
+  
+  LOG_INFO( "PitchOrientation   : %i", PITCH_O );
+  LOG_INFO( "PitchRotationConv  : %i", PITCH_ROT_CONV );
+  LOG_INFO( "RollOrientation    : %i", ROLL_O );
+  LOG_INFO( "RollRotationConv   : %i", ROLL_ROT_CONV );
+  LOG_INFO( "RollRotationRef    : %i", ROLL_ZREF );
 
 
   /*

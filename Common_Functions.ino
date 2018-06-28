@@ -45,6 +45,8 @@
 void Common_Init ( CONTROL_TYPE       *p_control,
                    SENSOR_STATE_TYPE  *p_sensor_state)
 {
+  char tmpBuffer[MAX_LINE_LEN];
+  
   LOG_INFO( "> Initializing Common Parameters");
 
   /* Initialize sample counter */
@@ -75,6 +77,15 @@ void Common_Init ( CONTROL_TYPE       *p_control,
     {
       LOG_INFO( " > SD Logging enabled");
       
+      /* Setting Default */
+      p_control->SDCardPresent            = FALSE;
+      p_control->log_info_file.enabled    = FALSE;
+      p_control->log_info_file.type       = 0; /* type 0:txt */
+      p_control->log_info_file.LogFileIdx = 0;
+      p_control->log_data_file.enabled    = FALSE;
+      p_control->log_data_file.type       = 1; /* type 1:bin */
+      p_control->log_data_file.LogFileIdx = 0;
+      
       /* Connect to SD Card */
       p_control->SDCardPresent = (SD.begin(SD_PIN));
       
@@ -94,40 +105,36 @@ void Common_Init ( CONTROL_TYPE       *p_control,
       {
         LOG_INFO( " > SD Card Detected");
 
-        /* Open Log Info File */
-        p_control->log_info_file.type = 0; /* type 0:txt */
-        p_control->log_info_file.LogFileIdx = 0;
-        GetNextLogFileName( p_control, &p_control->log_info_file );
-        LOG_INFO( " > Using Log Info File %s", p_control->log_info_file.LogFileName);
-        p_control->log_info_file.LogFile_fh = FILE_OPEN_WRITE( p_control->log_info_file.LogFileName );
-        if( p_control->log_info_file.LogFile_fh!=NULL )
-        {
-          LOG_INFO( " > Log Info Open Successful");
-          p_control->log_info_file.enabled = TRUE;
-        }
-        else
-        {
-          LOG_INFO( " > Log Info Open Failed, Disabline SD Logging" );
-          p_control->SDCardPresent         = FALSE;
-          p_control->log_info_file.enabled = FALSE;
-        }
-        
         /* Open Log Data File */
-        p_control->log_data_file.type = 1; /* type 1:bin */
-        p_control->log_data_file.LogFileIdx = 0;
         GetNextLogFileName( p_control, &p_control->log_data_file );
-        LOG_INFO( " > Using Log Data File %s", p_control->log_data_file.LogFileName);
-        p_control->log_data_file.LogFile_fh = FILE_OPEN_WRITE( p_control->log_data_file.LogFileName );
-        if( p_control->log_data_file.LogFile_fh!=NULL )
+        LOG_INFO( " > Using Log Data File \"%s\"", p_control->log_data_file.LogFileName );
+        p_control->log_data_file.LogFile_fh = FILE_OPEN_WRITE_B( p_control->log_data_file.LogFileName );
+        if( p_control->log_data_file.LogFile_fh != NULL )
         {
-          LOG_INFO( " > Log Data Open Successful");
           p_control->log_data_file.enabled = TRUE;
+          LOG_INFO( " > Log Data Open Successful");
         }
         else
         {
           LOG_INFO( " > Log Data Open Failed, Disabling SD Logging" );
           p_control->SDCardPresent         = FALSE;
           p_control->log_data_file.enabled = FALSE;
+        }
+        
+        /* Open Log Info File */
+        GetNextLogFileName( p_control, &p_control->log_info_file );
+        LOG_INFO( " > Using Log Info File \"%s\"", p_control->log_info_file.LogFileName );
+        p_control->log_info_file.LogFile_fh = FILE_OPEN_WRITE( p_control->log_info_file.LogFileName );
+        if( p_control->log_info_file.LogFile_fh!=NULL )
+        {
+          p_control->log_info_file.enabled = TRUE;
+          LOG_INFO( " > Log Info Open Successful");
+        }
+        else
+        {
+          LOG_INFO( " > Log Info Open Failed, Disabline SD Logging" );
+          p_control->SDCardPresent         = FALSE;
+          p_control->log_info_file.enabled = FALSE;
         }
         
         /* Close both files if either failed */
@@ -159,6 +166,15 @@ void Common_Init ( CONTROL_TYPE       *p_control,
     {
       LOG_INFO( " > File Logging enabled");
       
+      /* Setting Default */
+      p_control->SDCardPresent            = FALSE;
+      p_control->log_info_file.enabled    = FALSE;
+      p_control->log_info_file.type       = 0; /* type 0:txt */
+      p_control->log_info_file.LogFileIdx = 0;
+      p_control->log_data_file.enabled    = FALSE;
+      p_control->log_data_file.type       = 1; /* type 1:bin */
+      p_control->log_data_file.LogFileIdx = 0;
+      
       /* Init Log Info */
       strcpy( p_control->log_info_file.file_prefix, LOG_INFO_FILE_PREFIX );
       strcpy( p_control->log_info_file.file_suffix, LOG_INFO_FILE_SUFFIX );
@@ -174,41 +190,38 @@ void Common_Init ( CONTROL_TYPE       *p_control,
       ** Open Files 
       */
 
-        /* Open Log Info File */
-        p_control->log_info_file.type = 0; /* type 0:txt */
-        p_control->log_info_file.LogFileIdx = 0;
-        GetNextLogFileName( p_control, &p_control->log_info_file );
-        LOG_INFO( " > Using Log Info File %s", p_control->log_info_file.LogFileName);
-        p_control->log_info_file.LogFile_fh = FILE_OPEN_WRITE( p_control->log_info_file.LogFileName );
-        if( p_control->log_info_file.LogFile_fh!=NULL )
-        {
-          LOG_INFO( " > Log Info Open Successful");
-          p_control->log_info_file.enabled = TRUE;
-        }
-        else
-        {
-          LOG_INFO( " > Log Info Open Failed, Disabline File Logging" );
-          p_control->SDCardPresent         = FALSE;
-          p_control->log_info_file.enabled = FALSE;
-        }
-        
-        /* Open Log Data File */
-        p_control->log_data_file.type = 1; /* type 1:bin */
-        p_control->log_data_file.LogFileIdx = 0;
-        GetNextLogFileName( p_control, &p_control->log_data_file );
-        LOG_INFO( " > Using Log Data File %s", p_control->log_data_file.LogFileName);
-        p_control->log_data_file.LogFile_fh = FILE_OPEN_WRITE( p_control->log_data_file.LogFileName );
-        if( p_control->log_data_file.LogFile_fh!=NULL )
-        {
-          LOG_INFO( " > Log Data Open Successful");
-          p_control->log_data_file.enabled = TRUE;
-        }
-        else
-        {
-          LOG_INFO( " > Log Data Open Failed, Disabling File Logging" );
-          p_control->log_data_file.enabled = FALSE;
-        }
+      /* Open Log Data File */
+      GetNextLogFileName( p_control, &p_control->log_data_file );
+      LOG_INFO( " > Using Log Data File \"%s\"", p_control->log_data_file.LogFileName );
+      p_control->log_data_file.LogFile_fh = FILE_OPEN_WRITE_B( p_control->log_data_file.LogFileName );
+      if( p_control->log_data_file.LogFile_fh != NULL )
+      {
+        p_control->log_data_file.enabled = TRUE;
+        LOG_INFO( " > Log Data Open Successful");
+      }
+      else
+      {
+        LOG_INFO( " > Log Data Open Failed, Disabling SD Logging" );
+        p_control->SDCardPresent         = FALSE;
+        p_control->log_data_file.enabled = FALSE;
+      }
       
+      /* Open Log Info File */
+      GetNextLogFileName( p_control, &p_control->log_info_file );
+      LOG_INFO( " > Using Log Info File \"%s\"", p_control->log_info_file.LogFileName );
+      p_control->log_info_file.LogFile_fh = FILE_OPEN_WRITE( p_control->log_info_file.LogFileName );
+      if( p_control->log_info_file.LogFile_fh!=NULL )
+      {
+        p_control->log_info_file.enabled = TRUE;
+        LOG_INFO( " > Log Info Open Successful");
+      }
+      else
+      {
+        LOG_INFO( " > Log Info Open Failed, Disabline SD Logging" );
+        p_control->SDCardPresent         = FALSE;
+        p_control->log_info_file.enabled = FALSE;
+      }
+    
       /* Close both files if either failed */
       if( (p_control->log_info_file.enabled==FALSE) ||
           (p_control->log_data_file.enabled==FALSE) )
@@ -237,6 +250,18 @@ void Common_Init ( CONTROL_TYPE       *p_control,
   p_control->sensor_prms.gyro_on     = GYRO_ON;
   p_control->sensor_prms.magn_on     = MAGN_ON;
   p_control->sensor_prms.sample_rate = TIME_SR;
+
+  LOG_INFO( "CALIBRATION_MODE : %d", CALIBRATION_MODE );
+  LOG_INFO( "DSP_on           : %d", DSP_ON );
+  LOG_INFO( "DCM_on           : %d", DCM_ON );
+  LOG_INFO( "GaPA_on          : %d", GAPA_ON );
+  LOG_INFO( "ACCEL_ON         : %d", ACCEL_ON );
+  LOG_INFO( "GYRO_ON          : %d", GYRO_ON );
+  
+  FltToStr( GRAVITY, 4, tmpBuffer );
+  LOG_INFO( "GRAVITY          : %s", tmpBuffer );
+  FltToStr( TIME_SR, 4, tmpBuffer );
+  LOG_INFO( "TIME_SR          : %s", tmpBuffer );
 
   /* Initialize stats */
   p_sensor_state->gyro_Ave  = 0.0;

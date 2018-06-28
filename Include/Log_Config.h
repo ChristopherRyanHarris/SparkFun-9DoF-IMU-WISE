@@ -19,8 +19,8 @@
 ** Logging Parameters
 *******************************************************************/
 
-#define ENABLE_SD_LOGGING 0
-#define ENABLE_C_FILE_LOGGING 1 /* EXE=1 Mode */
+#define ENABLE_SD_LOGGING 1
+#define ENABLE_C_FILE_LOGGING 0 /* EXE=1 Mode */
 
 #if( ENABLE_SD_LOGGING==1 )
   #ifndef _IMU9250_
@@ -65,10 +65,10 @@
 
 #define LOG_FILE_MAX_IDX 999  /* Max number of "log.txt" files */
 
-#define LOG_INFO_FILE_PREFIX "log_info_" /* Prefix name for log info files */
+#define LOG_INFO_FILE_PREFIX "info_" /* Prefix name for log info files */
 #define LOG_INFO_FILE_SUFFIX "txt"       /* Suffix name for log info files */
 
-#define LOG_DATA_FILE_PREFIX "log_data_" /* Prefix name for log data files */
+#define LOG_DATA_FILE_PREFIX "data_" /* Prefix name for log data files */
 #define LOG_DATA_FILE_SUFFIX "bin"       /* Suffix name for log data files */
 
 #define MAX_LOG_BUFFER_SIZE  POW_2_10 /* 1KB */
@@ -151,24 +151,24 @@ typedef struct
 #if( EXE_MODE==0 ) 
   /* 0 : IMU Mode 
   ** Writing/Reading from SD */
-  #define FILE_EXISTS_FLAG(_fn)         (SD.exists(_fn))
-  #define FILE_SIZE_BYTES(_fh)          (_fh.size())
-  #define FILE_CLOSE(_fh)               do{ if(_fh!=NULL){_fh.close();} }while(0)
-  #define FILE_OPEN_WRITE(_fn)          (SD.open(_fn,FILE_WRITE))
-  #define FILE_OPEN_WRITE_B(_fn)        (SD.open(_fn,FILE_WRITE))
-  #define FILE_FLUSH(_fh)               (_fh.flush())
-  #define FILE_PRINT_TO_FILE(_fh,_s)    (_fh.print(_s))
-  #define FILE_WRITE_TO_FILE(_b,_m,_n,_fh) (_fh.write(_b,_m*_n))
+  #define FILE_EXISTS_FLAG(_fn)            (SD.exists(_fn))
+  #define FILE_SIZE_BYTES(_fh)             (_fh.size())
+  #define FILE_CLOSE(_fh)                  do{ if(_fh!=NULL){_fh.close();} }while(0)
+  #define FILE_OPEN_WRITE(_fn)             (SD.open(_fn,FILE_WRITE))
+  #define FILE_OPEN_WRITE_B(_fn)           (SD.open(_fn,FILE_WRITE))
+  #define FILE_FLUSH(_fh)                  (_fh.flush())
+  #define FILE_PRINT_TO_FILE(_fh,_s)       (_fh.print(_s))
+  #define FILE_WRITE_TO_FILE(_b,_m,_n,_fh) (_fh.write(_b,(_m*_n)))
 #else
   /* 1 : Emulation Mode 
   ** Writing/Reading from local file */
-  #define FILE_EXISTS_FLAG(_fn)         (fopen(_fn,"r")!=NULL)
-  #define FILE_SIZE_BYTES(_fh)          ftell(_fh)
-  #define FILE_CLOSE(_fh)               do{ if(_fh!=NULL){fclose(_fh);} }while(0)
-  #define FILE_FLUSH(_fh)               (fflush(_fh))
-  #define FILE_OPEN_WRITE(_fn)          (fopen(_fn,"w"))
-  #define FILE_OPEN_WRITE_B(_fn)        (fopen(_fn,"wb"))
-  #define FILE_PRINT_TO_FILE(_fh,_s)    (fprintf(_fh,_s))
+  #define FILE_EXISTS_FLAG(_fn)            (fopen(_fn,"r")!=NULL)
+  #define FILE_SIZE_BYTES(_fh)             ftell(_fh)
+  #define FILE_CLOSE(_fh)                  do{ if(_fh!=NULL){fclose(_fh);} }while(0)
+  #define FILE_FLUSH(_fh)                  (fflush(_fh))
+  #define FILE_OPEN_WRITE(_fn)             (fopen(_fn,"w"))
+  #define FILE_OPEN_WRITE_B(_fn)           (fopen(_fn,"wb"))
+  #define FILE_PRINT_TO_FILE(_fh,_s)       (fprintf(_fh,_s))
   #define FILE_WRITE_TO_FILE(_b,_m,_n,_fh) (fwrite(_b,_m,_n,_fh))
 #endif
 
@@ -251,7 +251,7 @@ do{ \
     char _buffer_dat[MAX_LINE_LEN]; \
     char _buffer_log_pnt_db[MAX_LINE_LEN]; \
     sprintf(_buffer_log_pnt_db,__VA_ARGS__); \
-    sprintf( _buffer_dat, "[%s:%d] %s", __FUNCTION__,__LINE__, _buffer_log_pnt_db ); \
+    sprintf( _buffer_dat, "[%s:%d] %s\n", __FUNCTION__,__LINE__, _buffer_log_pnt_db ); \
     LogToFile( p_control, &p_control->log_info_file, _buffer_dat ); \
   }while(0)
 
@@ -261,7 +261,7 @@ do{ \
     char _buffer_dat[MAX_LINE_LEN]; \
     char _buffer_log_pnt_db[MAX_LINE_LEN]; \
     sprintf(_buffer_log_pnt_db,__VA_ARGS__); \
-    sprintf( _buffer_dat, "[%s:%d] %s %s", __FUNCTION__,__LINE__, LOG_INFO_FAIL_STRING, _buffer_log_pnt_db ); \
+    sprintf( _buffer_dat, "[%s:%d] %s %s\n", __FUNCTION__,__LINE__, LOG_INFO_FAIL_STRING, _buffer_log_pnt_db ); \
     LogToFile( p_control, &p_control->log_info_file, _buffer_dat ); \
   }while(0)
 
@@ -271,7 +271,7 @@ do{ \
     char _buffer_dat[MAX_LINE_LEN]; \
     char _buffer_log_pnt_db[MAX_LINE_LEN]; \
     sprintf(_buffer_log_pnt_db,__VA_ARGS__); \
-    sprintf( _buffer_dat, "[%s:%d] %s %s", __FUNCTION__,__LINE__, LOG_INFO_WARNING_STRING, _buffer_log_pnt_db ); \
+    sprintf( _buffer_dat, "[%s:%d] %s %s\n", __FUNCTION__,__LINE__, LOG_INFO_WARNING_STRING, _buffer_log_pnt_db ); \
     LogToFile( p_control, &p_control->log_info_file, _buffer_dat ); \
   }while(0)
   

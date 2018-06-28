@@ -31,6 +31,104 @@
 ** Functions *******************************************************
 ********************************************************************/
 
+/*************************************************
+** FUNCTION: Meta_LogOut
+** VARIABLES:
+**    [I ]  CONTROL_TYPE      *p_control
+**    [I ]  SENSOR_STATE_TYPE *p_sensor_state
+**    [I ]  GAPA_STATE_TYPE   *p_gapa_state
+**    [I ]  WISE_STATE_TYPE   *p_wise_state
+** RETURN:
+**    NONE
+** DESCRIPTION:
+**    This function will pack and write the meta data 
+**    Header block.
+**    
+*/
+void Meta_LogOut( CONTROL_TYPE       *p_control,
+                  SENSOR_STATE_TYPE  *p_sensor_state,
+                  GAPA_STATE_TYPE    *p_gapa_state,
+                  WISE_STATE_TYPE    *p_wise_state )
+{
+  META_PACKET_TYPE Packet;
+  
+  float platform;
+  
+  /* Get Platform */
+  #ifdef _IMU10736_
+    platform = 10736;
+  #endif
+  #ifdef _IMU9250_
+    platform = 10736;
+  #endif
+
+  Packet.version_id                     = (float)DATA_PACKET_VERSION;
+	Packet.header_length                  = (float)sizeof(META_PACKET_TYPE);
+	Packet.collection_id                  = -1.0f; /* Post - Processing */
+	Packet.collection_date                = -1.0f; /* Post - Processing */
+	Packet.platform_used                  = (float)platform;
+
+	Packet.data_quality                   = -1.0f; /* Post - Processing */;
+	Packet.collection_subject_id          = -1.0f; /* Post - Processing */;
+	Packet.imu_position                   = -1.0f; /* Post - Processing */;
+	Packet.collection_env                 = -1.0f; /* Post - Processing */;
+	Packet.multiple_speed_flag            = -1.0f; /* Post - Processing */;
+	Packet.speed                          = -1.0f; /* Post - Processing */;
+	Packet.mult_incline_flag              = -1.0f; /* Post - Processing */;
+	Packet.incline_pct                    = -1.0f; /* Post - Processing */;
+
+	Packet.time_scale                     = (float)TIME_RESOLUTION; 
+	Packet.sample_rate_flag               = -1.0f; /* Post - Processing */;
+	Packet.sample_rate_ave                = -1.0f; /* Post - Processing */;
+	Packet.sample_rate_std                = -1.0f; /* Post - Processing */;
+	Packet.number_of_samples              = -1.0f; /* Post - Processing */;
+	Packet.number_of_elements_per_sample  = 10.0f; /* Post - Processing */;
+	Packet.orientation_PO                 = (float)PITCH_O;
+	Packet.orientation_PRC                = (float)PITCH_ROT_CONV;
+	Packet.orientation_RRC                = (float)ROLL_ROT_CONV;
+	Packet.orientation_ZR                 = (float)ROLL_ZREF;
+	
+	LOG_DATA( &Packet, sizeof(META_PACKET_TYPE) );
+  
+} /* End Meta_LogOut */
+
+
+/*************************************************
+** FUNCTION: Data_LogOut
+** VARIABLES:
+**    [I ]  CONTROL_TYPE      *p_control
+**    [I ]  SENSOR_STATE_TYPE *p_sensor_state
+**    [I ]  GAPA_STATE_TYPE   *p_gapa_state
+**    [I ]  WISE_STATE_TYPE   *p_wise_state
+** RETURN:
+**    NONE
+** DESCRIPTION:
+**    This function will pack and write the specified
+**    data to the data log file (if logging to file is 
+**    enabled).
+*/
+void Data_LogOut( CONTROL_TYPE       *p_control,
+                  SENSOR_STATE_TYPE  *p_sensor_state,
+                  GAPA_STATE_TYPE    *p_gapa_state,
+                  WISE_STATE_TYPE    *p_wise_state )
+{
+  float Packet[10];
+  
+  Packet[0] = (float)p_control->timestamp;
+  Packet[1] = (float)p_sensor_state->accel[0];
+  Packet[2] = (float)p_sensor_state->accel[1];
+  Packet[3] = (float)p_sensor_state->accel[2];
+  Packet[4] = (float)p_sensor_state->gyro[0];
+  Packet[5] = (float)p_sensor_state->gyro[1];
+  Packet[6] = (float)p_sensor_state->gyro[2];
+  Packet[7] = (float)TO_DEG(p_sensor_state->yaw);
+  Packet[8] = (float)TO_DEG(p_sensor_state->pitch);
+  Packet[9] = (float)TO_DEG(p_sensor_state->roll);
+  
+  LOG_DATA( &Packet, 9*sizeof(float) );
+  
+} /* End Data_LogOut() */
+
 
 /*************************************************
 ** FUNCTION: Debug_LogOut
@@ -253,6 +351,7 @@ void FltToStr( float value,
                int   precision,
                char *StrBuffer )
 {
+  StrBuffer[0] = '\0';
   switch ( precision )
   {
     case 0:
@@ -272,6 +371,27 @@ void FltToStr( float value,
       break;
     case 5:
       sprintf(StrBuffer, "%d.%05d", (int)value, ABS((int)(value*100000)%100000) );
+      break;
+    case 6:
+      sprintf(StrBuffer, "%d.%06d", (int)value, ABS((int)(value*1000000)%1000000) );
+      break;
+    case 7:
+      sprintf(StrBuffer, "%d.%07d", (int)value, ABS((int)(value*10000000)%10000000) );
+      break;
+    case 8:
+      sprintf(StrBuffer, "%d.%08d", (int)value, ABS((int)(value*100000000)%100000000) );
+      break;
+    case 9:
+      sprintf(StrBuffer, "%d.%09d", (int)value, ABS((int)(value*1000000000)%1000000000) );
+      break;
+    case 10:
+      sprintf(StrBuffer, "%d.%010d", (int)value, ABS((int)(value*10000000000)%10000000000) );
+      break;
+    case 11:
+      sprintf(StrBuffer, "%d.%011d", (int)value, ABS((int)(value*100000000000)%100000000000) );
+      break;
+    case 12:
+      sprintf(StrBuffer, "%d.%012d", (int)value, ABS((int)(value*1000000000000)%1000000000000) );
       break;
   }
 }
@@ -296,12 +416,6 @@ void LogToFile( CONTROL_TYPE         *p_control,
                 char*                 msg  )
 {
   long int size_bytes;
-
-  
-  if( log_file->type==1 ) /* type 0:txt */
-  {
-    LOG_INFO( " HERE2 : size : %d", log_file->size );
-  }
   
   /* If logging to file is disabled,
   ** send to default out (wither uart or stdout)
@@ -323,7 +437,6 @@ void LogToFile( CONTROL_TYPE         *p_control,
   }
   else
   {
-    LOG_INFO( " HERE3 : size : %d", log_file->size );
     memcpy( &log_file->LogBuffer[log_file->LogBufferLen], msg, log_file->size );
     log_file->LogBufferLen += log_file->size;
   }
@@ -379,7 +492,8 @@ void LogToFile( CONTROL_TYPE         *p_control,
         }
         else /* type 1:bin */
         {
-          FILE_WRITE_TO_FILE( (log_file->LogBuffer), 1, log_file->LogBufferLen, log_file->LogFile_fh );
+          size_bytes = FILE_WRITE_TO_FILE( (log_file->LogBuffer), 1, log_file->LogBufferLen, log_file->LogFile_fh );
+          FILE_FLUSH( log_file->LogFile_fh );
         }
 
         log_file->LogBuffer[0] = '\0';
