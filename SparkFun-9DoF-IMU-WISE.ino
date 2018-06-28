@@ -126,7 +126,7 @@ void setup( void )
   ret = Init_IMU( &g_control, &g_sensor_state );
   if ( ret==0 ) 
   {
-    LOG_PRINT( "ERROR : Setup : Cant Connect to IMU" );
+    LOG_INFO( "ERROR : Setup : Cant Connect to IMU" );
     while(1){}
   }
   
@@ -165,7 +165,7 @@ void setup( void )
 	RELAY_2_SET_LOW;
   
   
-  UART_LOG( "> IMU Setup Done" );
+  LOG_INFO( "> IMU Setup Done" );
   
 } /* End setup */
 
@@ -288,7 +288,7 @@ void loop( void )
     f_RespondToInput( &g_control, &g_sensor_state, &g_calibration, SERIAL_AVAILABLE );  
   }
 
-  /* We blink every UART_LOG_RATE millisecods */
+  /* We blink every LOG_INFO_RATE millisecods */
   if ( micros()>(g_control.LastLogTime+DATA_LOG_RATE) )
   {
     /* Log the current states to the debug port */

@@ -62,7 +62,7 @@ void Debug_LogOut( CONTROL_TYPE       *p_control,
       strcat( LogBuffer, ", DT:" );
       FltToStr( p_control->G_Dt, 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
-      
+
       strcat( LogBuffer, ", SR:" );
       FltToStr( 1/p_control->G_Dt, 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
@@ -70,18 +70,18 @@ void Debug_LogOut( CONTROL_TYPE       *p_control,
       strcat( LogBuffer, ", R:" );
       FltToStr( TO_DEG(p_sensor_state->roll), 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
-      
+
       strcat( LogBuffer, ", P:" );
       FltToStr( TO_DEG(p_sensor_state->pitch), 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
-      
+
       strcat( LogBuffer, ", Y:" );
       FltToStr( TO_DEG(p_sensor_state->yaw), 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
-      
+
       sprintf(tmpBuffer,", A:%06d,%06d,%06d", (int)p_sensor_state->accel[0], (int)p_sensor_state->accel[1], (int)p_sensor_state->accel[2] );
       strcat( LogBuffer, tmpBuffer );
-      
+
       sprintf(tmpBuffer,", G:%07d,%07d,%07d", (int)p_sensor_state->gyro[0],  (int)p_sensor_state->gyro[1],  (int)p_sensor_state->gyro[2] );
       strcat( LogBuffer, tmpBuffer );
 
@@ -95,28 +95,28 @@ void Debug_LogOut( CONTROL_TYPE       *p_control,
 
       sprintf( tmpBuffer, ",%d,%d,%d", (int)p_sensor_state->accel[0], (int)p_sensor_state->accel[1], (int)p_sensor_state->accel[2] );
       strcat( LogBuffer, tmpBuffer );
-      
+
       sprintf( tmpBuffer,",%d,%d,%d",  (int)p_sensor_state->gyro[0],  (int)p_sensor_state->gyro[1],  (int)p_sensor_state->gyro[2] );
       strcat( LogBuffer, tmpBuffer );
 
       strcat( LogBuffer, "," );
       FltToStr( TO_DEG(p_sensor_state->roll), 3, tmpBuffer);
       strcat( LogBuffer, tmpBuffer );
-      
+
       strcat( LogBuffer, "," );
       FltToStr( TO_DEG(p_sensor_state->pitch), 3, tmpBuffer);
       strcat( LogBuffer, tmpBuffer );
-      
+
       strcat( LogBuffer, "," );
       FltToStr( TO_DEG(p_sensor_state->yaw), 3, tmpBuffer);
       strcat( LogBuffer, tmpBuffer );
       break;
-      
+
     default:
       break;
   }
-  
-  LOG_PRINT(LogBuffer);
+
+  LOG_INFO(LogBuffer);
 } /* End Debug_LogOut */
 
 
@@ -139,14 +139,14 @@ void Cal_LogOut( CONTROL_TYPE      *p_control,
 {
   char LogBuffer[MAX_LINE_LEN];
   char tmpBuffer[MAX_LINE_LEN];
-  
+
 
   sprintf( LogBuffer, "TIME: %09lu", p_control->timestamp );
 
   strcat( LogBuffer, ", DT: " );
   FltToStr( p_control->G_Dt, 4, tmpBuffer );
   strcat( LogBuffer, tmpBuffer );
-  
+
   strcat( LogBuffer, ", SR: " );
   FltToStr( 1/p_control->G_Dt, 4, tmpBuffer );
   strcat( LogBuffer, tmpBuffer );
@@ -159,78 +159,78 @@ void Cal_LogOut( CONTROL_TYPE      *p_control,
       strcat( LogBuffer, "[a1](" );
       FltToStr( p_calibration->accel_min[0], 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
-      
+
       strcat( LogBuffer, "/" );
       FltToStr( p_calibration->accel_total[0]/p_calibration->N, 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
-      
+
       strcat( LogBuffer, "/" );
       FltToStr( p_calibration->accel_max[0], 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
       strcat( LogBuffer, "), " );
 
-      
+
       strcat( LogBuffer, "[a2](" );
       FltToStr( p_calibration->accel_min[1], 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
-      
+
       strcat( LogBuffer, "/" );
       FltToStr( p_calibration->accel_total[1]/p_calibration->N, 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
-      
+
       strcat( LogBuffer, "/" );
       FltToStr( p_calibration->accel_max[1], 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
       strcat( LogBuffer, "), " );
 
-      
+
       strcat( LogBuffer, "[a3](" );
       FltToStr( p_calibration->accel_min[2], 4, tmpBuffer) ;
       strcat( LogBuffer, tmpBuffer );
-      
+
       strcat( LogBuffer, "/" );
       FltToStr( p_calibration->accel_total[2]/p_calibration->N, 4, tmpBuffer);
       strcat( LogBuffer, tmpBuffer );
-      
+
       strcat( LogBuffer, "/" );
       FltToStr( p_calibration->accel_max[2], 4, tmpBuffer );
-      strcat( LogBuffer, tmpBuffer );     
+      strcat( LogBuffer, tmpBuffer );
       strcat( LogBuffer, ")" );
       break;
-      
+
     case 1:
       strcat( LogBuffer, ", gyro (ave/current): " );
-      
+
       strcat( LogBuffer, "[g1](" );
       FltToStr( p_calibration->gyro_total[0]/p_calibration->N, 4, tmpBuffer );
-      strcat( LogBuffer, tmpBuffer );     
-      
+      strcat( LogBuffer, tmpBuffer );
+
       strcat( LogBuffer, "/" );
-      FltToStr( p_sensor_state->gyro[0], 4, tmpBuffer );  
-      strcat( LogBuffer, tmpBuffer );         
+      FltToStr( p_sensor_state->gyro[0], 4, tmpBuffer );
+      strcat( LogBuffer, tmpBuffer );
       strcat( LogBuffer, "), " );
 
       strcat( LogBuffer, "[g2](" );
       FltToStr( p_calibration->gyro_total[1]/p_calibration->N, 4, tmpBuffer);
-      strcat( LogBuffer, tmpBuffer );     
-      
+      strcat( LogBuffer, tmpBuffer );
+
       strcat( LogBuffer, "/" );
       FltToStr( p_sensor_state->gyro[1], 4, tmpBuffer);
-      strcat( LogBuffer, tmpBuffer );     
+      strcat( LogBuffer, tmpBuffer );
       strcat( LogBuffer, "), " );
-            
+
       strcat( LogBuffer, "[g3](" );
       FltToStr( p_calibration->gyro_total[2]/p_calibration->N, 4, tmpBuffer );
-      strcat( LogBuffer, tmpBuffer );     
+      strcat( LogBuffer, tmpBuffer );
 
       strcat( LogBuffer, "/" );
       FltToStr( p_sensor_state->gyro[2], 4, tmpBuffer );
-      strcat( LogBuffer, tmpBuffer );     
+      strcat( LogBuffer, tmpBuffer );
       strcat( LogBuffer, ")" );
       break;
   }
-  
-  LOG_PRINT(LogBuffer);
+
+  LOG_INFO(LogBuffer);
 } /* End Cal_LogOut */
 
 
@@ -276,6 +276,125 @@ void FltToStr( float value,
   }
 }
 
+/*************************************************
+** FUNCTION: LogToFile
+** VARIABLES:
+**    [I ]  CONTROL_TYPE         *p_control
+**    [I ]  OUTPUT_LOG_FILE_TYPE *log_file,
+**    [I ]  char*                 message
+** RETURN:
+**    void
+** DESCRIPTION:
+**    This is a helper function.
+**    It is used for logging to a file (SD or local).
+**    This function will add data to the output buffers
+**    and (when the buffer has reached the defined length)
+**    write the buffer to the appropriate output file.
+*/
+void LogToFile( CONTROL_TYPE         *p_control,
+                OUTPUT_LOG_FILE_TYPE *log_file,
+                char*                 msg  )
+{
+  long int size_bytes;
+
+  
+  if( log_file->type==1 ) /* type 0:txt */
+  {
+    LOG_INFO( " HERE2 : size : %d", log_file->size );
+  }
+  
+  /* If logging to file is disabled,
+  ** send to default out (wither uart or stdout)
+  ** Only works with txt logging */
+  if( log_file->enabled==FALSE )
+  {
+    if( log_file->type==0 ) /* type 0:txt */
+    {
+      LOG_INFO_DEFAULT( msg );
+    }
+    return;
+  }
+
+  /* Add message to output buffer */
+  if( log_file->type==0 ) /* type 0:txt */
+  {
+    log_file->LogBufferLen += strlen( msg );
+    strcat( log_file->LogBuffer, msg );
+  }
+  else
+  {
+    LOG_INFO( " HERE3 : size : %d", log_file->size );
+    memcpy( &log_file->LogBuffer[log_file->LogBufferLen], msg, log_file->size );
+    log_file->LogBufferLen += log_file->size;
+  }
+
+  /* If buffer has reached designated size ...*/
+  if( log_file->LogBufferLen > MAX_LOG_BUFFER_STORE )
+  {
+    /* If the filehandle is valid ...
+    ** NOTE : File is kept open during execution
+    **        First open is in common_init */
+    if( log_file->LogFile_fh!=NULL )
+    {
+      /* Get current file size */
+      size_bytes = FILE_SIZE_BYTES(log_file->LogFile_fh);
+
+      /* If the filesize is larger than the designated
+      ** max, close file and open next index */
+      if( size_bytes>MAX_OUTPUT_FILE_SIZE )
+      {
+        if( log_file->LogFileIdx>LOG_FILE_MAX_IDX )
+        {
+          FILE_CLOSE( log_file->LogFile_fh );
+          log_file->enabled = FALSE;
+        }
+        else
+        {
+          FILE_CLOSE( log_file->LogFile_fh );
+          GetNextLogFileName( p_control, log_file );
+
+          if( log_file->type==0 ) /* type 0:txt */
+          {
+            log_file->LogFile_fh = FILE_OPEN_WRITE( log_file->LogFileName );
+          }
+          else /* type 1:bin */
+          {
+            log_file->LogFile_fh = FILE_OPEN_WRITE_B( log_file->LogFileName );
+          }
+        }
+      }
+      if( log_file->LogFile_fh==NULL )
+      {
+        log_file->enabled        = FALSE;
+        #if( EXE_MODE==0 ) /* 0 : IMU Mode */
+          p_control->SDCardPresent = FALSE;
+        #endif
+      }
+      else
+      {
+        if( log_file->type==0 ) /* type 0:txt */
+        {
+          FILE_PRINT_TO_FILE( log_file->LogFile_fh, log_file->LogBuffer );
+          FILE_FLUSH( log_file->LogFile_fh );
+        }
+        else /* type 1:bin */
+        {
+          FILE_WRITE_TO_FILE( (log_file->LogBuffer), 1, log_file->LogBufferLen, log_file->LogFile_fh );
+        }
+
+        log_file->LogBuffer[0] = '\0';
+        log_file->LogBufferLen = 0;
+      }
+    }
+    else
+    {
+      log_file->enabled        = FALSE;
+      #if( EXE_MODE==0 ) /* 0 : IMU Mode */
+        p_control->SDCardPresent = FALSE;
+      #endif
+    } /* End if log_file->LogFile_fh!=NULL */
+  } /* End if log_file->LogBufferLen > MAX_LOG_BUFFER_STORE */
+} /* End LogToFile() */
 
 
 
@@ -291,24 +410,24 @@ void FltToStr( float value,
 **    This function creates a filename which does not
 **    exist on the card, to which we will log our data.
 */
-void GetNextLogFileName( CONTROL_TYPE *p_control )
+void GetNextLogFileName( CONTROL_TYPE          *p_control,
+                         OUTPUT_LOG_FILE_TYPE  *log_file )
 {
   int  i;
-  char buffer[50];
 
-  for( i=p_control->LogFileIdx; i<LOG_FILE_INDEX_MAX; i++ )
+  for( i=log_file->LogFileIdx; i<LOG_FILE_MAX_IDX; i++ )
   {
     /* Construct a file with PREFIX[Index].SUFFIX */
-    sprintf( p_control->LogFileName, "%s%i.%s", LOG_FILE_PREFIX, i, LOG_FILE_SUFFIX );
-    UART_LOG( " > Trying File %s", p_control->LogFileName );
-    
+    sprintf( log_file->LogFileName, "%s%i.%s", log_file->file_prefix, i, log_file->file_suffix );
+    LOG_INFO( " > Trying File %s", log_file->LogFileName );
+
     /* If the file name doesn't exist, return it */
-    if( !SD.exists(p_control->LogFileName) )
-    { 
-      UART_LOG( " > File %s Available", p_control->LogFileName );
-      p_control->LogFileIdx = i + 1;
+    //if( !SD.exists(log_file->LogFileName) )
+    if( ! FILE_EXISTS_FLAG(log_file->LogFileName) )
+    {
+      LOG_INFO( " > File %s Available", log_file->LogFileName );
+      log_file->LogFileIdx = i + 1;
       break;
     }
   }
-} /* End GetNextLogFileName() */
-
+} /* End GetNextLogF */

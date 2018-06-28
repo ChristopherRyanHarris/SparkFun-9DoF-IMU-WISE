@@ -53,7 +53,7 @@ void Init_Hardware( CONTROL_TYPE  *p_control )
   UART_PORT.begin(UART_PORT_BAUD);
   delay(2000);
 
-  UART_LOG( "> Initializing Hardware" );
+  LOG_INFO( "> Initializing Hardware" );
 
   /* Set up LED pin (active-high, default to off) */
   pinMode(HW_LED_PIN, OUTPUT);
@@ -78,7 +78,7 @@ void Init_Hardware( CONTROL_TYPE  *p_control )
 */
 void Blink_LED( CONTROL_TYPE  *p_control )
 {
-  /* We blink every UART_BLINK_RATE millisecods */
+  /* We blink every LED_BLINK_RATE millisecods */
   if ( millis() > (p_control->LastBlinkTime + LED_BLINK_RATE) )
   {
     /* Toggle LED */

@@ -42,7 +42,7 @@
 void GaPA_Init( CONTROL_TYPE      *p_control,
                 GAPA_STATE_TYPE   *p_gapa_state )
 {
-  UART_LOG( "> Initializing GaPA Parameters" );
+  LOG_INFO( "> Initializing GaPA Parameters" );
 
   /*
   ** Initialize GaPA control parameters
@@ -71,27 +71,28 @@ void GaPA_Init( CONTROL_TYPE      *p_control,
   ** NOTE: Only PHI implemented at this time */
   p_gapa_state->version      = 1;
 
-  p_gapa_state->iteration    = 0;
+  p_gapa_state->iteration     = 0;
 
-  p_gapa_state->phi_max      = 0.0f;
-  p_gapa_state->phi_min      = 0.0f;
-  p_gapa_state->PHI_max      = 0.0f;
-  p_gapa_state->PHI_min      = 0.0f;
-  p_gapa_state->phi_max_next = 0.0f;
-  p_gapa_state->phi_min_next = 0.0f;
-  p_gapa_state->PHI_max_next = 0.0f;
-  p_gapa_state->PHI_min_next = 0.0f;
-  p_gapa_state->gamma        = 0.0f;
-  p_gapa_state->GAMMA        = 0.0f;
-  p_gapa_state->z_phi        = p_control->gapa_prms.default_z_phi;
-  p_gapa_state->z_PHI        = p_control->gapa_prms.default_z_PHI;
-  p_gapa_state->phi_mw       = 0.0f;
-  p_gapa_state->PHI_mw       = 0.0f;
-  p_gapa_state->PErr_phi     = 0.0f;
-  p_gapa_state->IErr_phi     = 0.0f;
-  p_gapa_state->PErr_PHI     = 0.0f;
-  p_gapa_state->IErr_PHI     = 0.0f;
-  p_gapa_state->nu           = 0.0f;
+  p_gapa_state->phi_max       = 0.0f;
+  p_gapa_state->phi_min       = 0.0f;
+  p_gapa_state->PHI_max       = 0.0f;
+  p_gapa_state->PHI_min       = 0.0f;
+  p_gapa_state->phi_max_next  = 0.0f;
+  p_gapa_state->phi_min_next  = 0.0f;
+  p_gapa_state->PHI_max_next  = 0.0f;
+  p_gapa_state->PHI_min_next  = 0.0f;
+  p_gapa_state->gamma         = 0.0f;
+  p_gapa_state->GAMMA         = 0.0f;
+  p_gapa_state->z_phi         = p_control->gapa_prms.default_z_phi;
+  p_gapa_state->z_PHI         = p_control->gapa_prms.default_z_PHI;
+  p_gapa_state->phi_mw        = 0.0f;
+  p_gapa_state->PHI_mw        = 0.0f;
+  p_gapa_state->PErr_phi      = 0.0f;
+  p_gapa_state->IErr_phi      = 0.0f;
+  p_gapa_state->PErr_PHI      = 0.0f;
+  p_gapa_state->IErr_PHI      = 0.0f;
+  p_gapa_state->nu            = 0.0f;
+  p_gapa_state->nu_normalized = 0.5f;
 }/* End GaPA_Init */
 
 
@@ -209,7 +210,7 @@ void GaPA_Update( CONTROL_TYPE      *p_control,
   if(p_gapa_state->z_PHI==0){ p_gapa_state->z_PHI=p_control->gapa_prms.default_z_PHI; }
   p_gapa_state->PHIn = (p_gapa_state->PHI/p_gapa_state->z_PHI);
 
-  /* Normalize to 1 */
+  /* Normalize to 1 for ease of computation and visualization */
   R = sqrt( p_gapa_state->phin*p_gapa_state->phin + p_gapa_state->PHIn*p_gapa_state->PHIn );
   p_gapa_state->phin = p_gapa_state->phin/R;
   p_gapa_state->PHIn = p_gapa_state->PHIn/R;
@@ -234,7 +235,40 @@ void GaPA_Update( CONTROL_TYPE      *p_control,
 
   /* Get the phase angle */
   p_gapa_state->nu = f_atan2( leftParam, rightParam );
-
+  
+  /* Get the normalized phase angle (reported) 
+  ** Computed only if there is motion detected */
+  if( p_sensor_state->gyro_mAve>=p_control->gapa_prms.min_gyro )
+  {
+    p_gapa_state->nu_normalized = (p_gapa_state->nu+PI)/(TWOPI);
+  }
+  else
+  {
+    p_gapa_state->nu_normalized = 0.5f;
+  }
+  
+  /* Reset the normalization term at the start of each gait cycle
+  ** The normalization term(i.e. the scaling factors "z") is the maximum
+  ** absolute value from the previous iteration. I am using it to ensure the 
+  ** magnitude of both of the phase variables is the same and smoothish */
+  if( (fabs(p_gapa_state->nu-p_gapa_state->nu_prev)>p_control->gapa_prms.gait_end_threshold ) &&
+      (p_sensor_state->gyro_mAve>=p_control->gapa_prms.min_gyro) )
+  {
+    /* Update phi "z" scaling parameter */
+    p_gapa_state->z_phi = p_gapa_state->phi_max;
+    if(p_gapa_state->z_phi==0){ p_gapa_state->z_phi=p_control->gapa_prms.default_z_phi; }
+    p_gapa_state->phi_max = FABS( p_gapa_state->phi );
+    
+    /* Update PHI "z" scaling parameter */
+    p_gapa_state->z_PHI = p_gapa_state->PHI_max;
+    if(p_gapa_state->z_PHI==0){ p_gapa_state->z_PHI=p_control->gapa_prms.default_z_PHI; }
+    p_gapa_state->PHI_max = FABS( p_gapa_state->PHI );
+      
+    /* Mark the end of gain flag
+    ** This will indicate when we believe we have completed a cycle. */
+    p_gapa_state->Gait_End = TRUE;
+  }
+  
   /* No Motion detected (subject assumed stopped)
   ** Reset phase variables to prepare for motion */
   if( (p_sensor_state->gyro_mAve<p_control->gapa_prms.min_gyro) )
@@ -250,31 +284,6 @@ void GaPA_Update( CONTROL_TYPE      *p_control,
     p_gapa_state->z_PHI   = p_control->gapa_prms.default_z_PHI;
         
     p_gapa_state->nu_normalized = 0.0;
-  }
-  else
-  {
-    /* There is motion */
-    
-    /* Detect the end of gait */
-    if( (FABS(p_gapa_state->nu-p_gapa_state->nu_prev)>p_control->gapa_prms.gait_end_threshold) )
-    {
-      /* Update phi "z" scaling parameter */
-      p_gapa_state->z_phi = p_gapa_state->phi_max;
-      if(p_gapa_state->z_phi==0){ p_gapa_state->z_phi=p_control->gapa_prms.default_z_phi; }
-      p_gapa_state->phi_max = FABS( p_gapa_state->phi );
-
-      /* Update PHI "z" scaling parameter */
-      p_gapa_state->z_PHI = p_gapa_state->PHI_max;
-      if(p_gapa_state->z_PHI==0){ p_gapa_state->z_PHI=p_control->gapa_prms.default_z_PHI; }
-      p_gapa_state->PHI_max = FABS( p_gapa_state->PHI );
-
-      /* Mark the end of gain flag
-      ** This will indicate when we believe we have completed a cycle. */
-      p_gapa_state->Gait_End = TRUE;
-    }
-    
-    /* Compute normalized (reported) gait phasae angle */
-    p_gapa_state->nu_normalized = (p_gapa_state->nu+PI)/(TWOPI);
   }
 
 }/* End GaPA_Update */

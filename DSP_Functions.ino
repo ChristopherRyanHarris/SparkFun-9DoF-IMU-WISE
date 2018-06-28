@@ -57,7 +57,7 @@ void DSP_Filter_Init ( CONTROL_TYPE     *p_control,
   float FIR_coeffs_L[NTAPS]  = FIR_LPF;
   float FIR_coeffs_H[NTAPS]  = FIR_HPF;
 
-  UART_LOG( "> Initializing DSP Filter" );
+  LOG_INFO( "> Initializing DSP Filter" );
 
   /*
   ** Initialize DSP control parameters

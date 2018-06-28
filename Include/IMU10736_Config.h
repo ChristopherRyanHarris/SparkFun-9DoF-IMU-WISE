@@ -18,19 +18,6 @@
 ******************************************************************/
 
 
-///* DCM parameters
-//*******************************************************************/
-//
-///* DCM gain */
-//#define Kp_ROLLPITCH 0.3f
-////#define Kp_ROLLPITCH 0.02f
-//#define Ki_ROLLPITCH 0.00005f
-////#define Ki_ROLLPITCH 0.00002f
-//
-//#define Kp_YAW 1.2f
-//#define Ki_YAW 0.00002f
-
-
 /*
 ** Notes on orientation for the 10736 IMU
 **   Terms:
@@ -125,24 +112,9 @@
 #define COMM_PORT_BAUD 9600
 
 /* The LED can be used for external debugging */
-//#define UART_BLINK_RATE 100
-#define UART_BLINK_RATE 1000
+//#define LED_BLINK_RATE 100
+#define LED_BLINK_RATE 1000
 
-#if EXE_MODE==0 /* IMU Mode */
-  #define LOG_PORT if(DEBUG)Serial
-  //#define LOG_PORT if(DEBUG)SERIAL_PORstdoutT_USBVIRTUAL
-  #define COMM_PORT Serial
-
-  #define LOG_PRINTLN LOG_PORT.println
-  #define LOG_PRINT LOG_PORT.print
-
-  #define COMM_PRINT COMM_PORT.print
-  #define COMM_WRITE COMM_PORT.write
-  #define COMM_AVAILABLE COMM_PORT.available()
-  #define COMM_READ COMM_PORT.read()
-#else /* Emulator Mode */
-
-#endif
 
 /* Sampling resolution
 *******************************************************************/
@@ -202,17 +174,6 @@
 #define GYRO_STATUS    0x1A            /* Name:INT_STATUS                         - Access:R/W */
 #define GYRO_DATA      0x1D            /* Name:Start of data registers (6 bytes)  - Access:R   */
 #define GYRO_POWER     0x3E            /* Name:PWR_MGM                            - Access:R/W */
-
-
-/* I2C Macros I2C addresses
-******************************************************************/
-#define WIRE_SEND(b) Wire.write((byte) b)
-#define WIRE_RECEIVE() Wire.read()
-
-
-
-
-
 
 
 /******************************************************************

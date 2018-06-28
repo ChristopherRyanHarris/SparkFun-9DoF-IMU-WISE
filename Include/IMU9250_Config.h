@@ -214,14 +214,6 @@
 #define ACCEL_Y_SCALED(x) ( (x - ACCEL_Y_OFFSET - (0))*ACCEL_Y_GAIN )
 #define ACCEL_Z_SCALED(x) ( (x - ACCEL_Z_OFFSET)*ACCEL_Z_GAIN )
 
-////#define ACCEL_GAIN 0.0134
-////#define ACCEL_GAIN 0.0151
-//#define ACCEL_GAIN 0
-//#define ACCEL_X_SCALED(x) (x * ACCEL_GAIN)
-//#define ACCEL_Y_SCALED(x) (x * ACCEL_GAIN)
-//#define ACCEL_Z_SCALED(x) (x * ACCEL_GAIN)
-
-
 /* Magnetometer Calibration
 ******************************************************************/
 #define MAGN_X_MIN ((float) -600)
@@ -241,7 +233,6 @@
 ******************************************************************/
 // Gain for gyroscope (ITG-3200)
 #define GYRO_GAIN 0.06957 // Same gain on all axes
-//#define GYRO_GAIN 0.001214
 #define GYRO_AVERAGE_OFFSET_X ((float) 0.0)
 #define GYRO_AVERAGE_OFFSET_Y ((float) 0.0)
 #define GYRO_AVERAGE_OFFSET_Z ((float) 0.0)

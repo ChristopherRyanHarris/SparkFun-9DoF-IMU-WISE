@@ -48,7 +48,7 @@ void DCM_Init( CONTROL_TYPE       *p_control,
 {
   int i;
 
-  UART_LOG( "> Initializing DCM" );
+  LOG_INFO( "> Initializing DCM" );
 
   /*
   ** Initialize DCM control parameters
@@ -64,15 +64,15 @@ void DCM_Init( CONTROL_TYPE       *p_control,
   p_control->dcm_prms.RollRotationConv  = ROLL_ROT_CONV;
   p_control->dcm_prms.RollRotationRef   = ROLL_ZREF;
 
-  UART_LOG( "Kp_RollPitch : %f",      p_control->dcm_prms.Kp_RollPitch );
-  UART_LOG( "Ki_RollPitch : %f",      p_control->dcm_prms.Ki_RollPitch );
-  UART_LOG( "Kp_Yaw : %f",            p_control->dcm_prms.Kp_Yaw );
-  UART_LOG( "Ki_Yaw : %f",            p_control->dcm_prms.Ki_Yaw );
-  UART_LOG( "PitchOrientation : %i",  p_control->dcm_prms.PitchOrientation );
-  UART_LOG( "PitchRotationConv : %i", p_control->dcm_prms.PitchRotationConv );
-  UART_LOG( "RollOrientation : %i",   p_control->dcm_prms.RollOrientation );
-  UART_LOG( "RollRotationConv : %i",  p_control->dcm_prms.RollRotationConv );
-  UART_LOG( "RollRotationRef : %i",   p_control->dcm_prms.RollRotationRef );
+  LOG_INFO( "Kp_RollPitch : %f",      p_control->dcm_prms.Kp_RollPitch );
+  LOG_INFO( "Ki_RollPitch : %f",      p_control->dcm_prms.Ki_RollPitch );
+  LOG_INFO( "Kp_Yaw : %f",            p_control->dcm_prms.Kp_Yaw );
+  LOG_INFO( "Ki_Yaw : %f",            p_control->dcm_prms.Ki_Yaw );
+  LOG_INFO( "PitchOrientation : %i",  p_control->dcm_prms.PitchOrientation );
+  LOG_INFO( "PitchRotationConv : %i", p_control->dcm_prms.PitchRotationConv );
+  LOG_INFO( "RollOrientation : %i",   p_control->dcm_prms.RollOrientation );
+  LOG_INFO( "RollRotationConv : %i",  p_control->dcm_prms.RollRotationConv );
+  LOG_INFO( "RollRotationRef : %i",   p_control->dcm_prms.RollRotationRef );
 
 
   /*
@@ -216,9 +216,6 @@ void DCM_Filter( CONTROL_TYPE       *p_control,
                  DCM_STATE_TYPE     *p_dcm_state,
                  SENSOR_STATE_TYPE  *p_sensor_state )
 {
-  int i;
-
-  float temp;
   float error = 0;
   float renorm = 0;
 

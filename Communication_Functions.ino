@@ -52,12 +52,7 @@ void f_RespondToInput( CONTROL_TYPE       *p_control,
 {
   int i;
   unsigned char RequestByte;
-
-
-  /* Debug Logging */
-  char fastlog[500];
-
-
+  
   /* uint16_t Packet_nBytes;
   ** uint16_t nBytes;
   ** uint8_t Buffer[50];
@@ -66,7 +61,7 @@ void f_RespondToInput( CONTROL_TYPE       *p_control,
 
   /* Some Log Output (usb) */
 
-  UART_LOG( "> Recieved %i Bytes", nBytesIn );
+  LOG_INFO( "> Recieved %i Bytes", nBytesIn );
 
   /* We must read the request and respond appropriately
   ** If there is more than one request, we will respond
@@ -80,7 +75,7 @@ void f_RespondToInput( CONTROL_TYPE       *p_control,
     RequestByte = SERIAL_READ;
 
     /* Some Log outputs (usb) */
-    UART_LOG( "> Request Code (HEX): %x", RequestByte );
+    LOG_INFO( "> Request Code (HEX): %x", RequestByte );
 
     /* Respond the the request appropriately
     ** The packet architecture allows for multiple
@@ -99,7 +94,7 @@ void f_RespondToInput( CONTROL_TYPE       *p_control,
         **   Ints are signed */
 
         /* Some Log outputs (usb) */
-        UART_LOG( "\tReceived Debug Request: %x", RequestByte );
+        LOG_INFO( "\tReceived Debug Request: %x", RequestByte );
         Response.PacketType     = 11;
         Response.Buffer_nBytes  = sizeof(uint8_t)*2*1;
         Response.Packet_nBytes  = sizeof(uint16_t)*2 + sizeof(uint8_t)*(1 + Response.Buffer_nBytes);
@@ -114,7 +109,7 @@ void f_RespondToInput( CONTROL_TYPE       *p_control,
         ** Data buffer
         **   1 x 32 bit float
         **   Float is sent bit for bit */
-        UART_LOG( "\tReceived Debug Request: %x", RequestByte );
+        LOG_INFO( "\tReceived Debug Request: %x", RequestByte );
         Response.PacketType     = 12;
         Response.Buffer_nBytes  = sizeof(uint8_t)*4*1;
         Response.Packet_nBytes  = sizeof(uint16_t)*2 + sizeof(uint8_t)*(1 + Response.Buffer_nBytes);
@@ -130,9 +125,8 @@ void f_RespondToInput( CONTROL_TYPE       *p_control,
         **    3 x 16 bit fixed point floats
         **    Each element is shifted 7 bits
         **    floats are signed */
-
         /* Some Log outputs (usb) */
-        UART_LOG( "\tReceived Roll Pitch request ... Case : %d", RequestByte );
+        LOG_INFO( "\tReceived Roll Pitch request ... Case : %d", RequestByte );
         Response.PacketType     = 1;
         Response.Buffer_nBytes  = sizeof(uint8_t)*2*3;
         Response.Packet_nBytes  = sizeof(uint16_t)*2 + sizeof(uint8_t)*(1 + Response.Buffer_nBytes);
@@ -150,7 +144,7 @@ void f_RespondToInput( CONTROL_TYPE       *p_control,
         **    3 x 32 bit floats
         **    floats are packed bit for bit */
         /* Some Log outputs (usb) */
-        UART_LOG( "\tReceived Roll Pitch request ... Case : %d", RequestByte );
+        LOG_INFO( "\tReceived Roll Pitch request ... Case : %d", RequestByte );
         Response.PacketType     = 2;
         Response.Buffer_nBytes  = sizeof(uint8_t)*4*3;
         Response.Packet_nBytes  = sizeof(uint16_t)*2 + sizeof(uint8_t)*(1 + Response.Buffer_nBytes);
@@ -168,7 +162,7 @@ void f_RespondToInput( CONTROL_TYPE       *p_control,
         ** calibration output
         ** 0:Accel (min/ave/max) in text
         ** 1:Gyro  (current/ave) in text */
-        UART_LOG( "\t> Received Output Toggle Request ... Case : %d", RequestByte );
+        LOG_INFO( "\t> Received Output Toggle Request ... Case : %d", RequestByte );
         if( p_control->calibration_on==1 ) { p_control->calibration_prms.output_mode = (p_control->calibration_prms.output_mode+1)%NUM_CALCOM_MODES; }
         else { p_control->output_mode = (p_control->output_mode+1)%NUM_COM_MODES; }
         break;
@@ -176,20 +170,20 @@ void f_RespondToInput( CONTROL_TYPE       *p_control,
       case 0x63:
         /* DEBUG - Reset Calibration Variables
         ** Resets all calibration states */
-        UART_LOG( "\t> Received Calibration Reset Request ... Case : %d", RequestByte );
+        LOG_INFO( "\t> Received Calibration Reset Request ... Case : %d", RequestByte );
         Calibration_Init( p_control, p_calibration );
         break;
 
       case 0x64:
         /* WISE - Reset WISE state variables
         ** Simulate heel strike */
-        UART_LOG( "\t> Received WISE Reset Request ... Case : %d", RequestByte );
+        LOG_INFO( "\t> Received WISE Reset Request ... Case : %d", RequestByte );
         //WISE_Reset( p_control, p_wise_state );
         break;
 
       default:
-        UART_LOG( "\t ERROR: I don't understand the request!" );
-        UART_LOG( "\t> Unidentified Request Code (DEC): %d", RequestByte );
+        LOG_INFO( "\t ERROR: I don't understand the request!" );
+        LOG_INFO( "\t> Unidentified Request Code (DEC): %d", RequestByte );
         break;
     }
 
@@ -215,10 +209,7 @@ void f_SendPacket( COMMUNICATION_PACKET_TYPE Response )
   uint8_t Packet[100];
   int ret;
   int i;
-
-  /* Debug Logging */
-  char fastlog[500];
-
+  
   /* Initialize the array */
   for( ret=0; ret<100; ret++) Packet[ret] = 0;
 
@@ -350,20 +341,17 @@ void f_Handshake( CONTROL_TYPE *p_control )
   uint8_t IncomingByte;
   uint8_t JunkByte;
   int     nBytesIn;
-
-  /* Debug Logging */
-  char fastlog[500];
-
-  UART_LOG( "> Using BaudLockChar (int):%i", BaudLockChar );
-  UART_LOG( "> Using ConfirmChar (int):%i",  ConfirmChar );
-  UART_LOG( "> Using FailChar (int):%i",     FailChar );
+  
+  LOG_INFO( "> Using BaudLockChar (int):%i", BaudLockChar );
+  LOG_INFO( "> Using ConfirmChar (int):%i",  ConfirmChar );
+  LOG_INFO( "> Using FailChar (int):%i",     FailChar );
 
   /* We continue to attempt a handshake
   ** until there is a lock */
   while( p_control->BaudLock==FALSE )
   {
     /* Some Log Output (usb) */
-   UART_LOG( "> Beginning Handshake" );
+    LOG_INFO( "> Beginning Handshake" );
 
     /* Wait for initiation
     ** Master can send any character(s)
@@ -371,7 +359,7 @@ void f_Handshake( CONTROL_TYPE *p_control )
     **       is assumed to be garbage */
     while( SERIAL_AVAILABLE==0 ) {}
 
-   UART_LOG( "> Received Initialization" );
+    LOG_INFO( "> Received Initialization" );
 
     /* Clear the input buffer
     ** Since the data sent from the master will be garbage,
@@ -382,7 +370,7 @@ void f_Handshake( CONTROL_TYPE *p_control )
     delay( 5 );
     nBytesIn = SERIAL_AVAILABLE;
 
-    UART_LOG( "> Clearing %d characters from buffer", nBytesIn );
+    LOG_INFO( "> Clearing %d characters from buffer", nBytesIn );
     while( nBytesIn-- > 0 ) { JunkByte = SERIAL_READ; }
 
     /* Once handshake is initiated by the master,
@@ -391,7 +379,7 @@ void f_Handshake( CONTROL_TYPE *p_control )
     ** character */
     // Serial.print to Tx pin
     SERIAL_PRINT( BaudLockChar );
-    UART_LOG( "> BaudLockChar \"%c\" sent", BaudLockChar );
+    LOG_INFO( "> BaudLockChar \"%c\" sent", BaudLockChar );
 
     /* We delay a few ms to allow the
     ** master to detect and answer the handshake */
@@ -405,8 +393,8 @@ void f_Handshake( CONTROL_TYPE *p_control )
     if( nBytesIn>0 ) { IncomingByte = SERIAL_READ; }
 
     /* Some Log Output (usb) */
-    UART_LOG( "> Recieved %d Bytes", nBytesIn );
-    UART_LOG( "  Character (int): %d", IncomingByte );
+    LOG_INFO( "> Recieved %d Bytes", nBytesIn );
+    LOG_INFO( "  Character (int): %d", IncomingByte );
 
     /* If confirmation character detected, Baud is locked
     ** Reply with confirmation character to end handshake
@@ -415,7 +403,7 @@ void f_Handshake( CONTROL_TYPE *p_control )
     if( IncomingByte==ConfirmChar )
     {
       /* Baud lock successful */
-      UART_LOG( "> Baud Lock Successful" );
+      LOG_INFO( "> Baud Lock Successful" );
 
       /* Toggle Baud lock */
       p_control->BaudLock = TRUE;
@@ -423,18 +411,18 @@ void f_Handshake( CONTROL_TYPE *p_control )
       /* Reply with confirmation char to
       ** complete the handshake with the master */
       SERIAL_PRINT( ConfirmChar );
-      UART_LOG( "> Confirmation Character Sent" );
+      LOG_INFO( "> Confirmation Character Sent" );
     }
     else
     {
       /* Baud Lock failed */
-      UART_LOG( "> Baud Lock Fail");
+      LOG_INFO( "> Baud Lock Fail");
 
       /* Clear input buffer */
       delay( 5 );
       nBytesIn = SERIAL_AVAILABLE;
 
-      UART_LOG( "> Clearing %d characters from buffer", nBytesIn );
+      LOG_INFO( "> Clearing %d characters from buffer", nBytesIn );
       while( nBytesIn-- > 0 ) { JunkByte = SERIAL_READ; }
 
       /* Reply with Error char
@@ -444,7 +432,7 @@ void f_Handshake( CONTROL_TYPE *p_control )
       ** a symbolic check */
       //SERIAL_PRINT( FailChar );
       //SERIAL_PRINT( IncomingByte );
-      UART_LOG( "> Fail Character Sent" );
+      LOG_INFO( "> Fail Character Sent" );
     }
     /* Reset Input Buffer */
     IncomingByte = 0;

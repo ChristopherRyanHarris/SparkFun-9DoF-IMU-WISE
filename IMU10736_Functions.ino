@@ -64,7 +64,7 @@
 bool Init_IMU( CONTROL_TYPE       *p_control,
                SENSOR_STATE_TYPE  *p_sensor_state )
 {
-  UART_LOG( "> Initializing IMU10736" );
+  LOG_INFO( "> Initializing IMU10736" );
   
   /* Initialize sensors */
   delay(20);
@@ -209,7 +209,7 @@ void Read_Accel( CONTROL_TYPE       *p_control,
     i++;
     if ( i>6 )
     {
-      UART_LOG( "ERROR : Reading Accelerometer : Buffer Overflow" );
+      LOG_INFO( "ERROR : Reading Accelerometer : Buffer Overflow" );
       return;
     }
   }
@@ -226,7 +226,7 @@ void Read_Accel( CONTROL_TYPE       *p_control,
   }
   else
   {
-    UART_LOG( "ERROR : Reading Accelerometer : Lost Bytes" );
+    LOG_INFO( "ERROR : Reading Accelerometer : Lost Bytes" );
   }
 } /* End Read_Accel */
 
@@ -295,7 +295,7 @@ void Read_Magn( CONTROL_TYPE      *p_control,
     i++;
     if ( i>6 )
     {
-      UART_LOG( "ERROR : Reading Magnetometer : Buffer Overflow" );
+      LOG_INFO( "ERROR : Reading Magnetometer : Buffer Overflow" );
       return;
     }
   }
@@ -317,7 +317,7 @@ void Read_Magn( CONTROL_TYPE      *p_control,
   }
   else
   {
-    UART_LOG( "ERROR : Reading Magnetometer : Lost Bytes" );
+    LOG_INFO( "ERROR : Reading Magnetometer : Lost Bytes" );
   }
 } /* End Read_Magn */
 
@@ -405,7 +405,7 @@ void Read_Gyro( CONTROL_TYPE      *p_control,
     i++;
     if ( i>6 )
     {
-      UART_LOG( "ERROR : Reading Gyroscope : Buffer Overflow" );
+      LOG_INFO( "ERROR : Reading Gyroscope : Buffer Overflow" );
       return;
     }
   }
@@ -423,7 +423,7 @@ void Read_Gyro( CONTROL_TYPE      *p_control,
   }
   else
   {
-    UART_LOG( "ERROR : Reading Gyroscope : Lost Bytes" );
+    LOG_INFO( "ERROR : Reading Gyroscope : Lost Bytes" );
   }
 } /* End Read_Gyro */
 

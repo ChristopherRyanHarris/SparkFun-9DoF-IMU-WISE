@@ -46,7 +46,7 @@ void Calibration_Init ( CONTROL_TYPE      *p_control,
 {
   int i;
 
-  UART_LOG( "> Initializing Calibration" );
+  LOG_INFO( "> Initializing Calibration" );
 
   /* Set default calibration parameters */
   p_control->calibration_prms.output_mode = CAL_OUTPUT_MODE;

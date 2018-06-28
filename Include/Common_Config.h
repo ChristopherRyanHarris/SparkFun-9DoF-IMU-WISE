@@ -21,7 +21,7 @@
 #define DEBUG 1 /* Print log/verbose information */
 
 #if EXE_MODE==1
-  /* Emulator mode */
+  /* Emulator (C,Offline) mode */
   #include <math.h>
   #include <stdio.h>
   #include <stdio.h>
@@ -49,6 +49,7 @@
   #endif
 
 #else
+  /* IMU mode */
   #include "./Calibration_Config.h"
   #include "./DSP_Config.h"
   #include "./DCM_Config.h"
@@ -64,8 +65,6 @@
   #endif
   #ifdef _IMU9250_
     #include <SparkFunMPU9250-DMP.h>
-    //#include "./SparkFunMPU9250-DMP.h"
-    //#include <Time.h>
     #include "./IMU9250_Config.h"
   #endif
 #endif
@@ -111,7 +110,6 @@
 ** variables */
 typedef struct
 {
-  
   float yaw;
   float pitch;
   float roll;
@@ -182,6 +180,7 @@ typedef struct
   ** include the emulation structure */
   #if EXE_MODE==1
     EMULATION_TYPE emu_data;
+    META_PACKET_TYPE meta_packet;
   #endif
 
 
@@ -193,15 +192,15 @@ typedef struct
   /* LED state globals */
   bool     LedState; /* Used to set LED state */
   uint32_t LastBlinkTime; /* Used to set LED state */
-  /* SD control */
+  
+  
+  /* SD controls */
   bool     SDCardPresent;
-  char     LogFileName[50]; /* TO DO : Need change name buffer to define */
-  int      LogFileIdx;
-  File     LogFile_fh;
-  int      LogBufferLen;
-  char     LogBuffer[2048];
   
-  
+  /* Log Info File (text w/ dbug info) */
+  OUTPUT_LOG_FILE_TYPE log_info_file;
+  /* Log Data File (binary data only w/ meta header) */
+  OUTPUT_LOG_FILE_TYPE log_data_file;
 
   int verbose;
   int calibration_on;

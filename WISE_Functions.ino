@@ -47,7 +47,7 @@ void WISE_Init ( CONTROL_TYPE       *p_control,
 {
   int i;
 
-  UART_LOG( "> Initializing WISE" );
+  LOG_INFO( "> Initializing WISE" );
 
   /*
   ** Initialize WISE control parameters
@@ -646,12 +646,12 @@ void Estimate_Error(  CONTROL_TYPE        *p_control,
 //  p_wise_state->pave = (p_wise_state->pe[0] + p_wise_state->pe[1] + p_wise_state->pe[2])/3;
 //
 //  /*
-//  if ( millis() > (p_control->g_LastBlinkTime + UART_BLINK_RATE) )
+//  if ( millis() > (p_control->g_LastBlinkTime + LED_BLINK_RATE) )
 //  {
 //    imuLog = "\t\t err est (p1/p2/p3/pave): ";
 //    imuLog += String( pe1,7 ) + "/" + String( pe2,7 ) + "/" + String( pe3,7 ) + "/" +String( pave,7 );
 //    imuLog += "\r\n\n";
-//    LOG_PRINT( imuLog );
+//    LOG_INFO( imuLog );
 //  } */
 } /* End Estimate_Error */
 
