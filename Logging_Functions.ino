@@ -115,17 +115,17 @@ void Data_LogOut( CONTROL_TYPE       *p_control,
   float Packet[10];
   
   Packet[0] = (float)p_control->timestamp;
-  Packet[1] = (float)p_sensor_state->accel[0];
-  Packet[2] = (float)p_sensor_state->accel[1];
-  Packet[3] = (float)p_sensor_state->accel[2];
-  Packet[4] = (float)p_sensor_state->gyro[0];
-  Packet[5] = (float)p_sensor_state->gyro[1];
-  Packet[6] = (float)p_sensor_state->gyro[2];
+  Packet[1] = (float)p_sensor_state->accel.val[0];
+  Packet[2] = (float)p_sensor_state->accel.val[1];
+  Packet[3] = (float)p_sensor_state->accel.val[2];
+  Packet[4] = (float)p_sensor_state->gyro.val[0];
+  Packet[5] = (float)p_sensor_state->gyro.val[1];
+  Packet[6] = (float)p_sensor_state->gyro.val[2];
   Packet[7] = (float)TO_DEG(p_sensor_state->yaw);
   Packet[8] = (float)TO_DEG(p_sensor_state->pitch);
   Packet[9] = (float)TO_DEG(p_sensor_state->roll);
   
-  LOG_DATA( &Packet, 9*sizeof(float) );
+  LOG_DATA( &Packet, 10*sizeof(float) );
   
 } /* End Data_LogOut() */
 
@@ -156,7 +156,10 @@ void Debug_LogOut( CONTROL_TYPE       *p_control,
   {
     case 1:
       sprintf( LogBuffer, "T:%09lu", p_control->timestamp );
-
+      
+      sprintf( tmpBuffer, ", Sample:%09lu", p_control->SampleNumber );
+      strcat( LogBuffer, tmpBuffer );
+      
       strcat( LogBuffer, ", DT:" );
       FltToStr( p_control->G_Dt, 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
@@ -177,24 +180,32 @@ void Debug_LogOut( CONTROL_TYPE       *p_control,
       FltToStr( TO_DEG(p_sensor_state->yaw), 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
 
-      sprintf(tmpBuffer,", A:%06d,%06d,%06d", (int)p_sensor_state->accel[0], (int)p_sensor_state->accel[1], (int)p_sensor_state->accel[2] );
+      sprintf(tmpBuffer,", A:%06d,%06d,%06d", (int)p_sensor_state->accel.val[0], (int)p_sensor_state->accel.val[1], (int)p_sensor_state->accel.val[2] );
       strcat( LogBuffer, tmpBuffer );
 
-      sprintf(tmpBuffer,", G:%07d,%07d,%07d", (int)p_sensor_state->gyro[0],  (int)p_sensor_state->gyro[1],  (int)p_sensor_state->gyro[2] );
+      sprintf(tmpBuffer,", G:%07d,%07d,%07d", (int)p_sensor_state->gyro.val[0],  (int)p_sensor_state->gyro.val[1],  (int)p_sensor_state->gyro.val[2] );
       strcat( LogBuffer, tmpBuffer );
-
+      
+      strcat( LogBuffer, ", gyro_mag:" );
+      FltToStr( p_sensor_state->gyro.mag[0], 4, tmpBuffer );
+      strcat( LogBuffer, tmpBuffer );
+      
+      strcat( LogBuffer, ", gyro_mave:" );
+      FltToStr( p_sensor_state->gyro.mag_mave, 4, tmpBuffer );
+      strcat( LogBuffer, tmpBuffer );
+      
       strcat( LogBuffer, ", PA(N):" );
-      FltToStr( p_gapa_state->nu_normalized, 4, tmpBuffer );
+      FltToStr( p_gapa_state->nu_norm.val[0], 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
       break;
 
     case 2:
       sprintf( LogBuffer, "%09lu", p_control->timestamp );
 
-      sprintf( tmpBuffer, ",%d,%d,%d", (int)p_sensor_state->accel[0], (int)p_sensor_state->accel[1], (int)p_sensor_state->accel[2] );
+      sprintf( tmpBuffer, ",%d,%d,%d", (int)p_sensor_state->accel.val[0], (int)p_sensor_state->accel.val[1], (int)p_sensor_state->accel.val[2] );
       strcat( LogBuffer, tmpBuffer );
 
-      sprintf( tmpBuffer,",%d,%d,%d",  (int)p_sensor_state->gyro[0],  (int)p_sensor_state->gyro[1],  (int)p_sensor_state->gyro[2] );
+      sprintf( tmpBuffer,",%d,%d,%d",  (int)p_sensor_state->gyro.val[0],  (int)p_sensor_state->gyro.val[1],  (int)p_sensor_state->gyro.val[2] );
       strcat( LogBuffer, tmpBuffer );
 
       strcat( LogBuffer, "," );
@@ -304,7 +315,7 @@ void Cal_LogOut( CONTROL_TYPE      *p_control,
       strcat( LogBuffer, tmpBuffer );
 
       strcat( LogBuffer, "/" );
-      FltToStr( p_sensor_state->gyro[0], 4, tmpBuffer );
+      FltToStr( p_sensor_state->gyro.val[0], 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
       strcat( LogBuffer, "), " );
 
@@ -313,7 +324,7 @@ void Cal_LogOut( CONTROL_TYPE      *p_control,
       strcat( LogBuffer, tmpBuffer );
 
       strcat( LogBuffer, "/" );
-      FltToStr( p_sensor_state->gyro[1], 4, tmpBuffer);
+      FltToStr( p_sensor_state->gyro.val[1], 4, tmpBuffer);
       strcat( LogBuffer, tmpBuffer );
       strcat( LogBuffer, "), " );
 
@@ -322,7 +333,7 @@ void Cal_LogOut( CONTROL_TYPE      *p_control,
       strcat( LogBuffer, tmpBuffer );
 
       strcat( LogBuffer, "/" );
-      FltToStr( p_sensor_state->gyro[2], 4, tmpBuffer );
+      FltToStr( p_sensor_state->gyro.val[2], 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
       strcat( LogBuffer, ")" );
       break;

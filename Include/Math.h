@@ -14,11 +14,6 @@
 ** Defines *********************************************************
 ********************************************************************/
 
-/* General Defines */
-
-#define FALSE 0
-#define TRUE 1
-
 /* Data sizes */
 #define POW_2_0               1
 #define POW_2_1               2
@@ -52,6 +47,10 @@
 #define POW_2_29      536870912
 #define POW_2_30     1073741824 /* 1GB */
 
+/* General Defines */
+
+#define FALSE 0
+#define TRUE 1
 
 /* Constants */
 

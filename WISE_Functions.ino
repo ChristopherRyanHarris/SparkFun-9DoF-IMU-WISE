@@ -286,19 +286,19 @@ void Map_Accel_2D ( CONTROL_TYPE        *p_control,
   switch( PITCH_O )
   {
     case 1: /* P: 0:Nadir0/Zenith down  +90:Aft down   -90:Fore down */
-      Ax = p_sensor_state->accel[0]; /* Movement: +x */
-      Az = p_sensor_state->accel[2]; /* Gravity:  -z */
-      R  = p_sensor_state->gyro[1];  /* Rotation: -y */
+      Ax = p_sensor_state->accel.val[0]; /* Movement: +x */
+      Az = p_sensor_state->accel.val[2]; /* Gravity:  -z */
+      R  = p_sensor_state->gyro.val[1];  /* Rotation: -y */
       break;
     case 2: /* P: 0:Fore/Aft down       +90:Port down  -90:Starboard down */
-      Ax = p_sensor_state->accel[1]; /* Movement: +y (stbd) */
-      Az = p_sensor_state->accel[0]; /* Gravity:  -x (fwd) */
-      R  = p_sensor_state->gyro[2];  /* Rotation: -z */
+      Ax = p_sensor_state->accel.val[1]; /* Movement: +y (stbd) */
+      Az = p_sensor_state->accel.val[0]; /* Gravity:  -x (fwd) */
+      R  = p_sensor_state->gyro.val[2];  /* Rotation: -z */
       break;
     case 3: /* P: 0:Fore/Aft down       +90:Nadir down -90:Zenith down */
-      Ax = p_sensor_state->accel[2]; /* Movement: +x */
-      Az = p_sensor_state->accel[0]; /* Gravity:  -z */
-      R  = p_sensor_state->gyro[1];  /* Rotation: -y */
+      Ax = p_sensor_state->accel.val[2]; /* Movement: +x */
+      Az = p_sensor_state->accel.val[0]; /* Gravity:  -z */
+      R  = p_sensor_state->gyro.val[1];  /* Rotation: -y */
       break;
   }
   p_wise_state->accel_delta[0] = Ax;
@@ -560,7 +560,7 @@ void Adjust_Incline( CONTROL_TYPE       *p_control,
 
   /* Compute incline estimate */
   tempi = (p_wise_state->dist[1]/p_wise_state->dist[0])*100;
-  p_wise_state->Incline_ave = Rolling_Mean( p_wise_state->Nsamples, p_wise_state->Incline_ave, tempi );
+  p_wise_state->Incline_ave = Rolling_Mean( p_wise_state->Incline_ave, tempi, p_wise_state->Nsamples );
 
   /* Compute an average incline estimate using the final velocity estimate */
   if( (p_wise_state->Ncycles>3) )

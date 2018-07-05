@@ -19,17 +19,20 @@
 ** Logging Parameters
 *******************************************************************/
 
-#define ENABLE_SD_LOGGING 1
-#define ENABLE_C_FILE_LOGGING 0 /* EXE=1 Mode */
+#define ENABLE_SD_LOGGING 0
+#define ENABLE_C_FILE_LOGGING 0 /* emulation mode */
 
 #if( ENABLE_SD_LOGGING==1 )
   #ifndef _IMU9250_
-    #error "SD logging is only available on the SEN-14001 (MPU-9250)!"
+    #error "SD logging is only available on the SEN-14001 (MPU-9250)! Set ENABLE_SD_LOGGING=0"
   #endif
+  #if( EXE_MODE==1 ) /* Emulation Mode */
+    #error "SD logging is only available on the SEN-14001 (MPU-9250)! Set ENABLE_SD_LOGGING=0. Use ENABLE_C_FILE_LOGGING instead"
+  #endif 
 #endif
 #if( ENABLE_C_FILE_LOGGING==1 )
   #if( EXE_MODE==0 ) /* IMU Mode */
-    #error "Local file logging (separate from SD logging) is not available in IMU Mode!"
+    #error "Local file logging (separate from SD logging) is not available in IMU Mode! Set ENABLE_C_FILE_LOGGING=0"
   #endif
 #endif
 

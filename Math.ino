@@ -170,9 +170,9 @@ void Matrix_Vector_Multiply(const float m[3][3], const float v[3], float out[3])
 /*************************************************
 ** FUNCTION: Rolling_Mean
 ** VARIABLES:
-**    [I ]    const int n : Sample number
 **    [I ]  const float m : Initial mean
 **    [I ]  const float x : Sample value
+**    [I ]    const int n : Sample number
 ** RETURN:
 **    float return
 ** DESCRIPTION:
@@ -181,7 +181,7 @@ void Matrix_Vector_Multiply(const float m[3][3], const float v[3], float out[3])
 **    The rolling mean is a real-time method of
 **    computing a mean.
 */
-float Rolling_Mean( const int n, const float m, const float x )
+float Rolling_Mean( const float m, const float x, const int n )
 {
   return ( m + (x-m)/n );
 } /* End Rolling_Mean */
@@ -382,11 +382,252 @@ void calc_circle_center( float p1[2], float p2[2], float p3[2], float xcyc[2] )
 
 }
 
+/*************************************************
+** FUNCTION: circular_shift_1D
+** VARIABLES:
+**    [IO]  float* A   : The (1D) array to circular shift
+**    [I ]  int    len : The length of the array
+**    [I ]  int    n   : The number of elements to shift (with -:Left, +:right)
+** RETURN:
+**    NONE
+** DESCRIPTION:
+**    Cicular shift a 1D array (i.e. a vector)
+*/
+void circular_shift_array_1D( 
+  float*  A, 
+  int     len, 
+  int     n )
+{
+  int i;
+  float* imap;
+  n %= len;
+  imap = (float*)malloc( sizeof(float)*len );
+  for(i=0;i<len;i++){ imap[i]=A[ (len+i-n)%len ]; }
+  for( i=0; i<len; i++ ){ A[i] = imap[i]; }
+  free(imap);
+} /* End circular_shift_array_1D() */
+
+/*************************************************
+** FUNCTION: circular_shift_2D
+** VARIABLES:
+**    [IO]  float* A   : The (2D) array to circular shift
+**    [I ]  int    nr  : The number of rows in A
+**    [I ]  int    nc  : The number of columns in A
+**    [I ]  int    n   : The number of elements to shift (with -:Left, +:right)
+**    [I ]  int    dim : The dimension to rotate (1:rotate rows, 2:rotate cols)
+** RETURN:
+**    NONE
+** DESCRIPTION:
+**    Cicular shift a 2D array (i.e. a matrix)
+*/
+void circular_shift_array_2D( 
+  float*  A, 
+  int     nr, 
+  int     nc, 
+  int     n, 
+  int     rdim )
+{
+  int i,j;
+  float* imap;
+  
+  if( rdim==1 ) /* rotate rows */
+  {
+    n %= nr;
+    imap = (float*)malloc(sizeof(float)*nr);
+    for( j=0; j<nc; j++)
+    {
+      for( i=0; i<nr; i++ ){ imap[i] = A[ nc*((nr+i-n)%nr)+j ]; }
+      for( i=0; i<nr; i++ ){ A[i*nc+j] = imap[i]; }
+    }
+  }
+  else if( rdim==2 ) /* rotate cols */
+  {
+    n %= nc;
+    imap = (float*)malloc(sizeof(float)*nc);
+    for( j=0; j<nr; j++)
+    {
+      for( i=0; i<nc; i++ ){ imap[i] = A[ ((nr+i-n)%nr)+j*nc ]; }
+      for( i=0; i<nc; i++ ){ A[i+j*nc] = imap[i]; }
+    }
+  }
+  free(imap);
+} /* End circular_shift_array_2D() */
 
 
+/*************************************************
+** FUNCTION: Init_Stats_1D
+** VARIABLES:
+**    [IO]  
+** RETURN:
+**    NONE
+** DESCRIPTION:
+**    Initialize the statistics/metrics of the
+**    1D sample type.
+*/
+void Init_Stats_1D( 
+  CONTROL_TYPE        *p_control, 
+  SAMPLE_DATA_1D_TYPE *p_sample_data )
+{
+  memset( p_sample_data->val, 0, 3*sizeof(float) );
+  p_sample_data->val_min        = FLOAT_MIN;
+  p_sample_data->val_min        = FLOAT_MAX;
+  p_sample_data->val_mave_alpha = 1; /* 1 : ave[t]==x[t] */
+  p_sample_data->val_ave        = 0;
+  p_sample_data->val_mave       = 0;
+  p_sample_data->val_sam_var    = 0;
+  p_sample_data->val_pop_var    = 0;
+  memset( p_sample_data->val_sum,  0, 3*sizeof(float) );
+  memset( p_sample_data->val_diff, 0, 3*sizeof(float) );  
+} /* End Init_Stats_1D() */
 
 
+/*************************************************
+** FUNCTION: Init_Stats_2D
+** VARIABLES:
+**    [IO]  
+** RETURN:
+**    NONE
+** DESCRIPTION:
+**    Initialize the statistics/metrics of a 
+**    2D sample type.
+*/
+void Init_Stats_2D( 
+  CONTROL_TYPE        *p_control, 
+  SAMPLE_DATA_2D_TYPE *p_sample_data )
+{
+  memset( p_sample_data->val, 0, 3*3*sizeof(float) );
+  memset( p_sample_data->mag, 0, 3*sizeof(float) );
+  memset( p_sample_data->dc_offset, 0, 3*sizeof(float) );
+  p_sample_data->scale          = 1; 
+  p_sample_data->mag_min        = FLOAT_MIN;
+  p_sample_data->mag_min        = FLOAT_MAX;
+  p_sample_data->mag_mave_alpha = 1; /* 1 : ave[t]==x[t] */
+  p_sample_data->mag_ave        = 0;
+  p_sample_data->mag_mave       = 0;
+  p_sample_data->mag_sam_var    = 0;
+  p_sample_data->mag_pop_var    = 0;
+  memset( p_sample_data->mag_sum,  0, 3*sizeof(float) );
+  memset( p_sample_data->mag_diff, 0, 3*sizeof(float) );  
+} /* End Init_Stats_2D() */
 
+
+/*************************************************
+** FUNCTION: Update_Stats_2D
+** VARIABLES:
+**    [IO]  
+** RETURN:
+**    NONE
+** DESCRIPTION:
+**    Adds new sample to structure.
+**    Updates the statistics/metrics of a 
+**    2D sample type. 
+**    The stats/metrics include :
+**      1) Get magnitude ( i.e. sqrt(a*a + b*b + c*c) )
+**      2) Update magnitude min/max
+**      3) Update magnitudewindowed average
+**      4) Update magnitudewindowed sample & poulation variance
+**      5) Update magnitude cummulative sum and 2-point difference
+*/
+void Update_Stats_2D(
+  CONTROL_TYPE        *p_control, 
+  SAMPLE_DATA_2D_TYPE *p_sample_data,
+  float               *p_new_sample )
+{
+  
+  float tmp_ave;
+  float tmp_mave;
+  float tmp_M2;
+  
+  /* Add new sample into array */
+  circular_shift_array_2D( p_sample_data->val, 3, 3, 1, 1 );
+  memcpy( p_sample_data->val, p_new_sample, 3*sizeof(float) );
+  
+  /* Update magnitude */
+  circular_shift_array_1D( p_sample_data->mag, 3, 1 );
+  p_sample_data->mag[0] = Vector_Magnitude ( p_sample_data->val );
+  p_sample_data->mag[0] = p_sample_data->mag[0]*p_sample_data->scale; /* TO DO : add dc offset */
+  
+  /* Update min/max */
+  p_sample_data->mag_min = MIN(p_sample_data->mag_min,p_sample_data->mag[0]);
+  p_sample_data->mag_max = MAX(p_sample_data->mag_min,p_sample_data->mag[0]);
+  
+  /* Get the new mean */
+  tmp_ave = Rolling_Mean( p_sample_data->mag_ave, p_sample_data->mag[0], p_control->SampleNumber );
+  
+  /* Get the new windowed mean */
+  tmp_mave = Windowed_Mean( p_sample_data->mag_mave, p_sample_data->mag[0], p_control->SampleNumber, p_sample_data->mag_mave_alpha );
+  
+  /* Update M2 (sum of squares on nth point) */
+  tmp_M2 = Rolling_SumOfSquares( p_sample_data->mag_ave, tmp_ave, p_sample_data->mag[0], p_sample_data->mag_M2 ); /* from full mean */
+  //tmp_M2 = Rolling_SumOfSquares( p_sample_data->mag_mave, tmp_mave, p_sample_data->mag[0], p_sample_data->mag_M2 ); /* from windowed mean */
+  
+  /* Update rolling sample variance */
+  p_sample_data->mag_sam_var = Rolling_Sample_Variance( p_control->SampleNumber, p_sample_data->mag_M2 );
+  
+  /* Update rolling population variance */
+  p_sample_data->mag_pop_var = Rolling_Population_Variance( p_control->SampleNumber, p_sample_data->mag_M2 );
+  
+  /* Finish update */
+  p_sample_data->mag_ave  = tmp_ave;
+  p_sample_data->mag_mave = tmp_mave;
+  
+} /* End Update_Stats_2D() */
+
+/*************************************************
+** FUNCTION: Update_Stats_1D
+** VARIABLES:
+**    [IO]  
+** RETURN:
+**    NONE
+** DESCRIPTION:
+**    Adds new sample to structure.
+**    Updates the statistics/metrics of a 
+**    1D sample type. 
+**    The stats/metrics include :
+**      1) Update min/max
+**      2) Update windowed average
+**      3) Update windowed sample & poulation variance
+**      4) Update cummulative sum and 2-point difference
+*/
+void Update_Stats_1D( 
+  CONTROL_TYPE        *p_control, 
+  SAMPLE_DATA_1D_TYPE *p_sample_data,
+  float                new_sample )
+{
+  
+  float tmp_ave;
+  float tmp_mave;
+  float tmp_M2;
+  
+  /* Add new sample into array */
+  circular_shift_array_1D( p_sample_data->val, 3, 1 );
+  p_sample_data->val[0] = new_sample;
+  
+  /* Update min/max */
+  p_sample_data->val_min = MIN(p_sample_data->val_min,p_sample_data->val[0]);
+  p_sample_data->val_max = MAX(p_sample_data->val_min,p_sample_data->val[0]);
+  
+  /* Get the new mean */
+  tmp_ave = Rolling_Mean( p_sample_data->val_ave, p_sample_data->val[0], p_control->SampleNumber );
+  
+  /* Get the new windowed mean */
+  tmp_mave = Windowed_Mean( p_sample_data->val_mave, p_sample_data->val[0], p_control->SampleNumber, p_sample_data->val_mave_alpha );
+  
+  /* Update M2 (sum of squares on nth point) */
+  tmp_M2 = Rolling_SumOfSquares( p_sample_data->val_ave, tmp_ave, p_sample_data->val[0], p_sample_data->val_M2 ); /* from full mean */
+  //tmp_M2 = Rolling_SumOfSquares( p_sample_data->val_mave, tmp_mave, p_sample_data->val[0], p_sample_data->val_M2 ); /* from windowed mean */
+  
+  /* Update rolling sample variance */
+  p_sample_data->val_sam_var = Rolling_Sample_Variance( p_control->SampleNumber, p_sample_data->val_M2 );
+  
+  /* Update rolling population variance */
+  p_sample_data->val_pop_var = Rolling_Population_Variance( p_control->SampleNumber, p_sample_data->val_M2 );
+  
+  /* Finish update */
+  p_sample_data->val_ave  = tmp_ave;
+  p_sample_data->val_mave = tmp_mave;
+  
+} /* End Update_Stats_1D() */
 
 
 

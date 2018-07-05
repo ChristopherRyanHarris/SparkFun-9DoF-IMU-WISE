@@ -110,8 +110,8 @@ void DSP_Update ( CONTROL_TYPE      *p_control,
   /* log new inputs */
   for( i=0;i<3;i++ )
   {
-    p_dsp_state->accel_mem[i][0] = p_sensor_state->accel[i];
-    p_dsp_state->gyro_mem[i][0]  = p_sensor_state->gyro[i];
+    p_dsp_state->accel_mem[i][0] = p_sensor_state->accel.val[i];
+    p_dsp_state->gyro_mem[i][0]  = p_sensor_state->gyro.val[i];
   }
 } /* DSP_Update */
 
@@ -174,7 +174,7 @@ void IIR_Filter ( CONTROL_TYPE        *p_control,
     temp = 0.0f;
     for( i=0;i<NTAPS;i++ ) { temp = temp + p_dsp_state->IIR_coeffs_Lb[i]*p_dsp_state->accel_mem[j][i]; }
     for( i=1;i<NTAPS;i++ ) { temp = temp - p_dsp_state->IIR_coeffs_La[i]*p_dsp_state->accel_mem[j][i]; }
-    p_sensor_state->accel[j] = (1/p_dsp_state->IIR_coeffs_La[0])*temp;
+    p_sensor_state->accel.val[j] = (1/p_dsp_state->IIR_coeffs_La[0])*temp;
   }
   /* Gyro - HPF */
   for( j=0;j<3;j++ )
@@ -182,7 +182,7 @@ void IIR_Filter ( CONTROL_TYPE        *p_control,
     temp = 0.0f;
     for( i=0;i<NTAPS;i++ ) { temp = temp + p_dsp_state->IIR_coeffs_Hb[i]*p_dsp_state->accel_mem[j][i]; }
     for( i=1;i<NTAPS;i++ ) { temp = temp - p_dsp_state->IIR_coeffs_Ha[i]*p_dsp_state->accel_mem[j][i]; }
-    p_sensor_state->gyro[j] = (1/p_dsp_state->IIR_coeffs_Ha[0])*temp;
+    p_sensor_state->gyro.val[j] = (1/p_dsp_state->IIR_coeffs_Ha[0])*temp;
   }
 } /* End IIR_Filter */
 
@@ -216,14 +216,14 @@ void FIR_Filter ( CONTROL_TYPE        *p_control,
   {
     temp = 0.0f;
     for( i=0;i<NTAPS;i++ ) { temp = temp + p_dsp_state->FIR_coeffs_L[i]*p_dsp_state->accel_mem[j][i]; }
-    p_sensor_state->accel[j] = temp;
+    p_sensor_state->accel.val[j] = temp;
   }
   /* Gyro - HPF */
   for( j=0;j<3;j++ )
   {
     temp = 0.0f;
     for( i=0;i<NTAPS;i++ ) { temp = temp + p_dsp_state->FIR_coeffs_H[i]*p_dsp_state->accel_mem[j][i]; }
-    p_sensor_state->gyro[j] = temp;
+    p_sensor_state->gyro.val[j] = temp;
   }
 } /* End FIR_Filter */
 

@@ -139,14 +139,16 @@ void Set_Sensor_Fusion( CONTROL_TYPE      *p_control,
   float temp1[3];
   float temp2[3];
   float xAxis[] = {1.0f, 0.0f, 0.0f};
+  
+  float *p_a = &(p_sensor_state->accel.val[0]);
 
   /* GET PITCH
   ** Using y-z-plane-component/x-component of gravity vector */
-  p_sensor_state->pitch = -1 * f_atan2( p_sensor_state->accel[0], sqrt(p_sensor_state->accel[1]*p_sensor_state->accel[1] + p_sensor_state->accel[2]*p_sensor_state->accel[2]) );
+  p_sensor_state->pitch = -1 * f_atan2( p_a[0], sqrt(p_a[1]*p_a[1] + p_a[2]*p_a[2]) );
 
   /* GET ROLL
   ** Compensate pitch of gravity vector */
-  Vector_Cross_Product( p_sensor_state->accel, xAxis, temp1 );
+  Vector_Cross_Product( p_a, xAxis, temp1 );
   Vector_Cross_Product( xAxis, temp1, temp2 );
 
   /* Normally using x-z-plane-component/y-component of compensated gravity vector
@@ -249,16 +251,16 @@ void DCM_Filter( CONTROL_TYPE       *p_control,
 
   /* Convert the acceleration values
   ** Note: Values read from sensor are fixed point */
-  Accel_Vector[0] = ( p_sensor_state->accel[0] );
-  Accel_Vector[1] = ( p_sensor_state->accel[1] );
-  Accel_Vector[2] = ( p_sensor_state->accel[2] );
+  Accel_Vector[0] = ( p_sensor_state->accel.val[0] );
+  Accel_Vector[1] = ( p_sensor_state->accel.val[1] );
+  Accel_Vector[2] = ( p_sensor_state->accel.val[2] );
 
   /* Apply prop and int gain to rotation
   ** Need to convert the Gyro values to radians
   **    Note: Values read from sensor are fixed point */
-  Omega_Vector[0] = GYRO_X_SCALED( p_sensor_state->gyro[0] ) + p_dcm_state->Omega_I[0] + p_dcm_state->Omega_P[0];
-  Omega_Vector[1] = GYRO_Y_SCALED( p_sensor_state->gyro[1] ) + p_dcm_state->Omega_I[1] + p_dcm_state->Omega_P[1];
-  Omega_Vector[2] = GYRO_Z_SCALED( p_sensor_state->gyro[2] ) + p_dcm_state->Omega_I[2] + p_dcm_state->Omega_P[2];
+  Omega_Vector[0] = GYRO_X_SCALED( p_sensor_state->gyro.val[0] ) + p_dcm_state->Omega_I[0] + p_dcm_state->Omega_P[0];
+  Omega_Vector[1] = GYRO_Y_SCALED( p_sensor_state->gyro.val[1] ) + p_dcm_state->Omega_I[1] + p_dcm_state->Omega_P[1];
+  Omega_Vector[2] = GYRO_Z_SCALED( p_sensor_state->gyro.val[2] ) + p_dcm_state->Omega_I[2] + p_dcm_state->Omega_P[2];
 
   /* Update the state matrix
   ** We are essentially applying a rotation

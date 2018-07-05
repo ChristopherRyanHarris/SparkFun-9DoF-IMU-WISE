@@ -30,6 +30,7 @@
   #include <string.h>
   #include <time.h>
   
+  #include "../Include/Common_Types.h"
   #include "../Include/Math.h"
   #include "../Include/Calibration_Config.h"
   #include "../Include/DSP_Config.h"
@@ -50,6 +51,7 @@
 
 #else
   /* IMU mode */
+  #include "./Common_Types.h"
   #include "./Calibration_Config.h"
   #include "./DSP_Config.h"
   #include "./DCM_Config.h"
@@ -103,7 +105,6 @@
 ********************************************************************/
 
 
-
 /*
 ** TYPE: SENSOR_STATE_TYPE
 ** This type is used to hold the sensor
@@ -119,26 +120,10 @@ typedef struct
   float roll_prev;
 
   /* Accel x:Fore y:Port z:Zenith */
-  float accel[3];
-  float gyro[3];
-  float mag[3]; /* not used */
-
-  /* Stats are computed from
-  ** magnitudes */
-  float gyro_Ave;
-  float gyro_mAve;
-  float gyro_M2;
-  float gyro_sVar;
-  float gyro_pVar;
+  SAMPLE_DATA_2D_TYPE accel;
+  SAMPLE_DATA_2D_TYPE gyro;
+  SAMPLE_DATA_2D_TYPE magn; /* not used */
   
-  float accel_Ave;
-  float accel_mAve;
-  float accel_M2;
-  float accel_sVar;
-  float accel_pVar;
-  
-  float std_time;
-
 } SENSOR_STATE_TYPE;
 
 /*

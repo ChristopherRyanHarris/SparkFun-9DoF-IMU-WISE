@@ -84,7 +84,7 @@ bool Init_IMU( CONTROL_TYPE       *p_control,
   **    INV_XYZ_ACCEL, or INV_XYZ_COMPASS
   ** Input: Combination of enabled sensors. 
   ** Unless specified a sensor will be disabled.
-  ** Output: INV_SUCCESS (0) on success, otherwise error */
+  ** Output: INV_SUCCESS (0) on succesvs, otherwise error */
   #if ACCEL_ON==1
     activate_sensors = activate_sensors | INV_XYZ_ACCEL;
   #endif
@@ -120,22 +120,27 @@ bool Init_IMU( CONTROL_TYPE       *p_control,
 void Read_Sensors( CONTROL_TYPE       *p_control,
                    SENSOR_STATE_TYPE  *p_sensor_state )
 {
-  int i;
+  float tmp[3];
+  
+  /* Increment sample number */
+  p_control->SampleNumber++;
   
   /* Read the Accelerometer */
   #if ACCEL_ON==1
     imu.updateAccel();
-    p_sensor_state->accel[0] = (float)imu.ax;
-    p_sensor_state->accel[1] = (float)imu.ay;
-    p_sensor_state->accel[2] = (float)imu.az;
+    tmp[0] = (float)imu.ax;
+    tmp[1] = (float)imu.ay;
+    tmp[2] = (float)imu.az;
+    Update_Stats_2D( p_control, &p_sensor_state->accel, tmp );
   #endif 
   
   /* Read the Gyroscope */
   #if GYRO_ON==1
     imu.updateGyro();
-    p_sensor_state->gyro[0] = (float)imu.gx;
-    p_sensor_state->gyro[1] = (float)imu.gy;
-    p_sensor_state->gyro[2] = (float)imu.gz;
+    tmp[0] = (float)imu.gx;
+    tmp[1] = (float)imu.gy;
+    tmp[2] = (float)imu.gz;
+    Update_Stats_2D( p_control, &p_sensor_state->gyro, tmp );
   #endif 
   
   /* Read the Magnometer */

@@ -47,6 +47,8 @@ void Common_Init ( CONTROL_TYPE       *p_control,
 {
   char tmpBuffer[MAX_LINE_LEN];
   
+  p_control->verbose = DEBUG; /* Not used yet */
+  
   LOG_INFO( "> Initializing Common Parameters");
 
   /* Initialize sample counter */
@@ -60,16 +62,17 @@ void Common_Init ( CONTROL_TYPE       *p_control,
   p_control->timestamp      = 0;
   p_control->timestamp_old  = 0;
   p_control->G_Dt           = 0.0;
+  
+  
 
   /* For emulation mode,
-  ** am "emu timestamp" is needed  */
+  ** an "emu timestamp" is needed  */
   #if EXE_MODE==1 /* Emulator Mode */
     p_control->emu_data.timestamp = 0;
     p_control->emu_data.InputFID  = NULL;
     p_control->emu_data.OutputFID = NULL;
   #endif
 
-  p_control->verbose = DEBUG;
   
   #if( EXE_MODE==0 ) /* 0 : IMU Mode */
   {
@@ -258,24 +261,24 @@ void Common_Init ( CONTROL_TYPE       *p_control,
   LOG_INFO( "ACCEL_ON         : %d", ACCEL_ON );
   LOG_INFO( "GYRO_ON          : %d", GYRO_ON );
   
-  FltToStr( GRAVITY, 4, tmpBuffer );
+  FltToStr( GRAVITY, 2, tmpBuffer );
   LOG_INFO( "GRAVITY          : %s", tmpBuffer );
-  FltToStr( TIME_SR, 4, tmpBuffer );
+  FltToStr( TIME_SR, 2, tmpBuffer );
   LOG_INFO( "TIME_SR          : %s", tmpBuffer );
 
   /* Initialize stats */
-  p_sensor_state->gyro_Ave  = 0.0;
-  p_sensor_state->gyro_mAve = 0.0;
-  p_sensor_state->gyro_M2   = 0.0;
-  p_sensor_state->gyro_sVar = 0.0;
-  p_sensor_state->gyro_pVar = 0.0;
-
-  p_sensor_state->accel_Ave  = 0.0;
-  p_sensor_state->accel_mAve = 0.0;
-  p_sensor_state->accel_M2   = 0.0;
-  p_sensor_state->accel_sVar = 0.0;
-  p_sensor_state->accel_pVar = 0.0;
-
+  Init_Stats_2D( p_control, &p_sensor_state->gyro );
+  p_sensor_state->gyro.dc_offset[0] = GYRO_AVERAGE_OFFSET_X;
+  p_sensor_state->gyro.dc_offset[1] = GYRO_AVERAGE_OFFSET_Y;
+  p_sensor_state->gyro.dc_offset[2] = GYRO_AVERAGE_OFFSET_Z;
+  //p_sensor_state->gyro.scale        = TO_RAD(GYRO_GAIN); /* TO DO : fix min gyro to account for scale */
+  
+  Init_Stats_2D( p_control, &p_sensor_state->accel );
+  p_sensor_state->accel.dc_offset[0] = ACCEL_X_OFFSET;
+  p_sensor_state->accel.dc_offset[1] = ACCEL_Y_OFFSET;
+  p_sensor_state->accel.dc_offset[2] = ACCEL_Z_OFFSET;
+  p_sensor_state->accel.scale        = ACCEL_X_GAIN;
+  
 } /* End Common_Init*/
 
 

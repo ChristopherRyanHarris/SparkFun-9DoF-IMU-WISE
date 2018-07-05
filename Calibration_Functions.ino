@@ -103,13 +103,13 @@ void Calibrate ( CONTROL_TYPE       *p_control,
   int i;
   for( i=0; i<3; i++ )
   {
-    p_calibration->accel_total[i] += p_sensor_state->accel[i];
-    if( p_sensor_state->accel[i] > p_calibration->accel_max[i] ) { p_calibration->accel_max[i] = p_sensor_state->accel[i]; }
-    if( p_sensor_state->accel[i] < p_calibration->accel_min[i] ) { p_calibration->accel_min[i] = p_sensor_state->accel[i]; }
+    p_calibration->accel_total[i] += p_sensor_state->accel.val[i];
+    if( p_sensor_state->accel.val[i] > p_calibration->accel_max[i] ) { p_calibration->accel_max[i] = p_sensor_state->accel.val[i]; }
+    if( p_sensor_state->accel.val[i] < p_calibration->accel_min[i] ) { p_calibration->accel_min[i] = p_sensor_state->accel.val[i]; }
 
-    p_calibration->gyro_total[i] += p_sensor_state->gyro[i];
-    if( p_sensor_state->gyro[i] > p_calibration->gyro_max[i] ) { p_calibration->gyro_max[i] = p_sensor_state->gyro[i]; }
-    if( p_sensor_state->gyro[i] < p_calibration->gyro_min[i] ) { p_calibration->gyro_min[i] = p_sensor_state->gyro[i]; }
+    p_calibration->gyro_total[i] += p_sensor_state->gyro.val[i];
+    if( p_sensor_state->gyro.val[i] > p_calibration->gyro_max[i] ) { p_calibration->gyro_max[i] = p_sensor_state->gyro.val[i]; }
+    if( p_sensor_state->gyro.val[i] < p_calibration->gyro_min[i] ) { p_calibration->gyro_min[i] = p_sensor_state->gyro.val[i]; }
   }
   p_calibration->N++;
 

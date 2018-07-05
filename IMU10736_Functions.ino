@@ -195,6 +195,8 @@ void Read_Accel( CONTROL_TYPE       *p_control,
   int i = 0;
   uint8_t buff[6];
 
+  float *p_a = &(p_sensor_state->accel.val[0]);
+
   /* Send address to read from */
   Wire.beginTransmission(ACCEL_ADDRESS);
   WIRE_SEND(ACCEL_DATA);
@@ -220,9 +222,9 @@ void Read_Accel( CONTROL_TYPE       *p_control,
   {
     /* No multiply by -1 for coordinate system transformation here, because of double negation:
     ** We want the gravity vector, which is negated acceleration vector. */
-    p_sensor_state->accel[0] = (int16_t)((((uint16_t) buff[3]) << 8) | buff[2]);  // X axis (internal sensor y axis)
-    p_sensor_state->accel[1] = (int16_t)((((uint16_t) buff[1]) << 8) | buff[0]);  // Y axis (internal sensor x axis)
-    p_sensor_state->accel[2] = (int16_t)((((uint16_t) buff[5]) << 8) | buff[4]);  // Z axis (internal sensor z axis)
+    p_a[0] = (int16_t)((((uint16_t) buff[3]) << 8) | buff[2]);  // X axis (internal sensor y axis)
+    p_a[1] = (int16_t)((((uint16_t) buff[1]) << 8) | buff[0]);  // Y axis (internal sensor x axis)
+    p_a[2] = (int16_t)((((uint16_t) buff[5]) << 8) | buff[4]);  // Z axis (internal sensor z axis)
   }
   else
   {
@@ -280,6 +282,8 @@ void Read_Magn( CONTROL_TYPE      *p_control,
 {
   int i = 0;
   uint8_t buff[6];
+  
+  float *p_m = &(p_sensor_state->magn.val[0]);
 
   /* Send address to read from */
   Wire.beginTransmission(MAGN_ADDRESS);
@@ -309,11 +313,11 @@ void Read_Magn( CONTROL_TYPE      *p_control,
     ** Y and Z reversed: X, Z, Y */
     
     /* X axis (internal sensor -y axis) */
-    p_sensor_state->mag[0] = -1 * (int16_t)(((((uint16_t) buff[4]) << 8) | buff[5]));  
+    p_m[0] = -1 * (int16_t)(((((uint16_t) buff[4]) << 8) | buff[5]));  
     /* Y axis (internal sensor -x axis) */
-    p_sensor_state->mag[1] = -1 * (int16_t)(((((uint16_t) buff[0]) << 8) | buff[1]));  
+    p_m[1] = -1 * (int16_t)(((((uint16_t) buff[0]) << 8) | buff[1]));  
     /* Z axis (internal sensor -z axis) */
-    p_sensor_state->mag[2] = -1 * (int16_t)(((((uint16_t) buff[2]) << 8) | buff[3]));  
+    p_m[2] = -1 * (int16_t)(((((uint16_t) buff[2]) << 8) | buff[3]));  
   }
   else
   {
@@ -391,6 +395,8 @@ void Read_Gyro( CONTROL_TYPE      *p_control,
   int i = 0;
   uint8_t buff[7];
 
+  float *p_g = &(p_sensor_state->gyro.val[0]);
+  
   /* Send address to read from */
   Wire.beginTransmission(GYRO_ADDRESS);
   WIRE_SEND(GYRO_DATA);
@@ -415,11 +421,11 @@ void Read_Gyro( CONTROL_TYPE      *p_control,
   if ( i==6 )
   {
     /* X axis (internal sensor -y axis) */
-    p_sensor_state->gyro[0] = -1 * (int16_t)(((((uint16_t) buff[2]) << 8) | buff[3]));   
+    p_g[0] = -1 * (int16_t)(((((uint16_t) buff[2]) << 8) | buff[3]));   
     /* Y axis (internal sensor -x axis) */
-    p_sensor_state->gyro[1] = -1 * (int16_t)(((((uint16_t) buff[0]) << 8) | buff[1]));    
+    p_g[1] = -1 * (int16_t)(((((uint16_t) buff[0]) << 8) | buff[1]));    
     /* Z axis (internal sensor -z axis) */
-    p_sensor_state->gyro[2] = -1 * (int16_t)(((((uint16_t) buff[4]) << 8) | buff[5]));    
+    p_g[2] = -1 * (int16_t)(((((uint16_t) buff[4]) << 8) | buff[5]));    
   }
   else
   {
