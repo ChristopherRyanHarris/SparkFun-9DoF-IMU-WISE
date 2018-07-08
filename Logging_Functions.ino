@@ -53,7 +53,8 @@ void Meta_LogOut( CONTROL_TYPE       *p_control,
   META_PACKET_TYPE Packet;
   
   float platform;
-  
+  float Default = -999;
+    
   /* Get Platform */
   #ifdef _IMU10736_
     platform = 10736;
@@ -61,33 +62,45 @@ void Meta_LogOut( CONTROL_TYPE       *p_control,
   #ifdef _IMU9250_
     platform = 10736;
   #endif
+  
+  switch(DATA_PACKET_VERSION)
+  {
+    case 1 :
+      Packet.version_id                     = (float)DATA_PACKET_VERSION;
+    	Packet.header_length                  = (float)sizeof(META_PACKET_TYPE);
+    	Packet.collection_id                  = Default; /* Post - Processing */
+    	Packet.collection_date                = Default; /* Post - Processing */
+    	Packet.platform_used                  = (float)platform;
 
-  Packet.version_id                     = (float)DATA_PACKET_VERSION;
-	Packet.header_length                  = (float)sizeof(META_PACKET_TYPE);
-	Packet.collection_id                  = -1.0f; /* Post - Processing */
-	Packet.collection_date                = -1.0f; /* Post - Processing */
-	Packet.platform_used                  = (float)platform;
+    	Packet.data_quality                   = Default; /* Post - Processing */;
+    	Packet.collection_subject_id          = Default; /* Post - Processing */;
+    	Packet.imu_position                   = Default; /* Post - Processing */;
+    	Packet.collection_env                 = Default; /* Post - Processing */;
+    	Packet.multiple_speed_flag            = Default; /* Post - Processing */;
+    	Packet.speed                          = Default; /* Post - Processing */;
+    	Packet.mult_incline_flag              = Default; /* Post - Processing */;
+    	Packet.incline_pct                    = Default; /* Post - Processing */;
 
-	Packet.data_quality                   = -1.0f; /* Post - Processing */;
-	Packet.collection_subject_id          = -1.0f; /* Post - Processing */;
-	Packet.imu_position                   = -1.0f; /* Post - Processing */;
-	Packet.collection_env                 = -1.0f; /* Post - Processing */;
-	Packet.multiple_speed_flag            = -1.0f; /* Post - Processing */;
-	Packet.speed                          = -1.0f; /* Post - Processing */;
-	Packet.mult_incline_flag              = -1.0f; /* Post - Processing */;
-	Packet.incline_pct                    = -1.0f; /* Post - Processing */;
+    	Packet.time_scale                     = (float)TIME_RESOLUTION; 
+    	Packet.sample_rate_flag               = Default; /* Post - Processing */;
+    	Packet.sample_rate_ave                = Default; /* Post - Processing */;
+    	Packet.sample_rate_std                = Default; /* Post - Processing */;
+    	Packet.number_of_samples              = Default; /* Post - Processing */;
+    	Packet.number_of_elements_per_sample  = 10.0f; /* Post - Processing */;
+    	Packet.orientation_PO                 = (float)PITCH_O;
+    	Packet.orientation_PRC                = (float)PITCH_ROT_CONV;
+    	Packet.orientation_RRC                = (float)ROLL_ROT_CONV;
+    	Packet.orientation_ZR                 = (float)ROLL_ZREF;
+    	
+    	break;
+    	
+    case 2 :
+      break;
+      
+    default :
+      break;
+  } /* End switch(DATA_PACKET_VERSION) */
 
-	Packet.time_scale                     = (float)TIME_RESOLUTION; 
-	Packet.sample_rate_flag               = -1.0f; /* Post - Processing */;
-	Packet.sample_rate_ave                = -1.0f; /* Post - Processing */;
-	Packet.sample_rate_std                = -1.0f; /* Post - Processing */;
-	Packet.number_of_samples              = -1.0f; /* Post - Processing */;
-	Packet.number_of_elements_per_sample  = 10.0f; /* Post - Processing */;
-	Packet.orientation_PO                 = (float)PITCH_O;
-	Packet.orientation_PRC                = (float)PITCH_ROT_CONV;
-	Packet.orientation_RRC                = (float)ROLL_ROT_CONV;
-	Packet.orientation_ZR                 = (float)ROLL_ZREF;
-	
 	LOG_DATA( &Packet, sizeof(META_PACKET_TYPE) );
   
 } /* End Meta_LogOut */
@@ -121,9 +134,9 @@ void Data_LogOut( CONTROL_TYPE       *p_control,
   Packet[4] = (float)p_sensor_state->gyro.val[0];
   Packet[5] = (float)p_sensor_state->gyro.val[1];
   Packet[6] = (float)p_sensor_state->gyro.val[2];
-  Packet[7] = (float)TO_DEG(p_sensor_state->yaw);
-  Packet[8] = (float)TO_DEG(p_sensor_state->pitch);
-  Packet[9] = (float)TO_DEG(p_sensor_state->roll);
+  Packet[7] = (float)TO_DEG(p_sensor_state->yaw.val[0]);
+  Packet[8] = (float)TO_DEG(p_sensor_state->pitch.val[0]);
+  Packet[9] = (float)TO_DEG(p_sensor_state->roll.val[0]);
   
   LOG_DATA( &Packet, 10*sizeof(float) );
   
@@ -169,15 +182,15 @@ void Debug_LogOut( CONTROL_TYPE       *p_control,
       strcat( LogBuffer, tmpBuffer );
 
       strcat( LogBuffer, ", R:" );
-      FltToStr( TO_DEG(p_sensor_state->roll), 4, tmpBuffer );
+      FltToStr( TO_DEG(p_sensor_state->roll.val[0]), 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
 
       strcat( LogBuffer, ", P:" );
-      FltToStr( TO_DEG(p_sensor_state->pitch), 4, tmpBuffer );
+      FltToStr( TO_DEG(p_sensor_state->pitch.val[0]), 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
 
       strcat( LogBuffer, ", Y:" );
-      FltToStr( TO_DEG(p_sensor_state->yaw), 4, tmpBuffer );
+      FltToStr( TO_DEG(p_sensor_state->yaw.val[0]), 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
 
       sprintf(tmpBuffer,", A:%06d,%06d,%06d", (int)p_sensor_state->accel.val[0], (int)p_sensor_state->accel.val[1], (int)p_sensor_state->accel.val[2] );
@@ -197,6 +210,7 @@ void Debug_LogOut( CONTROL_TYPE       *p_control,
       strcat( LogBuffer, ", PA(N):" );
       FltToStr( p_gapa_state->nu_norm.val[0], 4, tmpBuffer );
       strcat( LogBuffer, tmpBuffer );
+      
       break;
 
     case 2:
@@ -209,15 +223,15 @@ void Debug_LogOut( CONTROL_TYPE       *p_control,
       strcat( LogBuffer, tmpBuffer );
 
       strcat( LogBuffer, "," );
-      FltToStr( TO_DEG(p_sensor_state->roll), 3, tmpBuffer);
+      FltToStr( TO_DEG(p_sensor_state->roll.val[0]), 3, tmpBuffer);
       strcat( LogBuffer, tmpBuffer );
 
       strcat( LogBuffer, "," );
-      FltToStr( TO_DEG(p_sensor_state->pitch), 3, tmpBuffer);
+      FltToStr( TO_DEG(p_sensor_state->pitch.val[0]), 3, tmpBuffer);
       strcat( LogBuffer, tmpBuffer );
 
       strcat( LogBuffer, "," );
-      FltToStr( TO_DEG(p_sensor_state->yaw), 3, tmpBuffer);
+      FltToStr( TO_DEG(p_sensor_state->yaw.val[0]), 3, tmpBuffer);
       strcat( LogBuffer, tmpBuffer );
       break;
 
@@ -461,6 +475,7 @@ void LogToFile( CONTROL_TYPE         *p_control,
     if( log_file->LogFile_fh!=NULL )
     {
       /* Get current file size */
+      //size_bytes = 0; /* Force 1 file */
       size_bytes = FILE_SIZE_BYTES(log_file->LogFile_fh);
 
       /* If the filesize is larger than the designated
@@ -506,14 +521,13 @@ void LogToFile( CONTROL_TYPE         *p_control,
           size_bytes = FILE_WRITE_TO_FILE( (log_file->LogBuffer), 1, log_file->LogBufferLen, log_file->LogFile_fh );
           FILE_FLUSH( log_file->LogFile_fh );
         }
-
         log_file->LogBuffer[0] = '\0';
         log_file->LogBufferLen = 0;
       }
     }
     else
     {
-      log_file->enabled        = FALSE;
+      log_file->enabled          = FALSE;
       #if( EXE_MODE==0 ) /* 0 : IMU Mode */
         p_control->SDCardPresent = FALSE;
       #endif

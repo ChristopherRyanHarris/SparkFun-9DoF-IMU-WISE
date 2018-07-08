@@ -197,38 +197,29 @@ void loop( void )
   }
 
   /* Apply the DCM Filter */
-  if( g_control.DCM_on==1 ){ DCM_Filter( &g_control, &g_dcm_state, &g_sensor_state ); }
+  if( g_control.DCM_on==1 ){ DCM_Filter( &g_control, &g_dcm_state, &g_sensor_state ); } /* cost: 70 sam/s */
 
   /* Estimate the Gait Phase Angle */
-  if( g_control.GaPA_on==1 ){ GaPA_Update( &g_control, &g_sensor_state, &g_gapa_state ); }
+  if( g_control.GaPA_on==1 ){ GaPA_Update( &g_control, &g_sensor_state, &g_gapa_state ); } /* cost: 20 sam/s */
 
   /* Estimate Walking Speed and Incline */
-  if( g_control.WISE_on==1 )
-  {
-    if( (g_sensor_state.gyro.mag_mave<g_control.gapa_prms.min_gyro) )
-    {
-      WISE_Update(&g_control, &g_sensor_state, &g_wise_state );
-    }
-  }
+  if( g_control.WISE_on==1 ){ if( (g_sensor_state.gyro.mag_mave<g_control.gapa_prms.min_gyro) ){ WISE_Update(&g_control, &g_sensor_state, &g_wise_state ); } }
   
   /* ***************** **
   ** FES Test Specific **
   ** ***************** */
-  FES_Update ( &g_control, &g_fes_state, &g_sensor_state, &g_dcm_state, &g_gapa_state, &g_wise_state );
+  FES_Update ( &g_control, &g_fes_state, &g_sensor_state, &g_dcm_state, &g_gapa_state, &g_wise_state ); /* cost: 45 sam/s */
   		
   		
   /* Read/Respond to command */
-  if( SERIAL_AVAILABLE>0 )
-  {
-    f_RespondToInput( &g_control, &g_sensor_state, &g_calibration, SERIAL_AVAILABLE );  
-  }
+  if( SERIAL_AVAILABLE>0 ){ f_RespondToInput( &g_control, &g_sensor_state, &g_calibration, SERIAL_AVAILABLE ); }
 
   /* We blink every LOG_INFO_RATE millisecods */
   if ( micros()>(g_control.LastLogTime+DATA_LOG_RATE) )
   {
     /* Log the current states to the debug port */
-    Debug_LogOut( &g_control, &g_sensor_state, &g_gapa_state, &g_wise_state );
-    Data_LogOut( &g_control, &g_sensor_state, &g_gapa_state, &g_wise_state );
+    //Debug_LogOut( &g_control, &g_sensor_state, &g_gapa_state, &g_wise_state ); /* sd vs uart : cost ~100 sam/s */
+    Data_LogOut( &g_control, &g_sensor_state, &g_gapa_state, &g_wise_state ); /* cost: ~20 sam/s */
     
     g_control.LastLogTime = micros();
 

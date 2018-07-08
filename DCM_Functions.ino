@@ -89,6 +89,13 @@ void DCM_Init( CONTROL_TYPE       *p_control,
   for(i=0;i<3;i++) p_dcm_state->Omega_P[i] = 0.0f;
   p_dcm_state->SampleNumber=0;
 
+  /*
+  ** Init Stats 
+  */
+  Init_Stats_1D( p_control, &p_sensor_state->yaw );
+  Init_Stats_1D( p_control, &p_sensor_state->pitch );
+  Init_Stats_1D( p_control, &p_sensor_state->roll );
+
   Reset_Sensor_Fusion( p_control, p_dcm_state, p_sensor_state );
 } /* End DCM_Init */
 
@@ -136,6 +143,7 @@ void Reset_Sensor_Fusion( CONTROL_TYPE      *p_control,
 void Set_Sensor_Fusion( CONTROL_TYPE      *p_control,
                         SENSOR_STATE_TYPE *p_sensor_state )
 {
+  float tmpf;
   float temp1[3];
   float temp2[3];
   float xAxis[] = {1.0f, 0.0f, 0.0f};
@@ -144,7 +152,8 @@ void Set_Sensor_Fusion( CONTROL_TYPE      *p_control,
 
   /* GET PITCH
   ** Using y-z-plane-component/x-component of gravity vector */
-  p_sensor_state->pitch = -1 * f_atan2( p_a[0], sqrt(p_a[1]*p_a[1] + p_a[2]*p_a[2]) );
+  tmpf = -1 * f_atan2( p_a[0], sqrt(p_a[1]*p_a[1] + p_a[2]*p_a[2]) );
+  Update_Stats_1D( p_control, &p_sensor_state->pitch, tmpf );
 
   /* GET ROLL
   ** Compensate pitch of gravity vector */
@@ -154,10 +163,12 @@ void Set_Sensor_Fusion( CONTROL_TYPE      *p_control,
   /* Normally using x-z-plane-component/y-component of compensated gravity vector
   **  roll = atan2(temp2[1], sqrt(temp2[0] * temp2[0] + temp2[2] * temp2[2]));
   ** Since we compensated for pitch, x-z-plane-component equals z-component: */
-  p_sensor_state->roll = f_atan2(temp2[1], temp2[2]);
+  tmpf = f_atan2(temp2[1], temp2[2]);
+  Update_Stats_1D( p_control, &p_sensor_state->roll, tmpf );
 
   /* GET YAW */
-  p_sensor_state->yaw = 0;
+  tmpf = 0;
+  Update_Stats_1D( p_control, &p_sensor_state->yaw, tmpf );
 } /* End Set_Sensor_Fusion */
 
 
@@ -178,9 +189,9 @@ void Init_Rotation_Matrix( CONTROL_TYPE       *p_control,
                            SENSOR_STATE_TYPE  *p_sensor_state )
 {
   float *m    = &(p_dcm_state->DCM_Matrix[0][0]);
-  float roll  = p_sensor_state->roll;
-  float pitch = p_sensor_state->pitch;
-  float yaw   = p_sensor_state->yaw;
+  float roll  = p_sensor_state->roll.val[0];
+  float pitch = p_sensor_state->pitch.val[0];
+  float yaw   = p_sensor_state->yaw.val[0];
 
   float c1 = cos(roll);
   float s1 = sin(roll);
@@ -224,6 +235,8 @@ void DCM_Filter( CONTROL_TYPE       *p_control,
                  DCM_STATE_TYPE     *p_dcm_state,
                  SENSOR_STATE_TYPE  *p_sensor_state )
 {
+  float tmpf;
+  
   float error = 0;
   float renorm = 0;
 
@@ -283,10 +296,10 @@ void DCM_Filter( CONTROL_TYPE       *p_control,
   /* Determine vector overlap
   ** Each vector should be orthogonal */
   error = -Vector_Dot_Product(&TempM2[0][0],&TempM2[1][0]) * 0.5;
-
+  
   /* temp = V .* e */
-  Vector_Scale( &TempM2[1][0], error, &TempM[0][0] );
-  Vector_Scale( &TempM2[0][0], error, &TempM[1][0] );
+  Vector_Scale( &TempM2[1][0], error, &TempM[0][0] ); /* cost: 10 sam/s */
+  Vector_Scale( &TempM2[0][0], error, &TempM[1][0] ); /* cost: 5 sam/s */
 
   /* temp = temp .* DCM[0][:] */
   Vector_Add( &TempM[0][0], &TempM2[0][0], &TempM[0][0] );
@@ -294,19 +307,20 @@ void DCM_Filter( CONTROL_TYPE       *p_control,
 
   /* Force orthogonality */
   Vector_Cross_Product( &TempM[0][0], &TempM[1][0], &TempM[2][0] );
-
+  
   /* Normalize each vector
   ** DCM[i][:] = temp ./ ( 0.5*(3 - sum(temp.^2)) )
   ** Note that the sum of the DCM vectors should have length of 1 */
-
+  /* cost: 30 sam/s */
   renorm = .5 *(3 - Vector_Dot_Product(&TempM[0][0],&TempM[0][0]));
-  Vector_Scale( &TempM[0][0], renorm, &p_dcm_state->DCM_Matrix[0][0] );
+  Vector_Scale( &TempM[0][0], renorm, &p_dcm_state->DCM_Matrix[0][0] ); /* cost: 5 sam/s */
 
   renorm = .5 *(3 - Vector_Dot_Product(&TempM[1][0],&TempM[1][0]));
   Vector_Scale( &TempM[1][0], renorm, &p_dcm_state->DCM_Matrix[1][0] );
 
   renorm = .5 *(3 - Vector_Dot_Product(&TempM[2][0],&TempM[2][0]));
-  Vector_Scale( &TempM[2][0], renorm, &p_dcm_state->DCM_Matrix[2][0] );
+  Vector_Scale( &TempM[2][0], renorm, &p_dcm_state->DCM_Matrix[2][0] ); /* cost: 2 sam/s */
+
 
 
 
@@ -341,7 +355,7 @@ void DCM_Filter( CONTROL_TYPE       *p_control,
   ** by a integral and proportional gain in each cycle */
   Vector_Cross_Product( &Accel_Vector[0], &p_dcm_state->DCM_Matrix[2][0], &errorRollPitch[0] );
 
-  Vector_Scale( &errorRollPitch[0], Kp_ROLLPITCH*Accel_weight, &p_dcm_state->Omega_P[0] );
+  Vector_Scale( &errorRollPitch[0], Kp_ROLLPITCH*Accel_weight, &p_dcm_state->Omega_P[0] ); /* cost: 5 sam/s */
   Vector_Scale( &errorRollPitch[0], Ki_ROLLPITCH*Accel_weight, &ErrorGain[0] );
   Vector_Add( p_dcm_state->Omega_I, ErrorGain, p_dcm_state->Omega_I );
 
@@ -385,19 +399,20 @@ void DCM_Filter( CONTROL_TYPE       *p_control,
   switch ( p_control->dcm_prms.PitchOrientation )
   {
     case 1 :
-      //p_sensor_state->pitch = -PITCH_ROT_CONV*f_asin( p_dcm_state->DCM_Matrix[2][0] );
-      p_sensor_state->pitch = -p_control->dcm_prms.PitchRotationConv*f_asin( p_dcm_state->DCM_Matrix[2][0] );
+      //tmpf = -PITCH_ROT_CONV*f_asin( p_dcm_state->DCM_Matrix[2][0] );
+      tmpf = -p_control->dcm_prms.PitchRotationConv*f_asin( p_dcm_state->DCM_Matrix[2][0] );
       break;
     case 2 :
-      //p_sensor_state->pitch = -PITCH_ROT_CONV*f_asin( p_dcm_state->DCM_Matrix[2][1] );
-      p_sensor_state->pitch = -p_control->dcm_prms.PitchRotationConv*f_asin( p_dcm_state->DCM_Matrix[2][1] );
+      //tmpf = -PITCH_ROT_CONV*f_asin( p_dcm_state->DCM_Matrix[2][1] );
+      tmpf = -p_control->dcm_prms.PitchRotationConv*f_asin( p_dcm_state->DCM_Matrix[2][1] );
       break;
     case 3 :
-      //p_sensor_state->pitch = -PITCH_ROT_CONV*f_asin( p_dcm_state->DCM_Matrix[2][2] );
-      p_sensor_state->pitch = -p_control->dcm_prms.PitchRotationConv*f_asin( p_dcm_state->DCM_Matrix[2][2] );
+      //tmpf = -PITCH_ROT_CONV*f_asin( p_dcm_state->DCM_Matrix[2][2] );
+      tmpf = -p_control->dcm_prms.PitchRotationConv*f_asin( p_dcm_state->DCM_Matrix[2][2] );
       break;
-  }
-
+  } /* cost: 5 sam/s */
+  Update_Stats_1D( p_control, &p_sensor_state->pitch, tmpf ); /* cost: 1 sam/s */
+  
   /* Define roll orientation convention (set in config):
   ** We should only be using 3,4,5 orientations, but they are all available for hacking.
   ** Range: -180:180
@@ -412,26 +427,29 @@ void DCM_Filter( CONTROL_TYPE       *p_control,
   switch ( p_control->dcm_prms.RollOrientation )
   {
     case 1 :
-      p_sensor_state->roll = -p_control->dcm_prms.RollRotationConv*f_atan2( p_dcm_state->DCM_Matrix[2][0], -p_control->dcm_prms.RollRotationRef*p_dcm_state->DCM_Matrix[2][1] );
+      tmpf = -p_control->dcm_prms.RollRotationConv*f_atan2( p_dcm_state->DCM_Matrix[2][0], -p_control->dcm_prms.RollRotationRef*p_dcm_state->DCM_Matrix[2][1] );
       break;
     case 2 :
-      p_sensor_state->roll = -p_control->dcm_prms.RollRotationConv*f_atan2( p_dcm_state->DCM_Matrix[2][0], -p_control->dcm_prms.RollRotationRef*p_dcm_state->DCM_Matrix[2][2] );
+      tmpf = -p_control->dcm_prms.RollRotationConv*f_atan2( p_dcm_state->DCM_Matrix[2][0], -p_control->dcm_prms.RollRotationRef*p_dcm_state->DCM_Matrix[2][2] );
       break;
     case 3 :
-      p_sensor_state->roll = -p_control->dcm_prms.RollRotationConv*f_atan2( p_dcm_state->DCM_Matrix[2][1], -p_control->dcm_prms.RollRotationRef*p_dcm_state->DCM_Matrix[2][2] );
+      tmpf = -p_control->dcm_prms.RollRotationConv*f_atan2( p_dcm_state->DCM_Matrix[2][1], -p_control->dcm_prms.RollRotationRef*p_dcm_state->DCM_Matrix[2][2] );
       break;
     case 4 :
-      p_sensor_state->roll =  p_control->dcm_prms.RollRotationConv*f_atan2( p_dcm_state->DCM_Matrix[2][1], -p_control->dcm_prms.RollRotationRef*p_dcm_state->DCM_Matrix[2][0] );
+      tmpf =  p_control->dcm_prms.RollRotationConv*f_atan2( p_dcm_state->DCM_Matrix[2][1], -p_control->dcm_prms.RollRotationRef*p_dcm_state->DCM_Matrix[2][0] );
       break;
     case 5 :
-      p_sensor_state->roll =  p_control->dcm_prms.RollRotationConv*f_atan2( p_dcm_state->DCM_Matrix[2][2], -p_control->dcm_prms.RollRotationRef*p_dcm_state->DCM_Matrix[2][0] );
+      tmpf =  p_control->dcm_prms.RollRotationConv*f_atan2( p_dcm_state->DCM_Matrix[2][2], -p_control->dcm_prms.RollRotationRef*p_dcm_state->DCM_Matrix[2][0] );
       break;
     case 6 :
-      p_sensor_state->roll =  p_control->dcm_prms.RollRotationConv*f_atan2( p_dcm_state->DCM_Matrix[2][2], -p_control->dcm_prms.RollRotationRef*p_dcm_state->DCM_Matrix[2][1] );
+      tmpf =  p_control->dcm_prms.RollRotationConv*f_atan2( p_dcm_state->DCM_Matrix[2][2], -p_control->dcm_prms.RollRotationRef*p_dcm_state->DCM_Matrix[2][1] );
       break;
   }
-
-  p_sensor_state->yaw   =  f_atan2( p_dcm_state->DCM_Matrix[1][0], p_dcm_state->DCM_Matrix[0][0] ); // A faster atan2
+  Update_Stats_1D( p_control, &p_sensor_state->roll, tmpf ); /* cost: 2 sam/s */
+  
+  tmpf   =  f_atan2( p_dcm_state->DCM_Matrix[1][0], p_dcm_state->DCM_Matrix[0][0] ); // A faster atan2
+  Update_Stats_1D( p_control, &p_sensor_state->yaw, tmpf ); 
+  
 } /* End DCM_Filter */
 
 

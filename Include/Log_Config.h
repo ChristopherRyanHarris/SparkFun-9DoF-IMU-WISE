@@ -19,7 +19,7 @@
 ** Logging Parameters
 *******************************************************************/
 
-#define ENABLE_SD_LOGGING 0
+#define ENABLE_SD_LOGGING 1
 #define ENABLE_C_FILE_LOGGING 0 /* emulation mode */
 
 #if( ENABLE_SD_LOGGING==1 )

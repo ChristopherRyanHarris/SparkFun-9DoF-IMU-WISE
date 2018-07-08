@@ -97,7 +97,7 @@
 ** This will reverse the direction of the "0" reference for roll
 **   1 :"0" is in direction of +axis (Fore)
 **  -1 :"0" is in direction of -axis (Aft) */
-#define ROLL_ZREF 1
+#define ROLL_ZREF -1
 
 
 

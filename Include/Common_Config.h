@@ -111,13 +111,9 @@
 ** variables */
 typedef struct
 {
-  float yaw;
-  float pitch;
-  float roll;
-
-  float yaw_prev;
-  float pitch_prev;
-  float roll_prev;
+  SAMPLE_DATA_1D_TYPE yaw;
+  SAMPLE_DATA_1D_TYPE pitch;
+  SAMPLE_DATA_1D_TYPE roll;
 
   /* Accel x:Fore y:Port z:Zenith */
   SAMPLE_DATA_2D_TYPE accel;

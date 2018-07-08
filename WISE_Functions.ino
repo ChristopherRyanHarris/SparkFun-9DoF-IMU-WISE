@@ -72,7 +72,7 @@ void WISE_Init ( CONTROL_TYPE       *p_control,
   p_wise_state->Nsamples = 1.0f;
   p_wise_state->Ncycles  = 0.0f;
 
-  p_wise_state->pitch_mem         = p_sensor_state->pitch;
+  p_wise_state->pitch_mem         = p_sensor_state->pitch.val[0];
   p_wise_state->pitch_delta       = 0.0f;
   p_wise_state->pitch_delta_total = 0.0f;
 
@@ -149,7 +149,7 @@ void WISE_Update ( CONTROL_TYPE       *p_control,
                    WISE_STATE_TYPE    *p_wise_state )
 {
   p_wise_state->Nsamples++;
-  p_wise_state->pitch_delta = p_sensor_state->pitch - p_wise_state->pitch_mem;
+  p_wise_state->pitch_delta = p_sensor_state->pitch.val[0] - p_wise_state->pitch_mem;
   p_wise_state->pitch_delta_total += p_wise_state->pitch_delta;
 
   p_wise_state->swing_state = 1;
@@ -169,7 +169,7 @@ void WISE_Update ( CONTROL_TYPE       *p_control,
   /* Reset at toeoff */
   if( p_wise_state->toe_off==TRUE ) { WISE_Reset( p_control, p_wise_state ); }
 
-  p_wise_state->pitch_mem = p_sensor_state->pitch;
+  p_wise_state->pitch_mem = p_sensor_state->pitch.val[0];
 } /* End WISE_Update */
 
 
@@ -310,7 +310,7 @@ void Map_Accel_2D ( CONTROL_TYPE        *p_control,
   **********************************/
 
   /* Calc wrt world coordinate system */
-  p_wise_state->accel[0]   = (Ax*cos(p_sensor_state->pitch) - Az*sin(p_sensor_state->pitch)) * GTOMPS2/GRAVITY * MPSTOMPH * WISE_CORRECTION;
+  p_wise_state->accel[0]   = (Ax*cos(p_sensor_state->pitch.val[0]) - Az*sin(p_sensor_state->pitch.val[0])) * GTOMPS2/GRAVITY * MPSTOMPH * WISE_CORRECTION;
 
   /* Feedback */
   p_wise_state->accel_delta[0] = p_wise_state->accel[0] - p_wise_state->accel_delta[0];
@@ -326,7 +326,7 @@ void Map_Accel_2D ( CONTROL_TYPE        *p_control,
   **********************************/
 
   /* Calc Ay wrt world coordinate system */
-  p_wise_state->accel[1]  = -(Ax*sin(p_sensor_state->pitch) - Az*cos(p_sensor_state->pitch)  - GRAVITY) * GTOMPS2/GRAVITY * MPSTOMPH;// * (1/WISE_CORRECTION);
+  p_wise_state->accel[1]  = -(Ax*sin(p_sensor_state->pitch.val[0]) - Az*cos(p_sensor_state->pitch.val[0])  - GRAVITY) * GTOMPS2/GRAVITY * MPSTOMPH;// * (1/WISE_CORRECTION);
 
   /* Feedback */
   p_wise_state->accel_delta[1] = p_wise_state->accel[1] - p_wise_state->accel_delta[1];

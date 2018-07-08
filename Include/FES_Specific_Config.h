@@ -19,7 +19,7 @@
   #define PHASE_ANGLE_SWITCH_ON_VAL (0.0)
   #define PHASE_ANGLE_SWITCH_OFF_VAL (0.1)
   #define PHASE_ANGLE_OFFSET (0)
-  #define PHASE_ANGLE_SWITCH_ON_EVENT ( (fmod((p_gapa_state->nu_norm.val[1]+PHASE_ANGLE_OFFSET),1)>PHASE_ANGLE_SWITCH_ON_VAL) && (fmod((p_gapa_state->nu_norm.val[0]+PHASE_ANGLE_OFFSET),1)<PHASE_ANGLE_SWITCH_ON_VAL) )
+  #define PHASE_ANGLE_SWITCH_ON_EVENT ( (fmod((p_gapa_state->nu_norm.val[1]+PHASE_ANGLE_OFFSET),1)<PHASE_ANGLE_SWITCH_ON_VAL) && (fmod((p_gapa_state->nu_norm.val[0]+PHASE_ANGLE_OFFSET),1)>PHASE_ANGLE_SWITCH_ON_VAL) )
 
 #elif RELAY_SWITCH_METHOD==2
   /* Method 2: On at angle_start and hold for N iterations*/

@@ -99,8 +99,7 @@ void Vector_Cross_Product( const float v1[3], const float v2[3], float out[3] )
 */
 void Vector_Scale( const float v[3], const float scalar, float out[3] )
 {
-  int i;
-  for( i=0; i<3; i++) { out[i] = v[i] * scalar; }
+  for( int i=0; i<3; i++) { out[i] = v[i] * scalar; }
 } /* End Vector_Scale */
 
 
@@ -539,37 +538,37 @@ void Update_Stats_2D(
   float tmp_M2;
   
   /* Add new sample into array */
-  circular_shift_array_2D( p_sample_data->val, 3, 3, 1, 1 );
+  //circular_shift_array_2D( p_sample_data->val, 3, 3, 1, 1 );
   memcpy( p_sample_data->val, p_new_sample, 3*sizeof(float) );
   
   /* Update magnitude */
-  circular_shift_array_1D( p_sample_data->mag, 3, 1 );
-  p_sample_data->mag[0] = Vector_Magnitude ( p_sample_data->val );
-  p_sample_data->mag[0] = p_sample_data->mag[0]*p_sample_data->scale; /* TO DO : add dc offset */
+  //circular_shift_array_1D( p_sample_data->mag, 3, 1 );
+  //p_sample_data->mag[0] = Vector_Magnitude ( p_sample_data->val );
+  //p_sample_data->mag[0] = p_sample_data->mag[0]*p_sample_data->scale; /* TO DO : add dc offset */
   
   /* Update min/max */
-  p_sample_data->mag_min = MIN(p_sample_data->mag_min,p_sample_data->mag[0]);
-  p_sample_data->mag_max = MAX(p_sample_data->mag_min,p_sample_data->mag[0]);
+  //p_sample_data->mag_min = MIN(p_sample_data->mag_min,p_sample_data->mag[0]);
+  //p_sample_data->mag_max = MAX(p_sample_data->mag_min,p_sample_data->mag[0]);
   
   /* Get the new mean */
-  tmp_ave = Rolling_Mean( p_sample_data->mag_ave, p_sample_data->mag[0], p_control->SampleNumber );
+  //tmp_ave = Rolling_Mean( p_sample_data->mag_ave, p_sample_data->mag[0], p_control->SampleNumber );
   
   /* Get the new windowed mean */
-  tmp_mave = Windowed_Mean( p_sample_data->mag_mave, p_sample_data->mag[0], p_control->SampleNumber, p_sample_data->mag_mave_alpha );
+  //tmp_mave = Windowed_Mean( p_sample_data->mag_mave, p_sample_data->mag[0], p_control->SampleNumber, p_sample_data->mag_mave_alpha );
   
   /* Update M2 (sum of squares on nth point) */
-  tmp_M2 = Rolling_SumOfSquares( p_sample_data->mag_ave, tmp_ave, p_sample_data->mag[0], p_sample_data->mag_M2 ); /* from full mean */
-  //tmp_M2 = Rolling_SumOfSquares( p_sample_data->mag_mave, tmp_mave, p_sample_data->mag[0], p_sample_data->mag_M2 ); /* from windowed mean */
+  //tmp_M2 = Rolling_SumOfSquares( p_sample_data->mag_ave, tmp_ave, p_sample_data->mag[0], p_sample_data->mag_M2 ); /* from full mean */
+  ////tmp_M2 = Rolling_SumOfSquares( p_sample_data->mag_mave, tmp_mave, p_sample_data->mag[0], p_sample_data->mag_M2 ); /* from windowed mean */
   
   /* Update rolling sample variance */
-  p_sample_data->mag_sam_var = Rolling_Sample_Variance( p_control->SampleNumber, p_sample_data->mag_M2 );
+  //p_sample_data->mag_sam_var = Rolling_Sample_Variance( p_control->SampleNumber, p_sample_data->mag_M2 );
   
   /* Update rolling population variance */
-  p_sample_data->mag_pop_var = Rolling_Population_Variance( p_control->SampleNumber, p_sample_data->mag_M2 );
+  //p_sample_data->mag_pop_var = Rolling_Population_Variance( p_control->SampleNumber, p_sample_data->mag_M2 );
   
   /* Finish update */
-  p_sample_data->mag_ave  = tmp_ave;
-  p_sample_data->mag_mave = tmp_mave;
+  //p_sample_data->mag_ave  = tmp_ave;
+  //p_sample_data->mag_mave = tmp_mave;
   
 } /* End Update_Stats_2D() */
 
@@ -615,7 +614,7 @@ void Update_Stats_1D(
   
   /* Update M2 (sum of squares on nth point) */
   tmp_M2 = Rolling_SumOfSquares( p_sample_data->val_ave, tmp_ave, p_sample_data->val[0], p_sample_data->val_M2 ); /* from full mean */
-  //tmp_M2 = Rolling_SumOfSquares( p_sample_data->val_mave, tmp_mave, p_sample_data->val[0], p_sample_data->val_M2 ); /* from windowed mean */
+  ////tmp_M2 = Rolling_SumOfSquares( p_sample_data->val_mave, tmp_mave, p_sample_data->val[0], p_sample_data->val_M2 ); /* from windowed mean */
   
   /* Update rolling sample variance */
   p_sample_data->val_sam_var = Rolling_Sample_Variance( p_control->SampleNumber, p_sample_data->val_M2 );

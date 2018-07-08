@@ -130,9 +130,9 @@ void f_RespondToInput( CONTROL_TYPE       *p_control,
         Response.PacketType     = 1;
         Response.Buffer_nBytes  = sizeof(uint8_t)*2*3;
         Response.Packet_nBytes  = sizeof(uint16_t)*2 + sizeof(uint8_t)*(1 + Response.Buffer_nBytes);
-        f_WriteFToPacket_u16( &Response.Buffer[sizeof(uint16_t)*0], TO_DEG(p_sensor_state->roll) );
-        f_WriteFToPacket_u16( &Response.Buffer[sizeof(uint16_t)*1], TO_DEG(p_sensor_state->pitch) );
-        f_WriteFToPacket_u16( &Response.Buffer[sizeof(uint16_t)*2], TO_DEG(p_sensor_state->yaw) );
+        f_WriteFToPacket_u16( &Response.Buffer[sizeof(uint16_t)*0], TO_DEG(p_sensor_state->roll.val[0]) );
+        f_WriteFToPacket_u16( &Response.Buffer[sizeof(uint16_t)*1], TO_DEG(p_sensor_state->pitch.val[0]) );
+        f_WriteFToPacket_u16( &Response.Buffer[sizeof(uint16_t)*2], TO_DEG(p_sensor_state->yaw.val[0]) );
         Response.CheckSum       = f_CheckSum( &Response.Buffer[0], Response.Buffer_nBytes );
         f_SendPacket( Response );
         break;
@@ -148,9 +148,9 @@ void f_RespondToInput( CONTROL_TYPE       *p_control,
         Response.PacketType     = 2;
         Response.Buffer_nBytes  = sizeof(uint8_t)*4*3;
         Response.Packet_nBytes  = sizeof(uint16_t)*2 + sizeof(uint8_t)*(1 + Response.Buffer_nBytes);
-        f_WriteFToPacket_s32( &Response.Buffer[sizeof(uint32_t)*0], TO_DEG(p_sensor_state->roll) );
-        f_WriteFToPacket_s32( &Response.Buffer[sizeof(uint32_t)*1], TO_DEG(p_sensor_state->pitch) );
-        f_WriteFToPacket_s32( &Response.Buffer[sizeof(uint32_t)*2], TO_DEG(p_sensor_state->yaw) );
+        f_WriteFToPacket_s32( &Response.Buffer[sizeof(uint32_t)*0], TO_DEG(p_sensor_state->roll.val[0]) );
+        f_WriteFToPacket_s32( &Response.Buffer[sizeof(uint32_t)*1], TO_DEG(p_sensor_state->pitch.val[0]) );
+        f_WriteFToPacket_s32( &Response.Buffer[sizeof(uint32_t)*2], TO_DEG(p_sensor_state->yaw.val[0]) );
         Response.CheckSum       = f_CheckSum( &Response.Buffer[0], Response.Buffer_nBytes );
         f_SendPacket( Response );
         break;
