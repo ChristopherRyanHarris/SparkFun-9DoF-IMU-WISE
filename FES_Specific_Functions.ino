@@ -111,7 +111,20 @@ void FES_Update (
   p_fes_state->foot_sensor_2_volts_ave = Windowed_Mean( p_fes_state->foot_sensor_2_volts_ave, p_fes_state->foot_sensor_2_volts, p_control->SampleNumber, FOOT_SENSOR_2_VOLTS_ALPHA );
   p_fes_state->foot_sensor_3_volts_ave = Windowed_Mean( p_fes_state->foot_sensor_3_volts_ave, p_fes_state->foot_sensor_3_volts, p_control->SampleNumber, FOOT_SENSOR_3_VOLTS_ALPHA );    //add 7-23-2018 Rebecca
   p_fes_state->foot_sensor_4_volts_ave = Windowed_Mean( p_fes_state->foot_sensor_4_volts_ave, p_fes_state->foot_sensor_4_volts, p_control->SampleNumber, FOOT_SENSOR_4_VOLTS_ALPHA );    //add 7-23-2018 Rebecca
-  
+
+  /* If FootSwitch in Contact, Turn on LED */
+  if( p_fes_state->foot_sensor_1_volts_ave > 1 )
+    LED_DF_SET_HIGH;
+    else if ( p_fes_state->foot_sensor_1_volts_ave < 1 )
+    LED_DF_SET_LOW;
+    else if ( p_fes_state->foot_sensor_2_volts_ave > 1 )
+    LED_PF_SET_HIGH;
+    else if ( p_fes_state->foot_sensor_2_volts_ave < 1 )
+    LED_PF_SET_LOW;
+    else
+    LED_DF_SET_LOW;
+    LED_PF_SET_LOW;
+   
   /* At given event, trigger relay */
 	if( PHASE_ANGLE_SWITCH_ON_EVENT )
 	{
