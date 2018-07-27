@@ -157,11 +157,26 @@ typedef struct
 #define RELAY_2_SET_HIGH digitalWrite( RELAY_2_PIN, HIGH )
 #define RELAY_2_SET_LOW  digitalWrite( RELAY_2_PIN, LOW )
 
-
-
 /*******************************************************************
 ** Foot sensor
 ********************************************************************/
+#define LED_DF_PIN 10 /* digital pin */ 
+#define LED_PF_PIN 12 /* digital pin */ 
+
+/* Set LED pins to monitor Foot Switches 1 & 2*/
+#define SET_LED_DF_OUTPUT pinMode(LED_DF_PIN,OUTPUT)
+#define SET_LED_PF_OUTPUT pinMode(LED_PF_PIN,OUTPUT)
+/* Set pins as INPUT ... not used */
+#define SET_LED_DF_OUTPUT pinMode(LED_DF_PIN,INPUT)
+#define SET_LED_PF_OUTPUT pinMode(LED_PF_PIN,INPUT)
+
+/* Set LED FootSwitch Monitor State
+** set the relays open, and High would be closed */
+#define LED_DF_SET_HIGH digitalWrite( LED_DF_PIN, HIGH )
+#define LED_DF_SET_LOW  digitalWrite( LED_DF_PIN, LOW )
+#define LED_PF_SET_HIGH digitalWrite( LED_PF_PIN, HIGH )
+#define LED_PF_SET_LOW  digitalWrite( LED_PF_PIN, LOW )
+        
 
 /* Analog Foot sensor in GPIO pin */
 #define FOOT_SENSOR_1_PIN A1
