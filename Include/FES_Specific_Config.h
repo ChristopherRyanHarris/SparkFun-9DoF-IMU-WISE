@@ -10,7 +10,7 @@
 
 
 /* Choose a method by which we will toggle the relays */
-#define RELAY_SWITCH_METHOD 1
+#define RELAY_SWITCH_METHOD 9
 
 
 #if RELAY_SWITCH_METHOD==1
@@ -191,11 +191,11 @@ typedef struct
 #define FOOT_SENSOR_VOLTAGE_IN (3.3f)
 
 /* Side A voltage splitting resistor */
-#define FOOT_SENSOR_1_R (1000000.0f) //Ohms
-#define FOOT_SENSOR_2_R (1000000.0f) //Ohms
+#define FOOT_SENSOR_1_R (1000.0f) //Ohms
+#define FOOT_SENSOR_2_R (1000.0f) //Ohms
 /* Side B voltage splitting resistor */
-#define FOOT_SENSOR_3_R (1000000.0f) //Ohms
-#define FOOT_SENSOR_4_R (1000000.0f) //Ohms
+#define FOOT_SENSOR_3_R (1000.0f) //Ohms
+#define FOOT_SENSOR_4_R (1000.0f) //Ohms
 
 
 /* Set pins as INPUT ... not used */
