@@ -42,7 +42,7 @@
 
 /* FES Structure
 ** This is specific to the FES test */
-FES_TEST_TYPE g_fes_state;
+FES_TEST_TYPE     g_fes_state;
 
 /* Control Structure
 ** This will contain all the various settings */
@@ -131,7 +131,7 @@ void setup( void )
   }
   
   /* Write the meta header */
-  Meta_LogOut( &g_control, &g_sensor_state, &g_gapa_state, &g_wise_state );
+  Meta_LogOut( &g_control, &g_sensor_state, &g_gapa_state, &g_wise_state, &g_fes_state );
   
   /* Set the initial roll/pitch/yaw from 
   ** initial accel/gyro */
@@ -209,8 +209,8 @@ void loop( void )
   ** FES Test Specific **
   ** ***************** */
   FES_Update ( &g_control, &g_fes_state, &g_sensor_state, &g_dcm_state, &g_gapa_state, &g_wise_state ); /* cost: 45 sam/s */
-  		
-  		
+    
+  
   /* Read/Respond to command */
   if( SERIAL_AVAILABLE>0 ){ f_RespondToInput( &g_control, &g_sensor_state, &g_calibration, SERIAL_AVAILABLE ); }
 
@@ -218,8 +218,10 @@ void loop( void )
   if ( micros()>(g_control.LastLogTime+DATA_LOG_RATE) )
   {
     /* Log the current states to the debug port */
-    //Debug_LogOut( &g_control, &g_sensor_state, &g_gapa_state, &g_wise_state ); /* sd vs uart : cost ~100 sam/s */
-    Data_LogOut( &g_control, &g_sensor_state, &g_gapa_state, &g_wise_state ); /* cost: ~20 sam/s */
+    /* Debug_LogOut sends values to Arduino Serial Monitor */
+    /* Data_LogOut sends values to SD Card (if available) */
+    Debug_LogOut( &g_control, &g_sensor_state, &g_gapa_state, &g_wise_state, &g_fes_state ); /* sd vs uart : cost ~100 sam/s */
+    //Data_LogOut( &g_control, &g_sensor_state, &g_gapa_state, &g_wise_state, &g_fes_state ); /* cost: ~20 sam/s */
     
     g_control.LastLogTime = micros();
 
@@ -234,9 +236,3 @@ void loop( void )
   **        to communicate during operation */
   Blink_LED( &g_control );
 } /* End loop */
-
-
-
-
-
-

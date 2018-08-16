@@ -48,7 +48,8 @@
 void Meta_LogOut( CONTROL_TYPE       *p_control,
                   SENSOR_STATE_TYPE  *p_sensor_state,
                   GAPA_STATE_TYPE    *p_gapa_state,
-                  WISE_STATE_TYPE    *p_wise_state )
+                  WISE_STATE_TYPE    *p_wise_state,
+                  FES_TEST_TYPE      *p_fes_state )
 {
   META_PACKET_TYPE Packet;
   
@@ -67,33 +68,33 @@ void Meta_LogOut( CONTROL_TYPE       *p_control,
   {
     case 1 :
       Packet.version_id                     = (float)DATA_PACKET_VERSION;
-    	Packet.header_length                  = (float)sizeof(META_PACKET_TYPE);
-    	Packet.collection_id                  = Default; /* Post - Processing */
-    	Packet.collection_date                = Default; /* Post - Processing */
-    	Packet.platform_used                  = (float)platform;
+      Packet.header_length                  = (float)sizeof(META_PACKET_TYPE);
+      Packet.collection_id                  = Default; /* Post - Processing */
+      Packet.collection_date                = Default; /* Post - Processing */
+      Packet.platform_used                  = (float)platform;
 
-    	Packet.data_quality                   = Default; /* Post - Processing */;
-    	Packet.collection_subject_id          = Default; /* Post - Processing */;
-    	Packet.imu_position                   = Default; /* Post - Processing */;
-    	Packet.collection_env                 = Default; /* Post - Processing */;
-    	Packet.multiple_speed_flag            = Default; /* Post - Processing */;
-    	Packet.speed                          = Default; /* Post - Processing */;
-    	Packet.mult_incline_flag              = Default; /* Post - Processing */;
-    	Packet.incline_pct                    = Default; /* Post - Processing */;
+      Packet.data_quality                   = Default; /* Post - Processing */;
+      Packet.collection_subject_id          = Default; /* Post - Processing */;
+      Packet.imu_position                   = Default; /* Post - Processing */;
+      Packet.collection_env                 = Default; /* Post - Processing */;
+      Packet.multiple_speed_flag            = Default; /* Post - Processing */;
+      Packet.speed                          = Default; /* Post - Processing */;
+      Packet.mult_incline_flag              = Default; /* Post - Processing */;
+      Packet.incline_pct                    = Default; /* Post - Processing */;
 
-    	Packet.time_scale                     = (float)TIME_RESOLUTION; 
-    	Packet.sample_rate_flag               = Default; /* Post - Processing */;
-    	Packet.sample_rate_ave                = Default; /* Post - Processing */;
-    	Packet.sample_rate_std                = Default; /* Post - Processing */;
-    	Packet.number_of_samples              = Default; /* Post - Processing */;
-    	Packet.number_of_elements_per_sample  = 10.0f; /* Post - Processing */;
-    	Packet.orientation_PO                 = (float)PITCH_O;
-    	Packet.orientation_PRC                = (float)PITCH_ROT_CONV;
-    	Packet.orientation_RRC                = (float)ROLL_ROT_CONV;
-    	Packet.orientation_ZR                 = (float)ROLL_ZREF;
-    	
-    	break;
-    	
+      Packet.time_scale                     = (float)TIME_RESOLUTION; 
+      Packet.sample_rate_flag               = Default; /* Post - Processing */;
+      Packet.sample_rate_ave                = Default; /* Post - Processing */;
+      Packet.sample_rate_std                = Default; /* Post - Processing */;
+      Packet.number_of_samples              = Default; /* Post - Processing */;
+      Packet.number_of_elements_per_sample  = 10.0f; /* Post - Processing */;
+      Packet.orientation_PO                 = (float)PITCH_O;
+      Packet.orientation_PRC                = (float)PITCH_ROT_CONV;
+      Packet.orientation_RRC                = (float)ROLL_ROT_CONV;
+      Packet.orientation_ZR                 = (float)ROLL_ZREF;
+      
+      break;
+      
     case 2 :
       break;
       
@@ -101,7 +102,7 @@ void Meta_LogOut( CONTROL_TYPE       *p_control,
       break;
   } /* End switch(DATA_PACKET_VERSION) */
 
-	LOG_DATA( &Packet, sizeof(META_PACKET_TYPE) );
+  LOG_DATA( &Packet, sizeof(META_PACKET_TYPE) );
   
 } /* End Meta_LogOut */
 
@@ -123,7 +124,8 @@ void Meta_LogOut( CONTROL_TYPE       *p_control,
 void Data_LogOut( CONTROL_TYPE       *p_control,
                   SENSOR_STATE_TYPE  *p_sensor_state,
                   GAPA_STATE_TYPE    *p_gapa_state,
-                  WISE_STATE_TYPE    *p_wise_state )
+                  WISE_STATE_TYPE    *p_wise_state,
+                  FES_TEST_TYPE      *p_fes_state )
 {
   float Packet[10];
   
@@ -160,14 +162,15 @@ void Data_LogOut( CONTROL_TYPE       *p_control,
 void Debug_LogOut( CONTROL_TYPE       *p_control,
                    SENSOR_STATE_TYPE  *p_sensor_state,
                    GAPA_STATE_TYPE    *p_gapa_state,
-                   WISE_STATE_TYPE    *p_wise_state )
+                   WISE_STATE_TYPE    *p_wise_state,
+                   FES_TEST_TYPE      *p_fes_state )
 {
   char LogBuffer[MAX_LINE_LEN];
   char tmpBuffer[MAX_LINE_LEN];
 
   switch ( p_control->output_mode )
   {
-    case 1:
+    case 1:    /* IMU Values */
       sprintf( LogBuffer, "T:%09lu", p_control->timestamp );
       
       sprintf( tmpBuffer, ", Sample:%09lu", p_control->SampleNumber );
@@ -213,7 +216,7 @@ void Debug_LogOut( CONTROL_TYPE       *p_control,
       
       break;
 
-    case 2:
+    case 2:    /* IMU + Footswitch Values */
       sprintf( LogBuffer, "%09lu", p_control->timestamp );
 
       sprintf( tmpBuffer, ",%d,%d,%d", (int)p_sensor_state->accel.val[0], (int)p_sensor_state->accel.val[1], (int)p_sensor_state->accel.val[2] );
@@ -223,18 +226,77 @@ void Debug_LogOut( CONTROL_TYPE       *p_control,
       strcat( LogBuffer, tmpBuffer );
 
       strcat( LogBuffer, "," );
-      FltToStr( TO_DEG(p_sensor_state->roll.val[0]), 3, tmpBuffer);
+      FltToStr( TO_DEG(p_sensor_state->roll.val[0]), 2, tmpBuffer);
       strcat( LogBuffer, tmpBuffer );
 
       strcat( LogBuffer, "," );
-      FltToStr( TO_DEG(p_sensor_state->pitch.val[0]), 3, tmpBuffer);
+      FltToStr( TO_DEG(p_sensor_state->pitch.val[0]), 2, tmpBuffer);
       strcat( LogBuffer, tmpBuffer );
 
       strcat( LogBuffer, "," );
-      FltToStr( TO_DEG(p_sensor_state->yaw.val[0]), 3, tmpBuffer);
+      FltToStr( TO_DEG(p_sensor_state->yaw.val[0]), 2, tmpBuffer);
       strcat( LogBuffer, tmpBuffer );
+
+      strcat( LogBuffer, ", PA(N):" );
+      FltToStr( p_gapa_state->nu_norm.val[0], 2, tmpBuffer );
+      strcat( LogBuffer, tmpBuffer );
+    
+      strcat( LogBuffer, ", Volts_1_ave " );
+      FltToStr( p_fes_state->foot_sensor_1_volts_ave, 2, tmpBuffer);
+      strcat( LogBuffer, tmpBuffer );
+
+      strcat( LogBuffer, ", Volts_2_ave " );
+      FltToStr( p_fes_state->foot_sensor_2_volts_ave, 2, tmpBuffer);
+      strcat( LogBuffer, tmpBuffer );
+      
+      strcat( LogBuffer, ", Volts_3_ave " );
+      FltToStr( p_fes_state->foot_sensor_3_volts_ave, 2, tmpBuffer);
+      strcat( LogBuffer, tmpBuffer );
+
+      strcat( LogBuffer, ", Volts_4_ave " );
+      FltToStr( p_fes_state->foot_sensor_4_volts_ave, 2, tmpBuffer);
+      strcat( LogBuffer, tmpBuffer );
+      
       break;
 
+    case 3:    /* Footswitch Data Only */
+      sprintf( LogBuffer, "%09lu", p_control->timestamp );
+
+      strcat( LogBuffer, ", Volts_1_ave " );
+      FltToStr( p_fes_state->foot_sensor_1_volts_ave, 3, tmpBuffer);
+      strcat( LogBuffer, tmpBuffer );
+
+      strcat( LogBuffer, ", Volts_2_ave " );
+      FltToStr( p_fes_state->foot_sensor_2_volts_ave, 3, tmpBuffer);
+      strcat( LogBuffer, tmpBuffer );
+
+      strcat( LogBuffer, ", Volts_3_ave " );
+      FltToStr( p_fes_state->foot_sensor_3_volts_ave, 3, tmpBuffer);
+      strcat( LogBuffer, tmpBuffer );
+
+      strcat( LogBuffer, ", Volts_4_ave " );
+      FltToStr( p_fes_state->foot_sensor_4_volts_ave, 3, tmpBuffer);
+      strcat( LogBuffer, tmpBuffer );
+
+/*
+      strcat( LogBuffer, ", Volts_1_val " );
+      FltToStr( p_fes_state->foot_sensor_1_val, 3, tmpBuffer);
+      strcat( LogBuffer, tmpBuffer );
+
+      strcat( LogBuffer, ", Volts_2_val " );
+      FltToStr( p_fes_state->foot_sensor_2_val, 3, tmpBuffer);
+      strcat( LogBuffer, tmpBuffer );
+
+      strcat( LogBuffer, ", Volts_3_val " );
+      FltToStr( p_fes_state->foot_sensor_3_val, 3, tmpBuffer);
+      strcat( LogBuffer, tmpBuffer );
+
+      strcat( LogBuffer, ", Volts_4_val " );
+      FltToStr( p_fes_state->foot_sensor_4_val, 3, tmpBuffer);
+      strcat( LogBuffer, tmpBuffer );
+*/    
+      break;
+    
     default:
       break;
   }
@@ -570,3 +632,4 @@ void GetNextLogFileName( CONTROL_TYPE          *p_control,
     }
   }
 } /* End GetNextLogF */
+
