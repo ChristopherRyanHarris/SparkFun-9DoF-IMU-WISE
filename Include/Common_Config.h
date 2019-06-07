@@ -39,8 +39,7 @@
   #include "../Include/WISE_Config.h"
   #include "../Include/Communication_Config.h"
   #include "../Include/Log_Config.h"
-
-
+
   #include "../Include/Emulator_Config.h"
 
   #ifdef _IMU10736_
@@ -81,7 +80,7 @@
 ** hot switch these. */
 
 /* I/O params */
-#define OUTPUT_MODE 3
+#define OUTPUT_MODE 1
 #define NUM_COM_MODES 2
 
 /* Calibration params  */
