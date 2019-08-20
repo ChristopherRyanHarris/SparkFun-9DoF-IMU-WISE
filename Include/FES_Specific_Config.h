@@ -9,6 +9,8 @@
 #define FES_SPECIFIC_CONFIG_H
 
 
+#define NO_STIM 1
+
 /* Choose a method by which we will toggle the relays */
 #define RELAY_SWITCH_METHOD 9
 
@@ -95,13 +97,23 @@
 typedef struct
 {
   /* Relay variables */
-  bool relays_on;
+  //bool relays_on;
+  bool relay1_on;
+  bool relay2_on;
   
-  unsigned long int relay_start_micros;
-  unsigned long int relay_on_micros;
+  //unsigned long int relay_start_micros;
+  //unsigned long int relay_on_micros;
+  unsigned long int relay1_start_micros;
+  unsigned long int relay1_on_micros;
+  unsigned long int relay2_start_micros;
+  unsigned long int relay2_on_micros;
   
-  unsigned long int relay_start_iteration;
-  unsigned long int relay_on_iterations;
+  //unsigned long int relay_start_iteration;
+  //unsigned long int relay_on_iterations;
+  unsigned long int relay1_start_iteration;
+  unsigned long int relay1_on_iterations;
+  unsigned long int relay2_start_iteration;
+  unsigned long int relay2_on_iterations;
   
   /* Foot sensor variables */
   unsigned int foot_sensor_1_val;
