@@ -19,7 +19,7 @@
 ** Logging Parameters
 *******************************************************************/
 
-#define ENABLE_SD_LOGGING 1
+#define ENABLE_SD_LOGGING 0
 #define ENABLE_C_FILE_LOGGING 0 /* emulation mode */
 
 #if( ENABLE_SD_LOGGING==1 )
@@ -28,7 +28,7 @@
   #endif
   #if( EXE_MODE==1 ) /* Emulation Mode */
     #error "SD logging is only available on the SEN-14001 (MPU-9250)! Set ENABLE_SD_LOGGING=0. Use ENABLE_C_FILE_LOGGING instead"
-  #endif 
+  #endif
 #endif
 #if( ENABLE_C_FILE_LOGGING==1 )
   #if( EXE_MODE==0 ) /* IMU Mode */
@@ -79,7 +79,7 @@
 #define MAX_LOG_BUFFER_STORE 1
 #define MAX_OUTPUT_FILE_SIZE POW_2_30 /* 1 GB max file size */
 
-#if( EXE_MODE==0 ) 
+#if( EXE_MODE==0 )
   /* 0 : IMU Mode */
   #define FILE_TYPE File
 #else
@@ -139,11 +139,11 @@ typedef struct
 
   char      file_suffix[SHORT_LINE_LEN];
   char      file_prefix[SHORT_LINE_LEN];
-  
+
   /* type: 0:txt 1:bin */
   int       type;
   int       size;
-  
+
   bool      enabled;
 } OUTPUT_LOG_FILE_TYPE;
 
@@ -151,8 +151,8 @@ typedef struct
 ** Logging Macros
 *******************************************************************/
 
-#if( EXE_MODE==0 ) 
-  /* 0 : IMU Mode 
+#if( EXE_MODE==0 )
+  /* 0 : IMU Mode
   ** Writing/Reading from SD */
   #define FILE_EXISTS_FLAG(_fn)            (SD.exists(_fn))
   #define FILE_SIZE_BYTES(_fh)             (_fh.size())
@@ -163,7 +163,7 @@ typedef struct
   #define FILE_PRINT_TO_FILE(_fh,_s)       (_fh.print(_s))
   #define FILE_WRITE_TO_FILE(_b,_m,_n,_fh) (_fh.write(_b,(_m*_n)))
 #else
-  /* 1 : Emulation Mode 
+  /* 1 : Emulation Mode
   ** Writing/Reading from local file */
   #define FILE_EXISTS_FLAG(_fn)            (fopen(_fn,"r")!=NULL)
   #define FILE_SIZE_BYTES(_fh)             ftell(_fh)
@@ -218,7 +218,7 @@ do{ \
   /*
   ** Helpers & Simple Log calls
   */
-  
+
   /* Print [func,line] */
   #define LOG_TAG_UART \
   do{ \
@@ -238,7 +238,7 @@ do{ \
   /*
   ** Logging to SD
   */
-  
+
   /* Record binary data */
   #define LOG_DATA_SD(_p,_n) \
   do{ \
@@ -247,7 +247,7 @@ do{ \
     p_control->log_data_file.size = _n; \
     LogToFile( p_control, &p_control->log_data_file, _log_data_buff ); \
   }while(0)
-  
+
   /* Print message to SD file with forced newline */
   #define LOG_INFO_SD(...) \
   do{ \
@@ -277,14 +277,14 @@ do{ \
     sprintf( _buffer_dat, "[%s:%d] %s %s\n", __FUNCTION__,__LINE__, LOG_INFO_WARNING_STRING, _buffer_log_pnt_db ); \
     LogToFile( p_control, &p_control->log_info_file, _buffer_dat ); \
   }while(0)
-  
+
   /*
-  ** Logging to UART 
+  ** Logging to UART
   */
-  
+
   /* Print contents to UART */
   #define LOG_UART_SIMPLE(...) UART_PORT.print(__VA_ARGS__)
-  
+
   /* Print message to uart with forced newline */
   #define LOG_INFO_UART(...) \
   do{ \
@@ -306,7 +306,7 @@ do{ \
     UART_PORT.println(_buffer); \
     UART_PORT.flush(); \
   }while(0)
-  
+
   /* Print warning message to uart with forced newline */
   #define LOG_INFO_WARNING_UART(...) \
   do{ \
@@ -322,7 +322,7 @@ do{ \
   /*
   ** Set logging calls from mode dependent functions
   */
-  
+
   /* In the SEN-14001 platform, we have the
   ** ability to log to an sd card (if present) */
   #if( ENABLE_SD_LOGGING==TRUE ) /* Using SD Card */
@@ -335,11 +335,11 @@ do{ \
     #define LOG_INFO          LOG_INFO_UART
     #define LOG_INFO_FAIL     LOG_INFO_FAIL_UART
     #define LOG_INFO_WARNING  LOG_INFO_WARNING_UART
-  
+
   #endif /* End SD_LOGGING Block */
-  
+
   #define LOG_INFO_DEFAULT(...) LOG_UART_SIMPLE(__VA_ARGS__)
-  
+
 
 #else /* EXE_MODE==1 , c executable code */
 
@@ -352,11 +352,11 @@ do{ \
   /*
   ** Helpers
   */
-  
+
   /*
   ** Logging to file
   */
-  
+
   /* Record binary data */
   #define LOG_DATA_FILE(_p,_n) \
   do{ \
@@ -365,7 +365,7 @@ do{ \
     p_control->log_data_file.size = _n; \
     LogToFile( p_control, &p_control->log_data_file, _log_data_buff ); \
   }while(0)
-  
+
   /* Print message to file with forced newline */
   #define LOG_INFO_FILE(...) \
   do{ \
@@ -396,10 +396,10 @@ do{ \
     LogToFile( p_control, &p_control->log_info_file, _buffer_dat ); \
   }while(0)
 
-  /* 
-  ** Logging to stdout 
+  /*
+  ** Logging to stdout
   */
-  
+
   /* Print contents to stdout */
   #define LOG_STDOUT_SIMPLE(...) fprintf( stdout, __VA_ARGS__ )
 
@@ -426,11 +426,11 @@ do{ \
     sprintf(_buffer_log_pnt_db,__VA_ARGS__); \
     fprintf( stdout, "[%s:%d] %s %s\n", __FUNCTION__,__LINE__, LOG_INFO_WARNING_STRING, _buffer_log_pnt_db ); \
   }while(0)
-  
+
   /*
   ** Set logging calls from mode dependent functions
   */
-  
+
   #if( ENABLE_C_FILE_LOGGING==1 )
     #define LOG_DATA         LOG_DATA_FILE
     #define LOG_INFO         LOG_INFO_FILE
@@ -442,9 +442,9 @@ do{ \
     #define LOG_INFO_FAIL    LOG_INFO_FAIL_STDOUT
     #define LOG_INFO_WARNING LOG_INFO_WARNING_STDOUT
   #endif /* End if( ENABLE_C_FILE_LOGGING==1 ) */
-  
+
   #define LOG_INFO_DEFAULT(...) LOG_STDOUT_SIMPLE(__VA_ARGS__)
-  
+
 #endif /* End EXE_MODE==1 , c executable code */
 
 

@@ -61,7 +61,7 @@ void Meta_LogOut( CONTROL_TYPE       *p_control,
     platform = 10736;
   #endif
   #ifdef _IMU9250_
-    platform = 10736;
+    platform = 9250;
   #endif
   
   switch(DATA_PACKET_VERSION)
